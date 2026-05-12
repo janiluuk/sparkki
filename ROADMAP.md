@@ -24,7 +24,7 @@
 
 ## Design principles
 
-These are non-negotiable and apply to every page and component.
+These are non-negotiable and apply to every page and component. **Canonical tokens, typography, motion, and component recipes** live in **`DESIGN_SYSTEM.md`** — read that file before building or restyling UI.
 
 - **Font size minimum 18px body.** Never go below 16px anywhere. Elder users are a primary audience.
 - **High contrast.** WCAG AA minimum, aim for AAA on body text. Use Tailwind `text-gray-900` on white, never gray-on-gray.

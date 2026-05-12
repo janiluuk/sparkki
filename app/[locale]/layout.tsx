@@ -45,7 +45,7 @@ export default async function LocaleLayout({
       <div className="relative z-10 flex min-h-screen flex-col">
         <a
           href="#content"
-          className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-50 focus:rounded-lg focus:bg-verso-green focus:px-4 focus:py-3 focus:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
+          className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-50 focus:rounded-lg focus:bg-g focus:px-4 focus:py-3 focus:text-canvas focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-g"
         >
           {t("skipToContent")}
         </a>

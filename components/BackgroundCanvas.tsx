@@ -3,7 +3,7 @@
 import { useEffect, useRef } from "react";
 import * as THREE from "three";
 
-/** Decorative ambient canvas — spec: ROADMAP.md Three.js section */
+/** Decorative ambient canvas — DESIGN_SYSTEM.md + ROADMAP */
 export function BackgroundCanvas() {
   const ref = useRef<HTMLCanvasElement>(null);
 
@@ -38,28 +38,47 @@ export function BackgroundCanvas() {
       _vel: THREE.Vector3;
     };
 
-    for (let i = 0; i < 100; i++) {
+    if (reducedMotion) {
       const mat = new THREE.MeshBasicMaterial({
-        color: Math.random() > 0.88 ? 0xf59e0b : 0x1d9e75,
+        color: 0x1df5a0,
         transparent: true,
-        opacity: 0.035 + Math.random() * 0.055,
+        opacity: 0.14,
         wireframe: true,
       });
-      const mesh = new THREE.Mesh(geometry, mat) as unknown as MeshWithVel;
-      mesh.position.set(
-        (Math.random() - 0.5) * 40,
-        (Math.random() - 0.5) * 30,
-        (Math.random() - 0.5) * 20,
-      );
-      const s = 0.3 + Math.random() * 1.2;
-      mesh.scale.setScalar(s);
-      mesh._vel = new THREE.Vector3(
-        (Math.random() - 0.5) * 0.003,
-        (Math.random() - 0.5) * 0.003,
-        0,
-      );
+      const mesh = new THREE.Mesh(geometry, mat);
+      mesh.position.set(0, 0, 0);
+      mesh.scale.setScalar(1.45);
       scene.add(mesh);
       meshes.push(mesh);
+      renderer.render(scene, camera);
+    } else {
+      const count = 100;
+      for (let i = 0; i < count; i++) {
+        const amber = Math.random() < 0.15;
+        const mat = new THREE.MeshBasicMaterial({
+          color: amber ? 0xf5a623 : 0x1df5a0,
+          transparent: true,
+          opacity: amber
+            ? 0.05 + Math.random() * 0.05
+            : 0.06 + Math.random() * 0.12,
+          wireframe: true,
+        });
+        const mesh = new THREE.Mesh(geometry, mat) as unknown as MeshWithVel;
+        mesh.position.set(
+          (Math.random() - 0.5) * 40,
+          (Math.random() - 0.5) * 30,
+          (Math.random() - 0.5) * 20,
+        );
+        const s = 0.3 + Math.random() * 1.2;
+        mesh.scale.setScalar(s);
+        mesh._vel = new THREE.Vector3(
+          (Math.random() - 0.5) * 0.003,
+          (Math.random() - 0.5) * 0.003,
+          0,
+        );
+        scene.add(mesh);
+        meshes.push(mesh);
+      }
     }
 
     let animId = 0;
@@ -92,10 +111,12 @@ export function BackgroundCanvas() {
 
     const onVisibility = () => {
       if (document.hidden) cancelAnimationFrame(animId);
-      else animId = requestAnimationFrame(animate);
+      else if (!reducedMotion) animId = requestAnimationFrame(animate);
     };
 
-    if (!document.hidden) animId = requestAnimationFrame(animate);
+    if (!reducedMotion && !document.hidden) {
+      animId = requestAnimationFrame(animate);
+    }
     window.addEventListener("resize", onResize);
     document.addEventListener("visibilitychange", onVisibility);
 
@@ -111,7 +132,7 @@ export function BackgroundCanvas() {
     <canvas
       ref={ref}
       aria-hidden
-      className="fixed inset-0 -z-10 max-h-screen max-w-full pointer-events-none"
+      className="pointer-events-none fixed inset-0 -z-10 max-h-dvh max-w-full"
     />
   );
 }

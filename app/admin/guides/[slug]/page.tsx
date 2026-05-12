@@ -48,16 +48,16 @@ export default async function AdminGuideEditPage({
       <Link href="/admin/guides" className="text-verso-green underline">
         ← {a.guides}
       </Link>
-      <h1 className="mt-6 text-3xl font-bold text-gray-900">{a.guidesEditTitle}</h1>
-      <p className="mt-2 font-mono text-lg text-gray-700">{guide.slug}</p>
+      <h1 className="mt-6 text-3xl font-bold text-ink">{a.guidesEditTitle}</h1>
+      <p className="mt-2 font-mono text-lg text-fog">{guide.slug}</p>
 
       {saved ? (
-        <p className="mt-4 rounded-lg border border-green-200 bg-green-50 px-4 py-3 text-gray-900">
+        <p className="mt-4 rounded-lg border border-g/40 bg-g/10 px-4 py-3 text-ink">
           {a.guideSaved}
         </p>
       ) : null}
       {errMsg ? (
-        <p className="mt-4 rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-gray-900">
+        <p className="mt-4 rounded-lg border border-amber/30 bg-amber/10 px-4 py-3 text-ink">
           {errMsg}
         </p>
       ) : null}

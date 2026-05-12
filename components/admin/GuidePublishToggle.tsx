@@ -36,7 +36,7 @@ export function GuidePublishToggle({
   }
 
   return (
-    <div className="inline-flex items-center gap-3 font-medium text-gray-900">
+    <div className="inline-flex items-center gap-3 font-medium text-ink">
       <span className="sr-only">{a.guidesPublishedLabel}</span>
       <button
         type="button"
@@ -45,11 +45,11 @@ export function GuidePublishToggle({
         disabled={pending}
         onClick={() => void toggle()}
         className={`relative h-8 w-14 shrink-0 rounded-full transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-verso-green ${
-          on ? "bg-verso-green" : "bg-gray-300"
+          on ? "bg-verso-green" : "bg-dust"
         } ${pending ? "opacity-60" : ""}`}
       >
         <span
-          className={`absolute top-1 h-6 w-6 rounded-full bg-white shadow transition-[left] ${
+          className={`absolute top-1 h-6 w-6 rounded-full border border-em bg-card transition-[left] ${
             on ? "left-7" : "left-1"
           }`}
         />

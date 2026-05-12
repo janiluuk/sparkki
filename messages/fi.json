@@ -116,6 +116,7 @@
     "youtubeCta": "Katso videoita YouTubessa",
     "speedBefore": "Ennen: HDD-käynnistys",
     "speedAfter": "Jälkeen: SSD + Linux",
+    "speedVerdict": "Tyypillinen voitto: käynnistys lyhenee selvästi SSD:llä ja kevyemmällä järjestelmällä.",
     "stepsTitle": "Näin helppoa se on",
     "step1": "Kerrot koneen mallin tai tuot speksit",
     "step2": "Saat yhteensopivuusarvion",
@@ -267,6 +268,7 @@
   "yhteiso": {
     "title": "Yhteisö",
     "intro": "Liity Discordiin — kysymyksiä, vinkkejä ja vertaistukea.",
+    "discordBlockLead": "Kysy asennuksista, laitteista ja distroista — me ja yhteisö autamme.",
     "youtubeIntro": "Katso lyhyitä ohjeita ja demoja YouTube-kanavalla.",
     "youtubeCta": "Avaa YouTube-kanava",
     "guidelinesTitle": "Pelisäännöt",

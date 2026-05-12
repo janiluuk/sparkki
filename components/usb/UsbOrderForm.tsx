@@ -51,7 +51,7 @@ export function UsbOrderForm({ locale }: { locale: string }) {
         </label>
         <input
           id="usb-name"
-          className="min-h-tap w-full rounded-lg border border-gray-300 px-4 text-lg"
+          className="min-h-tap w-full rounded-lg border border-em px-4 text-lg"
           value={name}
           onChange={(e) => setName(e.target.value)}
           autoComplete="name"
@@ -64,7 +64,7 @@ export function UsbOrderForm({ locale }: { locale: string }) {
         <input
           id="usb-email"
           type="email"
-          className="min-h-tap w-full rounded-lg border border-gray-300 px-4 text-lg"
+          className="min-h-tap w-full rounded-lg border border-em px-4 text-lg"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           autoComplete="email"
@@ -77,20 +77,20 @@ export function UsbOrderForm({ locale }: { locale: string }) {
         <textarea
           id="usb-address"
           rows={3}
-          className="w-full rounded-lg border border-gray-300 px-4 py-3 text-lg"
+          className="w-full rounded-lg border border-em px-4 py-3 text-lg"
           value={address}
           onChange={(e) => setAddress(e.target.value)}
         />
       </div>
       {error ? (
-        <p className="font-semibold text-red-700" role="alert">
+        <p className="font-semibold text-danger" role="alert">
           {error}
         </p>
       ) : null}
       <button
         type="submit"
         disabled={!ok || loading}
-        className="min-h-tap rounded-xl bg-verso-green px-6 py-3 font-semibold text-white disabled:opacity-50"
+        className="min-h-tap rounded-xl bg-verso-green px-6 py-3 font-semibold text-canvas disabled:opacity-50"
       >
         {loading ? "…" : t("usbSubmit")}
       </button>

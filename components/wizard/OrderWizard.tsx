@@ -131,26 +131,26 @@ export function OrderWizard({ locale }: { locale: string }) {
 
   return (
     <section
-      className="verso-card mx-auto max-w-4xl p-6 shadow-soft md:p-10"
+      className="verso-card mx-auto max-w-4xl p-6 md:p-10"
       aria-labelledby="wizard-title"
     >
-      <h2 id="wizard-title" className="text-3xl font-bold text-gray-900">
+      <h2 id="wizard-title" className="text-3xl font-bold text-ink">
         {w("title")}
       </h2>
-      <p className="mt-2 text-lg text-gray-700">
+      <p className="mt-2 text-lg text-fog">
         {w("stepIndicator", { current: step + 1, total: 6 })}
       </p>
 
       {step === 0 ? (
         <div className="mt-8 space-y-6">
-          <h3 className="text-2xl font-semibold text-gray-900">{w("step1Title")}</h3>
+          <h3 className="text-2xl font-semibold text-ink">{w("step1Title")}</h3>
           <div>
             <label htmlFor="wiz-make" className="mb-2 block font-semibold">
               {w("step1Make")}
             </label>
             <input
               id="wiz-make"
-              className="min-h-tap w-full rounded-lg border border-gray-300 px-4 text-lg"
+              className="min-h-tap w-full rounded-lg border border-em px-4 text-lg"
               value={make}
               onChange={(e) => setMake(e.target.value)}
               autoComplete="organization"
@@ -162,7 +162,7 @@ export function OrderWizard({ locale }: { locale: string }) {
             </label>
             <input
               id="wiz-model"
-              className="min-h-tap w-full rounded-lg border border-gray-300 px-4 text-lg"
+              className="min-h-tap w-full rounded-lg border border-em px-4 text-lg"
               value={model}
               onChange={(e) => setModel(e.target.value)}
               autoComplete="off"
@@ -173,11 +173,11 @@ export function OrderWizard({ locale }: { locale: string }) {
 
       {step === 1 ? (
         <div className="mt-8 space-y-6">
-          <h3 className="text-2xl font-semibold text-gray-900">{w("step2Title")}</h3>
+          <h3 className="text-2xl font-semibold text-ink">{w("step2Title")}</h3>
           {!compat && !compatLoading ? (
             <button
               type="button"
-              className="min-h-tap rounded-xl bg-verso-green px-6 py-3 font-semibold text-white"
+              className="min-h-tap rounded-xl bg-verso-green px-6 py-3 font-semibold text-canvas"
               onClick={() => void loadCompatibility()}
             >
               {w("step2Run")}
@@ -185,8 +185,8 @@ export function OrderWizard({ locale }: { locale: string }) {
           ) : null}
           {compatLoading ? <p className="text-lg">{w("step2Loading")}</p> : null}
           {compat ? (
-            <div className="rounded-xl border border-gray-200 bg-gray-50 p-6">
-              <p className="text-xl font-bold text-gray-900">
+            <div className="rounded-xl border border-edge bg-canvas p-6">
+              <p className="text-xl font-bold text-ink">
                 {compat.status === "compatible"
                   ? w("step2Compatible")
                   : compat.status === "borderline"
@@ -196,7 +196,7 @@ export function OrderWizard({ locale }: { locale: string }) {
               <p className="mt-2 text-lg text-verso-green">
                 {w("step2Speed")}: {compat.speedGainEstimate}
               </p>
-              <ul className="mt-4 list-inside list-disc space-y-2 text-lg text-gray-900">
+              <ul className="mt-4 list-inside list-disc space-y-2 text-lg text-ink">
                 {compat.reasons.map((r) => (
                   <li key={r}>{reasonLabel(r)}</li>
                 ))}
@@ -208,7 +208,7 @@ export function OrderWizard({ locale }: { locale: string }) {
 
       {step === 2 ? (
         <div className="mt-8 space-y-4">
-          <h3 className="text-2xl font-semibold text-gray-900">{w("step3Title")}</h3>
+          <h3 className="text-2xl font-semibold text-ink">{w("step3Title")}</h3>
           <div className="grid gap-4 md:grid-cols-3">
             {(
               [
@@ -224,7 +224,7 @@ export function OrderWizard({ locale }: { locale: string }) {
                 className={`min-h-tap rounded-2xl border-2 p-6 text-left font-semibold focus-visible:outline focus-visible:outline-2 focus-visible:outline-verso-green ${
                   tier === value
                     ? "border-verso-green bg-verso-green/10"
-                    : "border-gray-200 bg-white"
+                    : "border-edge bg-card"
                 }`}
               >
                 {w(labelKey)}
@@ -236,7 +236,7 @@ export function OrderWizard({ locale }: { locale: string }) {
 
       {step === 3 ? (
         <div className="mt-8 space-y-4">
-          <h3 className="text-2xl font-semibold text-gray-900">{w("step4Title")}</h3>
+          <h3 className="text-2xl font-semibold text-ink">{w("step4Title")}</h3>
           <div className="grid gap-4 md:grid-cols-3">
             {(
               [
@@ -252,7 +252,7 @@ export function OrderWizard({ locale }: { locale: string }) {
                 className={`min-h-tap rounded-2xl border-2 p-6 text-left font-semibold focus-visible:outline focus-visible:outline-2 focus-visible:outline-verso-green ${
                   delivery === value
                     ? "border-verso-green bg-verso-green/10"
-                    : "border-gray-200 bg-white"
+                    : "border-edge bg-card"
                 }`}
               >
                 {w(labelKey)}
@@ -264,7 +264,7 @@ export function OrderWizard({ locale }: { locale: string }) {
 
       {step === 4 ? (
         <div className="mt-8 space-y-6">
-          <h3 className="text-2xl font-semibold text-gray-900">{w("step5Title")}</h3>
+          <h3 className="text-2xl font-semibold text-ink">{w("step5Title")}</h3>
           <div className="grid gap-3 md:grid-cols-3">
             {(
               [
@@ -280,7 +280,7 @@ export function OrderWizard({ locale }: { locale: string }) {
                 className={`min-h-tap rounded-xl border-2 px-4 py-3 font-semibold ${
                   support === value
                     ? "border-verso-green bg-verso-green/10"
-                    : "border-gray-200"
+                    : "border-edge"
                 }`}
               >
                 {w(labelKey)}
@@ -293,7 +293,7 @@ export function OrderWizard({ locale }: { locale: string }) {
             </label>
             <input
               id="wiz-name"
-              className="min-h-tap w-full rounded-lg border border-gray-300 px-4 text-lg"
+              className="min-h-tap w-full rounded-lg border border-em px-4 text-lg"
               value={customerName}
               onChange={(e) => setCustomerName(e.target.value)}
               autoComplete="name"
@@ -306,7 +306,7 @@ export function OrderWizard({ locale }: { locale: string }) {
             <input
               id="wiz-email"
               type="email"
-              className="min-h-tap w-full rounded-lg border border-gray-300 px-4 text-lg"
+              className="min-h-tap w-full rounded-lg border border-em px-4 text-lg"
               value={customerEmail}
               onChange={(e) => setCustomerEmail(e.target.value)}
               autoComplete="email"
@@ -319,7 +319,7 @@ export function OrderWizard({ locale }: { locale: string }) {
             <input
               id="wiz-phone"
               type="tel"
-              className="min-h-tap w-full rounded-lg border border-gray-300 px-4 text-lg"
+              className="min-h-tap w-full rounded-lg border border-em px-4 text-lg"
               value={customerPhone}
               onChange={(e) => setCustomerPhone(e.target.value)}
               autoComplete="tel"
@@ -332,7 +332,7 @@ export function OrderWizard({ locale }: { locale: string }) {
             <textarea
               id="wiz-address"
               rows={3}
-              className="w-full rounded-lg border border-gray-300 px-4 py-3 text-lg"
+              className="w-full rounded-lg border border-em px-4 py-3 text-lg"
               value={address}
               onChange={(e) => setAddress(e.target.value)}
             />
@@ -344,7 +344,7 @@ export function OrderWizard({ locale }: { locale: string }) {
             <input
               id="wiz-date"
               type="date"
-              className="min-h-tap w-full rounded-lg border border-gray-300 px-4 text-lg"
+              className="min-h-tap w-full rounded-lg border border-em px-4 text-lg"
               value={preferredDate}
               onChange={(e) => setPreferredDate(e.target.value)}
             />
@@ -356,7 +356,7 @@ export function OrderWizard({ locale }: { locale: string }) {
             <textarea
               id="wiz-notes"
               rows={3}
-              className="w-full rounded-lg border border-gray-300 px-4 py-3 text-lg"
+              className="w-full rounded-lg border border-em px-4 py-3 text-lg"
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
             />
@@ -365,7 +365,7 @@ export function OrderWizard({ locale }: { locale: string }) {
       ) : null}
 
       {step === 5 ? (
-        <div className="mt-8 space-y-4 text-lg text-gray-900">
+        <div className="mt-8 space-y-4 text-lg text-ink">
           <h3 className="text-2xl font-semibold">{w("step6Title")}</h3>
           <p>
             <strong>{w("summaryComputer")}:</strong> {make} {model}
@@ -388,14 +388,14 @@ export function OrderWizard({ locale }: { locale: string }) {
             </p>
           ) : null}
           {checkoutError ? (
-            <p className="font-semibold text-red-700" role="alert">
+            <p className="font-semibold text-danger" role="alert">
               {checkoutError}
             </p>
           ) : null}
           <button
             type="button"
             disabled={checkoutLoading}
-            className="min-h-tap w-full rounded-xl bg-verso-green py-4 text-lg font-semibold text-white hover:bg-[#178f68] disabled:opacity-60 md:max-w-md"
+            className="min-h-tap w-full rounded-xl bg-verso-green py-4 text-lg font-semibold text-canvas hover:opacity-[0.85] disabled:opacity-60 md:max-w-md"
             onClick={() => void startCheckout()}
           >
             {checkoutLoading ? "…" : w("payCta")}
@@ -406,7 +406,7 @@ export function OrderWizard({ locale }: { locale: string }) {
       <div className="mt-10 flex flex-wrap justify-between gap-4">
         <button
           type="button"
-          className="min-h-tap rounded-lg border border-gray-300 px-6 py-3 font-semibold text-gray-900 disabled:opacity-40"
+          className="min-h-tap rounded-lg border border-em px-6 py-3 font-semibold text-ink disabled:opacity-40"
           disabled={step === 0}
           onClick={() => setStep((s) => Math.max(0, s - 1))}
         >
@@ -414,7 +414,7 @@ export function OrderWizard({ locale }: { locale: string }) {
         </button>
         <button
           type="button"
-          className="min-h-tap rounded-lg bg-verso-green px-6 py-3 font-semibold text-white disabled:opacity-40"
+          className="min-h-tap rounded-lg bg-verso-green px-6 py-3 font-semibold text-canvas disabled:opacity-40"
           disabled={
             (step === 0 && !canNextFrom0) ||
             (step === 1 && !canNextFrom1) ||
@@ -437,7 +437,7 @@ export function OrderWizard({ locale }: { locale: string }) {
         </button>
       </div>
 
-      <p className="mt-6 text-sm text-gray-600">
+      <p className="mt-6 text-sm text-fog">
         {t("wizardLegalHint")}
       </p>
     </section>

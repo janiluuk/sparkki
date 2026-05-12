@@ -34,24 +34,30 @@ export default async function YhteisoPage() {
 
   return (
     <div className="mx-auto max-w-3xl space-y-8 px-4 py-12">
-      <h1 className="text-4xl font-bold text-gray-900">{t("title")}</h1>
-      <p className="text-xl text-gray-900">{t("intro")}</p>
+      <h1 className="text-4xl font-bold text-ink">{t("title")}</h1>
+      <p className="text-xl text-ink">{t("intro")}</p>
       {invite && invite !== "#" ? (
-        <a
-          href={invite}
-          className="inline-flex min-h-tap items-center justify-center rounded-xl bg-verso-green px-8 py-3 text-lg font-semibold text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-verso-green"
-          rel="noopener noreferrer"
-          target="_blank"
-        >
-          {t("discordCta")}
-        </a>
+        <div className="discord-block">
+          <div className="min-w-0 flex-1 space-y-2">
+            <p className="discord-channel">yhteiso</p>
+            <p className="text-lg leading-relaxed text-[#c9cdee]">{t("discordBlockLead")}</p>
+          </div>
+          <a
+            href={invite}
+            className="discord-btn"
+            rel="noopener noreferrer"
+            target="_blank"
+          >
+            {t("discordCta")}
+          </a>
+        </div>
       ) : null}
       {showYoutube ? (
         <div className="space-y-3">
-          <p className="text-lg text-gray-900">{t("youtubeIntro")}</p>
+          <p className="text-lg text-ink">{t("youtubeIntro")}</p>
           <a
             href={youtubeUrl}
-            className="inline-flex min-h-tap items-center justify-center rounded-xl border-2 border-gray-300 bg-white px-8 py-3 text-lg font-semibold text-gray-900 hover:border-verso-green focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-verso-green"
+            className="inline-flex min-h-tap items-center justify-center rounded-xl border border-em bg-card px-8 py-3 text-lg font-semibold text-ink hover:border-g focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-g"
             rel="noopener noreferrer"
             target="_blank"
           >
@@ -60,10 +66,10 @@ export default async function YhteisoPage() {
         </div>
       ) : null}
       <section aria-labelledby="g-title">
-        <h2 id="g-title" className="text-2xl font-bold text-gray-900">
+        <h2 id="g-title" className="text-2xl font-bold text-ink">
           {t("guidelinesTitle")}
         </h2>
-        <p className="mt-4 text-lg text-gray-900">{t("guidelinesBody")}</p>
+        <p className="mt-4 text-lg text-ink">{t("guidelinesBody")}</p>
       </section>
     </div>
   );

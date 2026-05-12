@@ -3,6 +3,8 @@
 import { useEffect, useRef, useState } from "react";
 import { useTranslations } from "next-intl";
 
+const fillEase = "cubic-bezier(0.22, 1, 0.36, 1)";
+
 export function SpeedBar() {
   const t = useTranslations("home");
   const ref = useRef<HTMLDivElement>(null);
@@ -24,41 +26,50 @@ export function SpeedBar() {
   return (
     <section
       ref={ref}
-      className="verso-card mx-auto max-w-3xl p-8 sm:p-10"
+      className="verso-card mx-auto max-w-[340px] sm:max-w-3xl"
       aria-labelledby="speed-heading"
     >
       <h2
         id="speed-heading"
-        className="text-2xl font-bold tracking-tight text-gray-900"
+        className="font-display text-2xl font-extrabold tracking-tight text-ink"
       >
         {t("speedBefore")} → {t("speedAfter")}
       </h2>
       <div className="mt-6 space-y-5">
         <div>
-          <p className="mb-2 font-medium text-gray-900">{t("speedBefore")}</p>
+          <p className="mb-2 font-normal text-ink">{t("speedBefore")}</p>
           <div
-            className="h-4 overflow-hidden rounded-full bg-gray-200/90 ring-1 ring-gray-300/40"
+            className="speed-track h-1.5 overflow-hidden rounded-full bg-sunken"
             role="presentation"
           >
             <div
-              className="h-full rounded-full bg-gradient-to-r from-gray-400 to-gray-300 transition-all duration-[1800ms] ease-out"
-              style={{ width: active ? "100%" : "20%" }}
+              className="h-full rounded-full bg-danger"
+              style={{
+                width: active ? "92%" : "0%",
+                transition: `width 1.2s ${fillEase}`,
+              }}
             />
           </div>
         </div>
         <div>
-          <p className="mb-2 font-medium text-verso-green">{t("speedAfter")}</p>
+          <p className="mb-2 font-normal text-g">{t("speedAfter")}</p>
           <div
-            className="h-4 overflow-hidden rounded-full bg-verso-green/15 ring-1 ring-verso-green/25"
+            className="speed-track h-1.5 overflow-hidden rounded-full bg-sunken"
             role="presentation"
           >
             <div
-              className="h-full rounded-full bg-gradient-to-r from-verso-green to-[#26b384] transition-all duration-[1800ms] ease-out"
-              style={{ width: active ? "28%" : "5%" }}
+              className="h-full rounded-full bg-g"
+              style={{
+                width: active ? "14%" : "0%",
+                transition: `width 1.2s ${fillEase}`,
+              }}
             />
           </div>
         </div>
       </div>
+      <p className="speed-verdict mt-5 rounded-[10px] border border-edge bg-g/[0.06] px-3.5 py-3.5 font-mono text-[13px] leading-relaxed text-g">
+        {t("speedVerdict")}
+      </p>
     </section>
   );
 }

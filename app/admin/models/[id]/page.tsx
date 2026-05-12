@@ -45,25 +45,25 @@ export default async function AdminModelDetailPage({
       <Link href="/admin/models" className="text-verso-green underline">
         ← {a.models}
       </Link>
-      <h1 className="mt-6 text-3xl font-bold text-gray-900">{a.modelDetailTitle}</h1>
-      <p className="mt-2 text-lg text-gray-800">
+      <h1 className="mt-6 text-3xl font-bold text-ink">{a.modelDetailTitle}</h1>
+      <p className="mt-2 text-lg text-ink">
         <span className="font-semibold">{row.make}</span> {row.model}{" "}
-        <span className="text-gray-600">({formatYears(row.yearFrom, row.yearTo)})</span>
+        <span className="text-fog">({formatYears(row.yearFrom, row.yearTo)})</span>
       </p>
       {row.checkedAt ? (
-        <p className="mt-2 text-sm text-gray-600">
+        <p className="mt-2 text-sm text-fog">
           {a.modelChecked}: {row.checkedAt.toLocaleString("fi-FI")}
           {row.checkedBy ? ` · ${row.checkedBy}` : ""}
         </p>
       ) : null}
 
       {saved ? (
-        <p className="mt-4 rounded-lg border border-green-200 bg-green-50 px-4 py-3 text-gray-900">
+        <p className="mt-4 rounded-lg border border-g/40 bg-g/10 px-4 py-3 text-ink">
           {a.modelSaved}
         </p>
       ) : null}
       {errMsg ? (
-        <p className="mt-4 rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-gray-900">
+        <p className="mt-4 rounded-lg border border-amber/30 bg-amber/10 px-4 py-3 text-ink">
           {errMsg}
         </p>
       ) : null}
@@ -72,7 +72,7 @@ export default async function AdminModelDetailPage({
         <input type="hidden" name="id" value={row.id} />
 
         <fieldset>
-          <legend className="mb-3 font-semibold text-gray-900">{a.modelFieldCompatible}</legend>
+          <legend className="mb-3 font-semibold text-ink">{a.modelFieldCompatible}</legend>
           <div className="flex flex-wrap gap-6">
             <label className="inline-flex cursor-pointer items-center gap-2 text-lg">
               <input
@@ -94,7 +94,7 @@ export default async function AdminModelDetailPage({
               {a.modelCompatibleNo}
             </label>
           </div>
-          <p className="mt-2 text-sm text-gray-600">{a.modelCompatibleHint}</p>
+          <p className="mt-2 text-sm text-fog">{a.modelCompatibleHint}</p>
         </fieldset>
 
         <div>
@@ -107,7 +107,7 @@ export default async function AdminModelDetailPage({
             required
             rows={4}
             defaultValue={row.verdict ?? ""}
-            className="w-full rounded-lg border border-gray-300 px-4 py-3 text-lg"
+            className="w-full rounded-lg border border-em px-4 py-3 text-lg"
           />
         </div>
 
@@ -119,7 +119,7 @@ export default async function AdminModelDetailPage({
             id="ssdSlot"
             name="ssdSlot"
             defaultValue={row.ssdSlot ?? ""}
-            className="min-h-tap w-full rounded-lg border border-gray-300 px-4 text-lg"
+            className="min-h-tap w-full rounded-lg border border-em px-4 text-lg"
           />
         </div>
 
@@ -133,7 +133,7 @@ export default async function AdminModelDetailPage({
             type="number"
             min={0}
             defaultValue={row.maxRamGb ?? ""}
-            className="min-h-tap w-full rounded-lg border border-gray-300 px-4 text-lg"
+            className="min-h-tap w-full rounded-lg border border-em px-4 text-lg"
           />
         </div>
 
@@ -146,13 +146,13 @@ export default async function AdminModelDetailPage({
             name="notes"
             rows={3}
             defaultValue={row.notes ?? ""}
-            className="w-full rounded-lg border border-gray-300 px-4 py-3 text-lg"
+            className="w-full rounded-lg border border-em px-4 py-3 text-lg"
           />
         </div>
 
         <button
           type="submit"
-          className="min-h-tap rounded-xl bg-verso-green px-8 py-3 font-semibold text-white hover:bg-[#178f68]"
+          className="min-h-tap rounded-xl bg-verso-green px-8 py-3 font-semibold text-canvas hover:opacity-[0.85]"
         >
           {a.modelSave}
         </button>

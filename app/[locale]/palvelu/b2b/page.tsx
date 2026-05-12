@@ -43,18 +43,18 @@ export default async function PalveluB2bPage({
   return (
     <div className="mx-auto max-w-2xl space-y-10 px-4 py-12">
       <header>
-        <p className="text-sm font-semibold text-verso-green">
+        <p className="text-sm font-semibold text-g">
           <Link href="/palvelu" className="hover:underline">
             {t("b2b.backToService")}
           </Link>
         </p>
-        <h1 className="mt-4 text-4xl font-bold text-gray-900">{t("b2b.title")}</h1>
-        <p className="mt-4 text-xl text-gray-900">{t("b2b.intro")}</p>
+        <h1 className="mt-4 text-4xl font-bold text-ink">{t("b2b.title")}</h1>
+        <p className="mt-4 text-xl text-ink">{t("b2b.intro")}</p>
       </header>
 
       {sent ? (
         <p
-          className="rounded-xl border border-verso-green/40 bg-verso-green/10 px-4 py-3 text-lg text-gray-900"
+          className="rounded-xl border border-g/40 bg-g/10 px-4 py-3 text-lg text-ink"
           role="status"
         >
           {t("b2b.sentOk")}
@@ -62,17 +62,17 @@ export default async function PalveluB2bPage({
       ) : null}
 
       {err === "validation" ? (
-        <p className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-lg text-red-900">
+        <p className="rounded-xl border border-danger/40 bg-danger/10 px-4 py-3 text-lg text-ink">
           {t("b2b.errorValidation")}
         </p>
       ) : null}
       {err === "config" ? (
-        <p className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-lg text-gray-900">
+        <p className="rounded-xl border border-amber/30 bg-amber/10 px-4 py-3 text-lg text-ink">
           {t("b2b.errorConfig")}
         </p>
       ) : null}
       {err === "send" ? (
-        <p className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-lg text-red-900">
+        <p className="rounded-xl border border-danger/40 bg-danger/10 px-4 py-3 text-lg text-ink">
           {t("b2b.errorSend")}
         </p>
       ) : null}
@@ -81,7 +81,7 @@ export default async function PalveluB2bPage({
         <input type="hidden" name="locale" value={locale} />
 
         <div>
-          <label htmlFor="companyName" className="block text-sm font-semibold text-gray-800">
+          <label htmlFor="companyName" className="block text-sm font-semibold text-ink">
             {t("b2b.fieldCompany")}
           </label>
           <input
@@ -91,12 +91,12 @@ export default async function PalveluB2bPage({
             required
             maxLength={200}
             autoComplete="organization"
-            className="mt-2 w-full rounded-lg border border-gray-300 px-3 py-2 text-lg text-gray-900 focus:border-verso-green focus:outline-none focus:ring-2 focus:ring-verso-green/30"
+            className="mt-2 w-full rounded-lg border border-em bg-sunken px-3 py-2 text-lg text-ink placeholder:text-dust focus:border-g focus:outline-none"
           />
         </div>
 
         <div>
-          <label htmlFor="contactName" className="block text-sm font-semibold text-gray-800">
+          <label htmlFor="contactName" className="block text-sm font-semibold text-ink">
             {t("b2b.fieldContact")}
           </label>
           <input
@@ -106,12 +106,12 @@ export default async function PalveluB2bPage({
             required
             maxLength={200}
             autoComplete="name"
-            className="mt-2 w-full rounded-lg border border-gray-300 px-3 py-2 text-lg text-gray-900 focus:border-verso-green focus:outline-none focus:ring-2 focus:ring-verso-green/30"
+            className="mt-2 w-full rounded-lg border border-em bg-sunken px-3 py-2 text-lg text-ink placeholder:text-dust focus:border-g focus:outline-none"
           />
         </div>
 
         <div>
-          <label htmlFor="email" className="block text-sm font-semibold text-gray-800">
+          <label htmlFor="email" className="block text-sm font-semibold text-ink">
             {t("b2b.fieldEmail")}
           </label>
           <input
@@ -121,12 +121,12 @@ export default async function PalveluB2bPage({
             required
             maxLength={320}
             autoComplete="email"
-            className="mt-2 w-full rounded-lg border border-gray-300 px-3 py-2 text-lg text-gray-900 focus:border-verso-green focus:outline-none focus:ring-2 focus:ring-verso-green/30"
+            className="mt-2 w-full rounded-lg border border-em bg-sunken px-3 py-2 text-lg text-ink placeholder:text-dust focus:border-g focus:outline-none"
           />
         </div>
 
         <div>
-          <label htmlFor="phone" className="block text-sm font-semibold text-gray-800">
+          <label htmlFor="phone" className="block text-sm font-semibold text-ink">
             {t("b2b.fieldPhone")}
           </label>
           <input
@@ -135,12 +135,12 @@ export default async function PalveluB2bPage({
             type="tel"
             maxLength={50}
             autoComplete="tel"
-            className="mt-2 w-full rounded-lg border border-gray-300 px-3 py-2 text-lg text-gray-900 focus:border-verso-green focus:outline-none focus:ring-2 focus:ring-verso-green/30"
+            className="mt-2 w-full rounded-lg border border-em bg-sunken px-3 py-2 text-lg text-ink placeholder:text-dust focus:border-g focus:outline-none"
           />
         </div>
 
         <div>
-          <label htmlFor="estimatedUnits" className="block text-sm font-semibold text-gray-800">
+          <label htmlFor="estimatedUnits" className="block text-sm font-semibold text-ink">
             {t("b2b.fieldUnits")}
           </label>
           <input
@@ -149,12 +149,12 @@ export default async function PalveluB2bPage({
             type="text"
             maxLength={100}
             placeholder={t("b2b.fieldUnitsPlaceholder")}
-            className="mt-2 w-full rounded-lg border border-gray-300 px-3 py-2 text-lg text-gray-900 focus:border-verso-green focus:outline-none focus:ring-2 focus:ring-verso-green/30"
+            className="mt-2 w-full rounded-lg border border-em bg-sunken px-3 py-2 text-lg text-ink placeholder:text-dust focus:border-g focus:outline-none"
           />
         </div>
 
         <div>
-          <label htmlFor="message" className="block text-sm font-semibold text-gray-800">
+          <label htmlFor="message" className="block text-sm font-semibold text-ink">
             {t("b2b.fieldMessage")}
           </label>
           <textarea
@@ -162,7 +162,7 @@ export default async function PalveluB2bPage({
             name="message"
             rows={5}
             maxLength={4000}
-            className="mt-2 w-full rounded-lg border border-gray-300 px-3 py-2 text-lg text-gray-900 focus:border-verso-green focus:outline-none focus:ring-2 focus:ring-verso-green/30"
+            className="mt-2 w-full rounded-lg border border-em bg-sunken px-3 py-2 text-lg text-ink placeholder:text-dust focus:border-g focus:outline-none"
           />
         </div>
 

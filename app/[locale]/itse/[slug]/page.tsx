@@ -48,12 +48,12 @@ export default async function GuidePage({ params }: Props) {
 
   return (
     <article className="mx-auto max-w-3xl px-4 py-12">
-      <header className="border-b border-gray-200 pb-8">
+      <header className="border-b border-edge pb-8">
         <p className="text-sm font-semibold uppercase text-verso-green">
           {guide.category}
         </p>
-        <h1 className="mt-2 text-4xl font-bold text-gray-900">{guide.titleFi}</h1>
-        <p className="mt-4 text-xl text-gray-900">{guide.descFi}</p>
+        <h1 className="mt-2 text-4xl font-bold text-ink">{guide.titleFi}</h1>
+        <p className="mt-4 text-xl text-ink">{guide.descFi}</p>
         {guide.videoUrl ? (
           <div className="mt-8 aspect-video w-full overflow-hidden rounded-xl bg-black">
             <iframe
@@ -67,7 +67,7 @@ export default async function GuidePage({ params }: Props) {
           </div>
         ) : null}
       </header>
-      <div className="mt-10 space-y-6 text-lg leading-relaxed text-gray-900 [&_h2]:mt-10 [&_h2]:text-2xl [&_h2]:font-bold [&_h3]:mt-6 [&_h3]:text-xl [&_h3]:font-semibold [&_ul]:list-disc [&_ul]:pl-6">
+      <div className="mt-10 space-y-6 text-lg leading-relaxed text-ink [&_h2]:mt-10 [&_h2]:text-2xl [&_h2]:font-bold [&_h3]:mt-6 [&_h3]:text-xl [&_h3]:font-semibold [&_ul]:list-disc [&_ul]:pl-6">
         <MDXRemote source={source} />
       </div>
       <p className="mt-12">

@@ -34,14 +34,14 @@ export default async function HomePage() {
   const showYoutube = Boolean(youtubeUrl && youtubeUrl !== "#");
 
   return (
-    <div className="mx-auto max-w-6xl space-y-20 px-4 py-12 sm:py-16">
+    <div className="mx-auto max-w-[1100px] space-y-20 px-6 py-12 sm:px-12 sm:py-16">
       <section className="verso-hero">
         <div className="verso-hero-inner">
           <p className="verso-eyebrow">{t("eyebrow")}</p>
-          <h1 className="text-balance text-4xl font-extrabold tracking-hero text-gray-900 sm:text-5xl md:text-[3.25rem]">
+          <h1 className="font-display text-balance text-4xl font-extrabold tracking-hero text-ink sm:text-5xl md:text-[3.25rem]">
             {t("title")}
           </h1>
-          <p className="mx-auto mt-6 max-w-2xl text-xl leading-relaxed text-gray-800">
+          <p className="mx-auto mt-6 max-w-2xl text-xl leading-relaxed text-ink">
             {t("subtitle")}
           </p>
           <div className="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row">
@@ -72,7 +72,7 @@ export default async function HomePage() {
       <section aria-labelledby="steps-title">
         <h2
           id="steps-title"
-          className="text-3xl font-bold tracking-tight text-gray-900"
+          className="font-display text-3xl font-extrabold tracking-tight text-ink"
         >
           {t("stepsTitle")}
         </h2>
@@ -82,7 +82,7 @@ export default async function HomePage() {
               <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-verso-green/12 text-xl font-bold text-verso-green ring-1 ring-verso-green/20">
                 {i + 1}
               </span>
-              <p className="mt-5 text-lg font-medium leading-snug text-gray-900">
+              <p className="mt-5 text-lg font-medium leading-snug text-ink">
                 {t(key)}
               </p>
             </li>
@@ -93,7 +93,7 @@ export default async function HomePage() {
       <section aria-labelledby="pricing-title">
         <h2
           id="pricing-title"
-          className="text-3xl font-bold tracking-tight text-gray-900"
+          className="font-display text-3xl font-extrabold tracking-tight text-ink"
         >
           {t("pricingTitle")}
         </h2>
@@ -104,10 +104,10 @@ export default async function HomePage() {
               className="verso-card-hover flex flex-col p-7 text-center"
             >
               <div className="mx-auto mb-3 h-1 w-10 rounded-full bg-verso-green/40" />
-              <h3 className="text-xl font-bold tracking-tight text-gray-900">
+              <h3 className="font-display text-xl font-bold tracking-tight text-ink">
                 {t(key)}
               </h3>
-              <p className="mt-4 text-lg text-gray-700">—</p>
+              <p className="mt-4 text-lg text-fog">—</p>
             </div>
           ))}
         </div>
@@ -130,7 +130,7 @@ export default async function HomePage() {
               <span className="text-lg text-verso-green/90" aria-hidden>
                 ◆
               </span>
-              <p className="mt-3 text-lg font-semibold leading-snug text-gray-900">
+              <p className="mt-3 text-lg font-semibold leading-snug text-ink">
                 {t(key)}
               </p>
             </div>
@@ -139,16 +139,16 @@ export default async function HomePage() {
       </section>
 
       <section
-        className="verso-card border-verso-amber/30 bg-gradient-to-br from-amber-50/95 to-white p-8 sm:p-10"
+        className="verso-card border-g bg-g/[0.04] p-8 sm:p-10"
         aria-labelledby="trust-title"
       >
         <h2
           id="trust-title"
-          className="text-2xl font-bold tracking-tight text-gray-900"
+          className="font-display text-2xl font-extrabold tracking-tight text-ink"
         >
           {t("trustTitle")}
         </h2>
-        <ul className="mt-5 space-y-3 text-lg leading-relaxed text-gray-900">
+        <ul className="mt-5 space-y-3 text-lg leading-relaxed text-ink">
           <li className="flex gap-3">
             <span className="text-verso-green" aria-hidden>
               ✓

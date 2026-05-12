@@ -116,6 +116,7 @@
     "youtubeCta": "Watch on YouTube",
     "speedBefore": "Before: HDD boot",
     "speedAfter": "After: SSD + Linux",
+    "speedVerdict": "Typical win: much shorter boot time with an SSD and a lighter system.",
     "stepsTitle": "How it works",
     "step1": "Tell us your model or share specs",
     "step2": "You get a compatibility readout",
@@ -267,6 +268,7 @@
   "yhteiso": {
     "title": "Community",
     "intro": "Join Discord — questions, tips, and peer help.",
+    "discordBlockLead": "Ask about installs, hardware, and distros — we and the community help out.",
     "youtubeIntro": "Short how-tos and demos on our YouTube channel.",
     "youtubeCta": "Open YouTube channel",
     "guidelinesTitle": "Guidelines",

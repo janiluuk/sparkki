@@ -19,12 +19,12 @@ export default async function AdminGuidesPage() {
       </Link>
       <div className="mt-6 flex flex-wrap items-end justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">{a.guides}</h1>
-          <p className="mt-2 text-lg text-gray-700">{a.guidesIntro}</p>
+          <h1 className="text-3xl font-bold text-ink">{a.guides}</h1>
+          <p className="mt-2 text-lg text-fog">{a.guidesIntro}</p>
         </div>
         <Link
           href="/admin/guides/new"
-          className="min-h-tap rounded-xl bg-verso-green px-5 py-3 font-semibold text-white hover:bg-[#178f68]"
+          className="min-h-tap rounded-xl bg-verso-green px-5 py-3 font-semibold text-canvas hover:opacity-[0.85]"
         >
           {a.guidesNew}
         </Link>
@@ -32,7 +32,7 @@ export default async function AdminGuidesPage() {
 
       <div className="verso-card mt-8 overflow-x-auto">
         <table className="min-w-full text-left text-lg">
-          <thead className="border-b border-gray-200 bg-gray-50">
+          <thead className="border-b border-edge bg-canvas">
             <tr>
               <th className="px-4 py-3 font-semibold">{a.guidesColTitle}</th>
               <th className="px-4 py-3 font-semibold">{a.guidesColSlug}</th>
@@ -43,23 +43,23 @@ export default async function AdminGuidesPage() {
           <tbody>
             {guides.length === 0 ? (
               <tr>
-                <td colSpan={4} className="px-4 py-8 text-center text-gray-600">
+                <td colSpan={4} className="px-4 py-8 text-center text-fog">
                   {a.guidesEmpty}
                 </td>
               </tr>
             ) : (
               guides.map((g) => (
-                <tr key={g.id} className="border-b border-gray-100 hover:bg-gray-50/80">
+                <tr key={g.id} className="border-b border-edge hover:bg-canvas/80">
                   <td className="px-4 py-3">
                     <Link href={`/admin/guides/${g.slug}`} className="font-medium text-verso-green underline">
                       {g.titleFi}
                     </Link>
                   </td>
-                  <td className="px-4 py-3 font-mono text-base text-gray-800">{g.slug}</td>
+                  <td className="px-4 py-3 font-mono text-base text-ink">{g.slug}</td>
                   <td className="px-4 py-3">
                     <GuidePublishToggle slug={g.slug} published={g.published} />
                   </td>
-                  <td className="px-4 py-3 text-gray-800">{g.order}</td>
+                  <td className="px-4 py-3 text-ink">{g.order}</td>
                 </tr>
               ))
             )}

@@ -45,15 +45,15 @@ export default async function AdminOrdersPage({ searchParams }: Props) {
         ← {a.dashboard}
       </Link>
       <h1 className="mt-6 text-3xl font-bold">{a.orders}</h1>
-      <p className="mt-2 text-lg text-gray-700">{a.ordersIntro}</p>
+      <p className="mt-2 text-lg text-fog">{a.ordersIntro}</p>
 
       <div className="mt-6 flex flex-wrap gap-2">
         <Link
           href="/admin/orders"
           className={`min-h-tap rounded-full px-4 py-2 font-semibold ${
             !searchParams.status
-              ? "bg-verso-green text-white"
-              : "bg-white ring-1 ring-gray-300"
+              ? "bg-verso-green text-canvas"
+              : "bg-card ring-1 ring-em"
           }`}
         >
           {a.filterAll}
@@ -64,8 +64,8 @@ export default async function AdminOrdersPage({ searchParams }: Props) {
             href={`/admin/orders?status=${s}`}
             className={`min-h-tap rounded-full px-4 py-2 font-semibold ${
               searchParams.status === s
-                ? "bg-verso-green text-white"
-                : "bg-white ring-1 ring-gray-300"
+                ? "bg-verso-green text-canvas"
+                : "bg-card ring-1 ring-em"
             }`}
           >
             {statusLabel(s)}
@@ -74,11 +74,11 @@ export default async function AdminOrdersPage({ searchParams }: Props) {
       </div>
 
       {orders.length === 0 ? (
-        <p className="mt-10 text-lg text-gray-700">{a.ordersEmpty}</p>
+        <p className="mt-10 text-lg text-fog">{a.ordersEmpty}</p>
       ) : (
-        <div className="mt-8 overflow-x-auto rounded-xl border border-gray-200 bg-white shadow-sm">
+        <div className="mt-8 overflow-x-auto rounded-xl border border-edge bg-card">
           <table className="min-w-full text-left text-lg">
-            <thead className="border-b border-gray-200 bg-gray-50">
+            <thead className="border-b border-edge bg-canvas">
               <tr>
                 <th className="px-4 py-3 font-semibold">{a.colDate}</th>
                 <th className="px-4 py-3 font-semibold">{a.colCustomer}</th>
@@ -89,7 +89,7 @@ export default async function AdminOrdersPage({ searchParams }: Props) {
             </thead>
             <tbody>
               {orders.map((o) => (
-                <tr key={o.id} className="border-b border-gray-100 hover:bg-gray-50">
+                <tr key={o.id} className="border-b border-edge hover:bg-canvas">
                   <td className="px-4 py-3 whitespace-nowrap">
                     {o.createdAt.toLocaleString("fi-FI")}
                   </td>
@@ -100,7 +100,7 @@ export default async function AdminOrdersPage({ searchParams }: Props) {
                     >
                       {o.customerName}
                     </Link>
-                    <div className="text-sm text-gray-600">{o.customerEmail}</div>
+                    <div className="text-sm text-fog">{o.customerEmail}</div>
                   </td>
                   <td className="px-4 py-3">{o.tier}</td>
                   <td className="px-4 py-3">{statusLabel(o.status)}</td>

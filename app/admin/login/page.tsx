@@ -34,7 +34,7 @@ export default function AdminLoginPage() {
 
   return (
     <main className="mx-auto flex max-w-md flex-col gap-8 px-4 py-16">
-      <h1 className="text-3xl font-bold text-gray-900">{t("loginTitle")}</h1>
+      <h1 className="text-3xl font-bold text-ink">{t("loginTitle")}</h1>
       <form onSubmit={onSubmit} className="flex flex-col gap-6">
         <div>
           <label htmlFor="email" className="mb-2 block font-semibold">
@@ -48,7 +48,7 @@ export default function AdminLoginPage() {
             required
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className="min-h-tap w-full rounded-lg border border-gray-300 px-4 text-lg focus:border-verso-green focus:outline-none focus:ring-2 focus:ring-verso-green"
+            className="min-h-tap w-full rounded-lg border border-em px-4 text-lg focus:border-verso-green focus:outline-none focus:ring-2 focus:ring-verso-green"
           />
         </div>
         <div>
@@ -63,18 +63,18 @@ export default function AdminLoginPage() {
             required
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            className="min-h-tap w-full rounded-lg border border-gray-300 px-4 text-lg focus:border-verso-green focus:outline-none focus:ring-2 focus:ring-verso-green"
+            className="min-h-tap w-full rounded-lg border border-em px-4 text-lg focus:border-verso-green focus:outline-none focus:ring-2 focus:ring-verso-green"
           />
         </div>
         {error ? (
-          <p className="text-lg font-medium text-red-700" role="alert">
+          <p className="text-lg font-medium text-danger" role="alert">
             {error}
           </p>
         ) : null}
         <button
           type="submit"
           disabled={loading}
-          className="min-h-tap rounded-xl bg-verso-green px-6 py-3 text-lg font-semibold text-white hover:bg-[#178f68] disabled:opacity-60"
+          className="min-h-tap rounded-xl bg-verso-green px-6 py-3 text-lg font-semibold text-canvas hover:opacity-[0.85] disabled:opacity-60"
         >
           {loading ? "…" : t("signIn")}
         </button>

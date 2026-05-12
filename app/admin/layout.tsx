@@ -10,7 +10,7 @@ export default function AdminRootLayout({
   return (
     <NextIntlClientProvider locale="fi" messages={fiMessages}>
       <AuthSessionProvider>
-        <div className="min-h-screen bg-gray-50 text-lg text-gray-900">
+        <div className="min-h-dvh bg-canvas text-lg text-ink">
           {children}
         </div>
       </AuthSessionProvider>

@@ -27,7 +27,7 @@ export function SaveGuideForm({ defaults }: { defaults: SaveGuideFormDefaults })
       <input type="hidden" name="editorSlug" value={defaults.editorSlug ?? ""} />
       <div className="grid gap-6 md:grid-cols-2">
         <div className="md:col-span-2">
-          <label htmlFor="g-slug" className="mb-2 block font-semibold text-gray-900">
+          <label htmlFor="g-slug" className="mb-2 block font-semibold text-ink">
             {a.guideFieldSlug}
           </label>
           <input
@@ -37,7 +37,7 @@ export function SaveGuideForm({ defaults }: { defaults: SaveGuideFormDefaults })
             readOnly={isEdit}
             defaultValue={defaults.slug ?? ""}
             pattern="[a-z0-9]+(-[a-z0-9]+)*"
-            className="min-h-tap w-full rounded-lg border border-gray-300 bg-white px-4 font-mono text-lg read-only:bg-gray-100"
+            className="min-h-tap w-full rounded-lg border border-em bg-card px-4 font-mono text-lg read-only:bg-sunken"
           />
         </div>
         <div>
@@ -49,7 +49,7 @@ export function SaveGuideForm({ defaults }: { defaults: SaveGuideFormDefaults })
             name="titleFi"
             required
             defaultValue={defaults.titleFi ?? ""}
-            className="min-h-tap w-full rounded-lg border border-gray-300 px-4 text-lg"
+            className="min-h-tap w-full rounded-lg border border-em px-4 text-lg"
           />
         </div>
         <div>
@@ -60,7 +60,7 @@ export function SaveGuideForm({ defaults }: { defaults: SaveGuideFormDefaults })
             id="g-titleEn"
             name="titleEn"
             defaultValue={defaults.titleEn ?? ""}
-            className="min-h-tap w-full rounded-lg border border-gray-300 px-4 text-lg"
+            className="min-h-tap w-full rounded-lg border border-em px-4 text-lg"
           />
         </div>
         <div className="md:col-span-2">
@@ -73,7 +73,7 @@ export function SaveGuideForm({ defaults }: { defaults: SaveGuideFormDefaults })
             required
             rows={3}
             defaultValue={defaults.descFi ?? ""}
-            className="w-full rounded-lg border border-gray-300 px-4 py-3 text-lg"
+            className="w-full rounded-lg border border-em px-4 py-3 text-lg"
           />
         </div>
         <div className="md:col-span-2">
@@ -85,7 +85,7 @@ export function SaveGuideForm({ defaults }: { defaults: SaveGuideFormDefaults })
             name="descEn"
             rows={3}
             defaultValue={defaults.descEn ?? ""}
-            className="w-full rounded-lg border border-gray-300 px-4 py-3 text-lg"
+            className="w-full rounded-lg border border-em px-4 py-3 text-lg"
           />
         </div>
         <div>
@@ -96,7 +96,7 @@ export function SaveGuideForm({ defaults }: { defaults: SaveGuideFormDefaults })
             id="g-cat"
             name="category"
             defaultValue={defaults.category ?? "install"}
-            className="min-h-tap w-full rounded-lg border border-gray-300 px-4 text-lg"
+            className="min-h-tap w-full rounded-lg border border-em px-4 text-lg"
           />
         </div>
         <div>
@@ -107,7 +107,7 @@ export function SaveGuideForm({ defaults }: { defaults: SaveGuideFormDefaults })
             id="g-diff"
             name="difficulty"
             defaultValue={defaults.difficulty ?? "easy"}
-            className="min-h-tap w-full rounded-lg border border-gray-300 px-4 text-lg"
+            className="min-h-tap w-full rounded-lg border border-em px-4 text-lg"
           >
             <option value="easy">easy</option>
             <option value="medium">medium</option>
@@ -124,7 +124,7 @@ export function SaveGuideForm({ defaults }: { defaults: SaveGuideFormDefaults })
             type="number"
             min={1}
             defaultValue={defaults.minutesFi ?? 5}
-            className="min-h-tap w-full rounded-lg border border-gray-300 px-4 text-lg"
+            className="min-h-tap w-full rounded-lg border border-em px-4 text-lg"
           />
         </div>
         <div>
@@ -136,7 +136,7 @@ export function SaveGuideForm({ defaults }: { defaults: SaveGuideFormDefaults })
             name="order"
             type="number"
             defaultValue={defaults.order ?? 0}
-            className="min-h-tap w-full rounded-lg border border-gray-300 px-4 text-lg"
+            className="min-h-tap w-full rounded-lg border border-em px-4 text-lg"
           />
         </div>
         <div className="md:col-span-2">
@@ -150,7 +150,7 @@ export function SaveGuideForm({ defaults }: { defaults: SaveGuideFormDefaults })
             inputMode="url"
             placeholder="https://"
             defaultValue={defaults.videoUrl ?? ""}
-            className="min-h-tap w-full rounded-lg border border-gray-300 px-4 text-lg"
+            className="min-h-tap w-full rounded-lg border border-em px-4 text-lg"
           />
         </div>
         <div>
@@ -161,7 +161,7 @@ export function SaveGuideForm({ defaults }: { defaults: SaveGuideFormDefaults })
             id="g-pub"
             name="published"
             defaultValue={defaults.published ? "true" : "false"}
-            className="min-h-tap w-full rounded-lg border border-gray-300 px-4 text-lg"
+            className="min-h-tap w-full rounded-lg border border-em px-4 text-lg"
           >
             <option value="false">{a.guidePublishedNo}</option>
             <option value="true">{a.guidePublishedYes}</option>
@@ -177,17 +177,17 @@ export function SaveGuideForm({ defaults }: { defaults: SaveGuideFormDefaults })
           name="mdxBody"
           rows={18}
           defaultValue={defaults.mdxContent ?? ""}
-          className="w-full rounded-lg border border-gray-300 bg-gray-50 px-4 py-3 font-mono text-base leading-relaxed text-gray-900"
+          className="w-full rounded-lg border border-em bg-canvas px-4 py-3 font-mono text-base leading-relaxed text-ink"
           spellCheck={false}
         />
       </div>
       <button
         type="submit"
-        className="min-h-tap rounded-xl bg-verso-green px-8 py-3 font-semibold text-white hover:bg-[#178f68]"
+        className="min-h-tap rounded-xl bg-verso-green px-8 py-3 font-semibold text-canvas hover:opacity-[0.85]"
       >
         {a.guideSave}
       </button>
-      <p className="text-sm text-gray-600">{a.guideSaveHint}</p>
+      <p className="text-sm text-fog">{a.guideSaveHint}</p>
     </form>
   );
 }

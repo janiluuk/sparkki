@@ -116,48 +116,48 @@ export default async function AdminDashboardPage() {
 
   return (
     <div className="mx-auto max-w-5xl px-4 py-10">
-      <header className="flex flex-wrap items-center justify-between gap-4 border-b border-gray-200 pb-6">
+      <header className="flex flex-wrap items-center justify-between gap-4 border-b border-edge pb-6">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">{a.dashboard}</h1>
-          <p className="mt-2 text-lg text-gray-700">
+          <h1 className="font-display text-3xl font-extrabold tracking-tight text-ink">{a.dashboard}</h1>
+          <p className="mt-2 text-lg text-fog">
             {a.welcome}, {session.user.email}
           </p>
         </div>
         <Link
           href="/api/auth/signout?callbackUrl=/admin/login"
-          className="min-h-tap rounded-lg border border-gray-300 px-4 py-2 font-semibold hover:bg-gray-100"
+          className="min-h-tap rounded-lg border border-em px-4 py-2 font-semibold hover:bg-sunken"
         >
           {a.logout}
         </Link>
       </header>
 
-      <p className="mt-8 text-lg text-gray-800">{a.statsIntro}</p>
+      <p className="mt-8 text-lg text-ink">{a.statsIntro}</p>
       <ul className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <li className="verso-card rounded-2xl p-5">
-          <p className="text-sm font-semibold uppercase tracking-wide text-gray-600">{a.statOpenOrders}</p>
-          <p className="mt-2 text-3xl font-bold text-gray-900">{openOrders}</p>
-          <p className="mt-1 text-sm text-gray-600">{a.statOpenOrdersHint}</p>
+          <p className="text-sm font-semibold uppercase tracking-wide text-fog">{a.statOpenOrders}</p>
+          <p className="mt-2 font-display text-3xl font-extrabold tracking-tight text-ink">{openOrders}</p>
+          <p className="mt-1 text-sm text-fog">{a.statOpenOrdersHint}</p>
         </li>
         <li className="verso-card rounded-2xl p-5">
-          <p className="text-sm font-semibold uppercase tracking-wide text-gray-600">{a.statTodayOrders}</p>
-          <p className="mt-2 text-3xl font-bold text-gray-900">{ordersToday}</p>
+          <p className="text-sm font-semibold uppercase tracking-wide text-fog">{a.statTodayOrders}</p>
+          <p className="mt-2 font-display text-3xl font-extrabold tracking-tight text-ink">{ordersToday}</p>
         </li>
         <li className="verso-card rounded-2xl p-5">
-          <p className="text-sm font-semibold uppercase tracking-wide text-gray-600">{a.statTodayRevenue}</p>
-          <p className="mt-2 text-3xl font-bold text-gray-900">
+          <p className="text-sm font-semibold uppercase tracking-wide text-fog">{a.statTodayRevenue}</p>
+          <p className="mt-2 font-display text-3xl font-extrabold tracking-tight text-ink">
             {revenueStr} {a.statEur}
           </p>
         </li>
         <li className="verso-card rounded-2xl p-5">
-          <p className="text-sm font-semibold uppercase tracking-wide text-gray-600">{a.statModelsUnchecked}</p>
-          <p className="mt-2 text-3xl font-bold text-gray-900">{modelsUnchecked}</p>
+          <p className="text-sm font-semibold uppercase tracking-wide text-fog">{a.statModelsUnchecked}</p>
+          <p className="mt-2 font-display text-3xl font-extrabold tracking-tight text-ink">{modelsUnchecked}</p>
         </li>
       </ul>
 
       <ul className="mt-6 grid gap-4 lg:grid-cols-2">
         <li className="verso-card rounded-2xl p-5 lg:col-span-2">
-          <p className="text-sm font-semibold uppercase tracking-wide text-gray-600">{a.statWeekOrders}</p>
-          <p className="mt-1 text-sm text-gray-600">{a.statWeekOrdersHint}</p>
+          <p className="text-sm font-semibold uppercase tracking-wide text-fog">{a.statWeekOrders}</p>
+          <p className="mt-1 text-sm text-fog">{a.statWeekOrdersHint}</p>
           <div className="mt-6 flex h-44 gap-2 sm:gap-3" role="img" aria-label={a.statWeekOrdersHint}>
             {dayKeys.map((key, idx) => {
               const { orders } = perDay.get(key)!;
@@ -168,13 +168,13 @@ export default async function AdminDashboardPage() {
                   : Math.max(8, Math.round((orders / maxDayOrders) * barMaxPx));
               return (
                 <div key={key} className="flex min-h-0 min-w-0 flex-1 flex-col justify-end gap-1">
-                  <span className="text-center text-sm font-semibold text-gray-900">{orders}</span>
+                  <span className="text-center text-sm font-semibold text-ink">{orders}</span>
                   <div
                     className="w-full max-w-[3rem] self-center rounded-t-md bg-verso-green/80 sm:max-w-none"
                     style={{ height: hPx }}
                   />
                   <span
-                    className="truncate text-center text-xs text-gray-600 sm:text-sm"
+                    className="truncate text-center text-xs text-fog sm:text-sm"
                     title={key}
                   >
                     {dayLabels[idx]}
@@ -183,18 +183,18 @@ export default async function AdminDashboardPage() {
               );
             })}
           </div>
-          <p className="mt-4 text-sm text-gray-700">
+          <p className="mt-4 text-sm text-fog">
             <span className="font-semibold">{a.statWeekRevenue}:</span> {weekRevenueStr} {a.statEur}
           </p>
         </li>
         <li className="verso-card rounded-2xl p-5">
-          <p className="text-sm font-semibold uppercase tracking-wide text-gray-600">{a.statModelApproval}</p>
+          <p className="text-sm font-semibold uppercase tracking-wide text-fog">{a.statModelApproval}</p>
           {approvalPct === null ? (
-            <p className="mt-3 text-lg text-gray-700">{a.statModelApprovalEmpty}</p>
+            <p className="mt-3 text-lg text-fog">{a.statModelApprovalEmpty}</p>
           ) : (
             <>
-              <p className="mt-2 text-3xl font-bold text-gray-900">{approvalPct}%</p>
-              <p className="mt-2 text-sm text-gray-600">
+              <p className="mt-2 font-display text-3xl font-extrabold tracking-tight text-ink">{approvalPct}%</p>
+              <p className="mt-2 text-sm text-fog">
                 {approvedModels} / {decidedModels} — {a.statModelApprovalHint}
               </p>
             </>
@@ -205,19 +205,19 @@ export default async function AdminDashboardPage() {
       <nav className="mt-10 flex flex-wrap gap-4" aria-label="Admin">
         <Link
           href="/admin/orders"
-          className="min-h-tap rounded-xl bg-white px-5 py-3 font-semibold shadow ring-1 ring-gray-200 hover:ring-verso-green"
+          className="min-h-tap rounded-xl border border-em bg-card px-5 py-3 font-semibold transition-colors duration-150 hover:border-g"
         >
           {a.orders}
         </Link>
         <Link
           href="/admin/models"
-          className="min-h-tap rounded-xl bg-white px-5 py-3 font-semibold shadow ring-1 ring-gray-200 hover:ring-verso-green"
+          className="min-h-tap rounded-xl border border-em bg-card px-5 py-3 font-semibold transition-colors duration-150 hover:border-g"
         >
           {a.models}
         </Link>
         <Link
           href="/admin/guides"
-          className="min-h-tap rounded-xl bg-white px-5 py-3 font-semibold shadow ring-1 ring-gray-200 hover:ring-verso-green"
+          className="min-h-tap rounded-xl border border-em bg-card px-5 py-3 font-semibold transition-colors duration-150 hover:border-g"
         >
           {a.guides}
         </Link>

@@ -65,17 +65,17 @@ export default async function AdminModelsPage({
       <Link href="/admin" className="text-verso-green underline">
         ← {a.dashboard}
       </Link>
-      <h1 className="mt-6 text-3xl font-bold text-gray-900">{a.models}</h1>
-      <p className="mt-2 text-lg text-gray-700">{a.modelsIntro}</p>
+      <h1 className="mt-6 text-3xl font-bold text-ink">{a.models}</h1>
+      <p className="mt-2 text-lg text-fog">{a.modelsIntro}</p>
 
       {errMsg ? (
-        <p className="mt-4 rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-gray-900">
+        <p className="mt-4 rounded-lg border border-amber/30 bg-amber/10 px-4 py-3 text-ink">
           {errMsg}
         </p>
       ) : null}
 
       <section className="verso-card mt-8 p-6 sm:p-8">
-        <h2 className="text-xl font-bold text-gray-900">{a.modelsAddTitle}</h2>
+        <h2 className="text-xl font-bold text-ink">{a.modelsAddTitle}</h2>
         <form action={createComputerModel} className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           <div className="sm:col-span-2">
             <label htmlFor="m-make" className="mb-2 block font-semibold">
@@ -85,7 +85,7 @@ export default async function AdminModelsPage({
               id="m-make"
               name="make"
               required
-              className="min-h-tap w-full rounded-lg border border-gray-300 px-4 text-lg"
+              className="min-h-tap w-full rounded-lg border border-em px-4 text-lg"
             />
           </div>
           <div className="sm:col-span-2">
@@ -96,7 +96,7 @@ export default async function AdminModelsPage({
               id="m-model"
               name="model"
               required
-              className="min-h-tap w-full rounded-lg border border-gray-300 px-4 text-lg"
+              className="min-h-tap w-full rounded-lg border border-em px-4 text-lg"
             />
           </div>
           <div>
@@ -108,7 +108,7 @@ export default async function AdminModelsPage({
               name="yearFrom"
               type="number"
               inputMode="numeric"
-              className="min-h-tap w-full rounded-lg border border-gray-300 px-4 text-lg"
+              className="min-h-tap w-full rounded-lg border border-em px-4 text-lg"
             />
           </div>
           <div>
@@ -120,13 +120,13 @@ export default async function AdminModelsPage({
               name="yearTo"
               type="number"
               inputMode="numeric"
-              className="min-h-tap w-full rounded-lg border border-gray-300 px-4 text-lg"
+              className="min-h-tap w-full rounded-lg border border-em px-4 text-lg"
             />
           </div>
           <div className="flex items-end sm:col-span-2 lg:col-span-4">
             <button
               type="submit"
-              className="min-h-tap rounded-xl bg-verso-green px-6 py-3 font-semibold text-white hover:bg-[#178f68]"
+              className="min-h-tap rounded-xl bg-verso-green px-6 py-3 font-semibold text-canvas hover:opacity-[0.85]"
             >
               {a.modelsAddSubmit}
             </button>
@@ -137,8 +137,8 @@ export default async function AdminModelsPage({
       <div className="mt-8 flex flex-wrap gap-2" role="group" aria-label={a.modelsFilterLabel}>
         <Link
           href="/admin/models"
-          className={`min-h-tap rounded-lg px-4 py-2 font-semibold ring-1 ring-gray-200 ${
-            !statusParam ? "bg-verso-green text-white ring-verso-green" : "bg-white hover:bg-gray-50"
+          className={`min-h-tap rounded-lg border border-em px-4 py-2 font-semibold ${
+            !statusParam ? "border-g bg-verso-green text-canvas" : "bg-card hover:bg-canvas"
           }`}
         >
           {a.filterAll}
@@ -147,8 +147,8 @@ export default async function AdminModelsPage({
           <Link
             key={s}
             href={`/admin/models?status=${s}`}
-            className={`min-h-tap rounded-lg px-4 py-2 font-semibold ring-1 ring-gray-200 ${
-              statusParam === s ? "bg-verso-green text-white ring-verso-green" : "bg-white hover:bg-gray-50"
+            className={`min-h-tap rounded-lg border border-em px-4 py-2 font-semibold ${
+              statusParam === s ? "border-g bg-verso-green text-canvas" : "bg-card hover:bg-canvas"
             }`}
           >
             {statusLabel(s)}
@@ -158,7 +158,7 @@ export default async function AdminModelsPage({
 
       <div className="verso-card mt-6 overflow-x-auto">
         <table className="min-w-full text-left text-lg">
-          <thead className="border-b border-gray-200 bg-gray-50">
+          <thead className="border-b border-edge bg-canvas">
             <tr>
               <th className="px-4 py-3 font-semibold">{a.modelsColMake}</th>
               <th className="px-4 py-3 font-semibold">{a.modelsColModel}</th>
@@ -170,26 +170,26 @@ export default async function AdminModelsPage({
           <tbody>
             {models.length === 0 ? (
               <tr>
-                <td colSpan={5} className="px-4 py-8 text-center text-gray-600">
+                <td colSpan={5} className="px-4 py-8 text-center text-fog">
                   {a.modelsEmpty}
                 </td>
               </tr>
             ) : (
               models.map((m) => (
-                <tr key={m.id} className="border-b border-gray-100 hover:bg-gray-50/80">
+                <tr key={m.id} className="border-b border-edge hover:bg-canvas/80">
                   <td className="px-4 py-3">
                     <Link href={`/admin/models/${m.id}`} className="font-medium text-verso-green underline">
                       {m.make}
                     </Link>
                   </td>
                   <td className="px-4 py-3">
-                    <Link href={`/admin/models/${m.id}`} className="text-gray-900 underline">
+                    <Link href={`/admin/models/${m.id}`} className="text-ink underline">
                       {m.model}
                     </Link>
                   </td>
-                  <td className="px-4 py-3 text-gray-800">{formatYears(m.yearFrom, m.yearTo)}</td>
+                  <td className="px-4 py-3 text-ink">{formatYears(m.yearFrom, m.yearTo)}</td>
                   <td className="px-4 py-3">{statusLabel(m.status)}</td>
-                  <td className="px-4 py-3 text-gray-600">
+                  <td className="px-4 py-3 text-fog">
                     {m.updatedAt.toLocaleDateString("fi-FI")}
                   </td>
                 </tr>

@@ -25,11 +25,11 @@ export default async function TilausHubPage() {
   return (
     <div className="mx-auto max-w-2xl space-y-8 px-4 py-12">
       <header>
-        <h1 className="text-4xl font-bold text-gray-900">{t("title")}</h1>
-        <p className="mt-4 text-xl leading-relaxed text-gray-900">{t("introHub")}</p>
+        <h1 className="text-4xl font-bold text-ink">{t("title")}</h1>
+        <p className="mt-4 text-xl leading-relaxed text-ink">{t("introHub")}</p>
       </header>
       <OrderTrackingForm variant="hub" />
-      <p className="text-center text-lg text-gray-700">
+      <p className="text-center text-lg text-fog">
         <Link
           href="/tuki"
           className="font-semibold text-verso-green underline underline-offset-2 focus-visible:outline focus-visible:outline-2 focus-visible:outline-verso-green"

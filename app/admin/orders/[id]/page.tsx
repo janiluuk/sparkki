@@ -46,73 +46,73 @@ export default async function AdminOrderDetailPage({ params, searchParams }: Pro
       </h1>
 
       {emailFlash === "sent" ? (
-        <p className="mt-4 rounded-lg bg-green-50 p-4 text-lg text-green-900">
+        <p className="mt-4 rounded-lg border border-g/40 bg-g/10 p-4 text-lg text-ink">
           {a.doneSent}
         </p>
       ) : null}
       {emailFlash === "failed" ? (
-        <p className="mt-4 rounded-lg bg-red-50 p-4 text-lg text-red-900">
+        <p className="mt-4 rounded-lg border border-danger/40 bg-danger/10 p-4 text-lg text-ink">
           {a.doneFailed}
         </p>
       ) : null}
 
       <dl className="mt-8 grid gap-4 text-lg">
         <div>
-          <dt className="font-semibold text-gray-700">{a.fieldId}</dt>
-          <dd className="font-mono text-gray-900">{order.id}</dd>
+          <dt className="font-semibold text-fog">{a.fieldId}</dt>
+          <dd className="font-mono text-ink">{order.id}</dd>
         </div>
         <div>
-          <dt className="font-semibold text-gray-700">{a.colStatus}</dt>
+          <dt className="font-semibold text-fog">{a.colStatus}</dt>
           <dd>{statusLabel(order.status)}</dd>
         </div>
         <div>
-          <dt className="font-semibold text-gray-700">{a.colTier}</dt>
+          <dt className="font-semibold text-fog">{a.colTier}</dt>
           <dd>{order.tier}</dd>
         </div>
         <div>
-          <dt className="font-semibold text-gray-700">{a.colSupport}</dt>
+          <dt className="font-semibold text-fog">{a.colSupport}</dt>
           <dd>{order.supportTier}</dd>
         </div>
         <div>
-          <dt className="font-semibold text-gray-700">{a.colDelivery}</dt>
+          <dt className="font-semibold text-fog">{a.colDelivery}</dt>
           <dd>{order.deliveryMethod}</dd>
         </div>
         <div>
-          <dt className="font-semibold text-gray-700">{a.colComputer}</dt>
+          <dt className="font-semibold text-fog">{a.colComputer}</dt>
           <dd>
             {order.computerMake} {order.computerModel}
           </dd>
         </div>
         <div>
-          <dt className="font-semibold text-gray-700">{a.colCustomer}</dt>
+          <dt className="font-semibold text-fog">{a.colCustomer}</dt>
           <dd>
             {order.customerName} · {order.customerEmail}
             {order.customerPhone ? ` · ${order.customerPhone}` : ""}
           </dd>
         </div>
         <div>
-          <dt className="font-semibold text-gray-700">{a.colAddress}</dt>
+          <dt className="font-semibold text-fog">{a.colAddress}</dt>
           <dd className="whitespace-pre-wrap">{order.address ?? "—"}</dd>
         </div>
         <div>
-          <dt className="font-semibold text-gray-700">{a.colPrice}</dt>
+          <dt className="font-semibold text-fog">{a.colPrice}</dt>
           <dd>
             {(order.priceEur / 100).toFixed(2)} {a.colEur}
           </dd>
         </div>
         <div>
-          <dt className="font-semibold text-gray-700">{a.colStripe}</dt>
+          <dt className="font-semibold text-fog">{a.colStripe}</dt>
           <dd className="break-all font-mono text-sm">
             {order.stripeSessionId ?? "—"}
           </dd>
         </div>
         <div>
-          <dt className="font-semibold text-gray-700">{a.colNotes}</dt>
+          <dt className="font-semibold text-fog">{a.colNotes}</dt>
           <dd className="whitespace-pre-wrap">{order.notes ?? "—"}</dd>
         </div>
       </dl>
 
-      <section className="mt-10 space-y-6 border-t border-gray-200 pt-8">
+      <section className="mt-10 space-y-6 border-t border-edge pt-8">
         <form action={updateOrderStatus} className="space-y-3">
           <input type="hidden" name="orderId" value={order.id} />
           <label htmlFor="status" className="block font-semibold">
@@ -122,7 +122,7 @@ export default async function AdminOrderDetailPage({ params, searchParams }: Pro
             id="status"
             name="status"
             defaultValue={order.status}
-            className="min-h-tap w-full max-w-md rounded-lg border border-gray-300 px-4 text-lg"
+            className="min-h-tap w-full max-w-md rounded-lg border border-em px-4 text-lg"
           >
             {STATUSES.map((s) => (
               <option key={s} value={s}>
@@ -132,7 +132,7 @@ export default async function AdminOrderDetailPage({ params, searchParams }: Pro
           </select>
           <button
             type="submit"
-            className="min-h-tap rounded-lg bg-verso-green px-5 py-2 font-semibold text-white"
+            className="min-h-tap rounded-lg bg-verso-green px-5 py-2 font-semibold text-canvas"
           >
             {a.saveStatus}
           </button>
@@ -149,11 +149,11 @@ export default async function AdminOrderDetailPage({ params, searchParams }: Pro
             rows={5}
             defaultValue={order.adminNotes ?? ""}
             placeholder={a.adminNotesPlaceholder}
-            className="w-full rounded-lg border border-gray-300 px-4 py-3 text-lg"
+            className="w-full rounded-lg border border-em px-4 py-3 text-lg"
           />
           <button
             type="submit"
-            className="min-h-tap rounded-lg border border-gray-300 px-5 py-2 font-semibold"
+            className="min-h-tap rounded-lg border border-em px-5 py-2 font-semibold"
           >
             {a.saveNotes}
           </button>
@@ -163,7 +163,7 @@ export default async function AdminOrderDetailPage({ params, searchParams }: Pro
           <input type="hidden" name="orderId" value={order.id} />
           <button
             type="submit"
-            className="min-h-tap rounded-lg bg-verso-amber px-5 py-2 font-semibold text-gray-900"
+            className="min-h-tap rounded-lg bg-verso-amber px-5 py-2 font-semibold text-ink"
           >
             {a.sendDone}
           </button>

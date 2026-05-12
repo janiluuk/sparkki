@@ -33,60 +33,60 @@ export default async function AboutPage() {
   return (
     <div className="mx-auto max-w-3xl space-y-12 px-4 py-12">
       <header>
-        <h1 className="text-4xl font-bold text-gray-900">{t("title")}</h1>
-        <p className="mt-4 text-xl leading-relaxed text-gray-900">{t("intro")}</p>
+        <h1 className="text-4xl font-bold text-ink">{t("title")}</h1>
+        <p className="mt-4 text-xl leading-relaxed text-ink">{t("intro")}</p>
       </header>
 
       <section aria-labelledby="company-heading" className="verso-card space-y-4 p-6 sm:p-8">
-        <h2 id="company-heading" className="text-2xl font-bold text-gray-900">
+        <h2 id="company-heading" className="text-2xl font-bold text-ink">
           {t("companyTitle")}
         </h2>
-        <p className="text-lg font-semibold text-gray-900">{t("companyName")}</p>
-        <dl className="grid gap-3 text-lg text-gray-900 sm:grid-cols-[minmax(10rem,auto)_1fr] sm:gap-x-6">
-          <dt className="font-semibold text-gray-800">{t("businessIdLabel")}</dt>
+        <p className="text-lg font-semibold text-ink">{t("companyName")}</p>
+        <dl className="grid gap-3 text-lg text-ink sm:grid-cols-[minmax(10rem,auto)_1fr] sm:gap-x-6">
+          <dt className="font-semibold text-ink">{t("businessIdLabel")}</dt>
           <dd>{t("businessIdValue")}</dd>
         </dl>
-        <p className="text-lg text-gray-800">{t("companyNote")}</p>
+        <p className="text-lg text-ink">{t("companyNote")}</p>
       </section>
 
       <section aria-labelledby="address-heading" className="verso-card space-y-4 p-6 sm:p-8">
-        <h2 id="address-heading" className="text-2xl font-bold text-gray-900">
+        <h2 id="address-heading" className="text-2xl font-bold text-ink">
           {t("addressTitle")}
         </h2>
-        <address className="whitespace-pre-line not-italic text-lg leading-relaxed text-gray-900">
+        <address className="whitespace-pre-line not-italic text-lg leading-relaxed text-ink">
           {t("addressLines")}
         </address>
       </section>
 
       <section aria-labelledby="team-heading" className="space-y-6">
-        <h2 id="team-heading" className="text-2xl font-bold text-gray-900">
+        <h2 id="team-heading" className="text-2xl font-bold text-ink">
           {t("teamTitle")}
         </h2>
         <ul className="grid gap-6 sm:grid-cols-2">
           <li className="verso-card flex flex-col p-6 sm:p-8">
-            <h3 className="text-xl font-bold text-gray-900">{t("person1Name")}</h3>
+            <h3 className="text-xl font-bold text-ink">{t("person1Name")}</h3>
             <p className="mt-1 text-sm font-semibold uppercase tracking-wide text-verso-green">
               {t("person1Role")}
             </p>
-            <p className="mt-4 text-lg leading-relaxed text-gray-900">{t("person1Bio")}</p>
+            <p className="mt-4 text-lg leading-relaxed text-ink">{t("person1Bio")}</p>
           </li>
           <li className="verso-card flex flex-col p-6 sm:p-8">
-            <h3 className="text-xl font-bold text-gray-900">{t("person2Name")}</h3>
+            <h3 className="text-xl font-bold text-ink">{t("person2Name")}</h3>
             <p className="mt-1 text-sm font-semibold uppercase tracking-wide text-verso-green">
               {t("person2Role")}
             </p>
-            <p className="mt-4 text-lg leading-relaxed text-gray-900">{t("person2Bio")}</p>
+            <p className="mt-4 text-lg leading-relaxed text-ink">{t("person2Bio")}</p>
           </li>
         </ul>
       </section>
 
       <section aria-labelledby="contact-heading" className="verso-card space-y-4 p-6 sm:p-8">
-        <h2 id="contact-heading" className="text-2xl font-bold text-gray-900">
+        <h2 id="contact-heading" className="text-2xl font-bold text-ink">
           {t("contactTitle")}
         </h2>
-        <ul className="space-y-4 text-lg text-gray-900">
+        <ul className="space-y-4 text-lg text-ink">
           <li>
-            <span className="font-semibold text-gray-800">{t("phoneLabel")}: </span>
+            <span className="font-semibold text-ink">{t("phoneLabel")}: </span>
             <a
               href={`tel:${t("phoneValue").replace(/\s/g, "")}`}
               className="text-verso-green underline underline-offset-2 focus-visible:outline focus-visible:outline-2 focus-visible:outline-verso-green"
@@ -95,7 +95,7 @@ export default async function AboutPage() {
             </a>
           </li>
           <li>
-            <span className="font-semibold text-gray-800">{t("emailLabel")}: </span>
+            <span className="font-semibold text-ink">{t("emailLabel")}: </span>
             <a
               href={`mailto:${t("emailValue")}`}
               className="text-verso-green underline underline-offset-2 focus-visible:outline focus-visible:outline-2 focus-visible:outline-verso-green"
@@ -104,11 +104,11 @@ export default async function AboutPage() {
             </a>
           </li>
           <li>
-            <span className="font-semibold text-gray-800">{t("hoursLabel")}: </span>
+            <span className="font-semibold text-ink">{t("hoursLabel")}: </span>
             {t("hoursValue")}
           </li>
         </ul>
-        <p className="pt-2 text-lg text-gray-800">
+        <p className="pt-2 text-lg text-ink">
           <Link
             href="/tuki"
             className="font-semibold text-verso-green underline underline-offset-2 focus-visible:outline focus-visible:outline-2 focus-visible:outline-verso-green"

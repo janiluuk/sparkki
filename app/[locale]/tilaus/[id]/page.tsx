@@ -31,11 +31,11 @@ export default async function TilausOrderPage({ params }: Props) {
   return (
     <div className="mx-auto max-w-2xl space-y-8 px-4 py-12">
       <header>
-        <h1 className="text-4xl font-bold text-gray-900">{t("title")}</h1>
-        <p className="mt-4 text-xl leading-relaxed text-gray-900">{t("introPrefill")}</p>
+        <h1 className="text-4xl font-bold text-ink">{t("title")}</h1>
+        <p className="mt-4 text-xl leading-relaxed text-ink">{t("introPrefill")}</p>
       </header>
       <OrderTrackingForm variant="prefill" orderId={id} />
-      <p className="text-center text-lg text-gray-700">
+      <p className="text-center text-lg text-fog">
         <Link
           href="/tilaus"
           className="font-semibold text-verso-green underline underline-offset-2 focus-visible:outline focus-visible:outline-2 focus-visible:outline-verso-green"

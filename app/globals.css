@@ -3,76 +3,76 @@
 @tailwind utilities;
 
 :root {
-  --background: #f4f6f8;
-  --foreground: #111827;
-  --verso-green: #1d9e75;
-  --verso-amber: #f59e0b;
-  /* Subtle “void” ink — Electric Smudge–inspired, kept light for a11y */
-  --void: #0f172a;
-  --surface: #ffffff;
+  /* Brand greens */
+  --g: #1df5a0;
+  --g2: #0bbf78;
+  --g3: #085041;
+
+  --amber: #f5a623;
+
+  /* Backgrounds */
+  --bg: #080c0a;
+  --bg2: #0e1410;
+  --bg3: #141c18;
+  --bg4: #1a2420;
+
+  /* Borders */
+  --border: rgba(29, 245, 160, 0.12);
+  --border2: rgba(29, 245, 160, 0.25);
+
+  /* Text */
+  --text: #e8f2ee;
+  --muted: #7a9a8e;
+  --dim: #3d5248;
+
+  --danger: #ff6b6b;
+
+  --status-pending: #f5a623;
+  --status-progress: #6495ed;
+  --status-done: #1df5a0;
+  --status-cancel: #ff6b6b;
+
+  /* Bridge for tooling / legacy */
+  --background: var(--bg);
+  --foreground: var(--text);
+}
+
+@layer base {
+  :focus-visible {
+    outline: 2px solid var(--g);
+    outline-offset: 2px;
+  }
+
+  h1,
+  h2,
+  h3 {
+    @apply font-display font-extrabold tracking-tight text-ink;
+  }
 }
 
 body {
-  color: var(--foreground);
-  background-color: var(--background);
-  background-image:
-    radial-gradient(
-      ellipse 120% 80% at 50% -30%,
-      rgba(29, 158, 117, 0.07),
-      transparent 55%
-    ),
-    radial-gradient(
-      ellipse 90% 60% at 100% 0%,
-      rgba(15, 23, 42, 0.035),
-      transparent 45%
-    ),
-    radial-gradient(
-      ellipse 70% 50% at 0% 100%,
-      rgba(15, 23, 42, 0.025),
-      transparent 50%
-    );
-  background-attachment: fixed;
+  color: var(--text);
+  background-color: var(--bg);
   font-size: 1.125rem;
-  line-height: 1.6;
+  line-height: 1.65;
+  font-weight: 300;
 }
 
 @layer components {
-  /* Soft product cards — depth without heavy chrome */
   .verso-card {
-    @apply rounded-2xl border border-gray-200/90 bg-white/95 shadow-sm shadow-slate-900/[0.06] backdrop-blur-[2px];
+    @apply rounded-2xl border bg-card p-7 transition-colors duration-200;
+  }
+
+  .verso-card:hover {
+    @apply border-em;
   }
 
   .verso-card-hover {
-    @apply verso-card transition-shadow duration-300 hover:border-gray-300 hover:shadow-md hover:shadow-slate-900/[0.08];
+    @apply verso-card;
   }
 
-  /* Hero band: subtle void + brand glow (reference: electricsmudge.com, toned down) */
   .verso-hero {
-    @apply relative overflow-hidden rounded-3xl border border-gray-200/70 px-6 py-12 text-center sm:px-10 sm:py-16;
-    background: linear-gradient(
-      165deg,
-      rgba(255, 255, 255, 0.98) 0%,
-      rgba(249, 250, 251, 0.96) 45%,
-      rgba(241, 245, 249, 0.92) 100%
-    );
-  }
-
-  .verso-hero::before {
-    content: "";
-    position: absolute;
-    inset: 0;
-    border-radius: inherit;
-    pointer-events: none;
-    background: radial-gradient(
-        ellipse 85% 55% at 50% -25%,
-        rgba(29, 158, 117, 0.11),
-        transparent 58%
-      ),
-      radial-gradient(
-        ellipse 55% 45% at 100% 100%,
-        rgba(15, 23, 42, 0.05),
-        transparent 55%
-      );
+    @apply relative overflow-hidden rounded-3xl border bg-card px-6 py-12 text-center sm:px-10 sm:py-16;
   }
 
   .verso-hero-inner {
@@ -80,15 +80,48 @@ body {
   }
 
   .verso-eyebrow {
-    @apply mb-3 text-xs font-semibold uppercase tracking-[0.22em] text-gray-500;
+    @apply mb-5 flex items-center gap-2.5 font-mono text-[11px] font-normal uppercase tracking-[0.15em] text-g;
+  }
+
+  .verso-eyebrow::before {
+    content: "";
+    display: inline-block;
+    width: 20px;
+    height: 1px;
+    background: var(--g);
   }
 
   .verso-btn-primary {
-    @apply inline-flex min-h-tap min-w-[200px] items-center justify-center rounded-xl bg-verso-green px-8 py-3 text-lg font-semibold text-white shadow-md shadow-verso-green/20 transition hover:bg-[#178f68] hover:shadow-lg hover:shadow-verso-green/25 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-verso-green;
+    @apply inline-flex min-h-tap min-w-[200px] items-center justify-center rounded-[10px] bg-g px-7 py-3.5 text-[15px] font-bold tracking-tight text-canvas transition-opacity duration-150 hover:opacity-[0.85] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-g;
   }
 
   .verso-btn-secondary {
-    @apply inline-flex min-h-tap min-w-[200px] items-center justify-center rounded-xl border border-gray-300/90 bg-white/90 px-8 py-3 text-lg font-semibold text-gray-900 shadow-sm shadow-slate-900/5 transition hover:border-verso-green/50 hover:bg-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-verso-green;
+    @apply inline-flex min-h-tap min-w-[200px] items-center justify-center rounded-[10px] border border-em bg-transparent px-7 py-3.5 text-[15px] font-normal text-fog transition-colors duration-150 hover:text-ink focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-g;
+  }
+
+  .verso-btn-secondary:hover {
+    background: rgba(29, 245, 160, 0.05);
+  }
+
+  .discord-block {
+    background: linear-gradient(135deg, #2c2f5b 0%, #1e1f3a 100%);
+    border: 1px solid rgba(88, 101, 242, 0.3);
+    @apply flex flex-col gap-6 rounded-2xl p-8 sm:flex-row sm:items-center sm:justify-between sm:gap-8;
+  }
+
+  .discord-btn {
+    @apply inline-flex shrink-0 items-center justify-center whitespace-nowrap rounded-[10px] px-6 py-3 text-sm font-semibold text-white transition-opacity duration-150 hover:opacity-90;
+    background: #5865f2;
+  }
+
+  .discord-channel {
+    font-family: var(--font-dm-mono), ui-monospace, monospace;
+    font-size: 12px;
+    color: #5865f2;
+  }
+
+  .discord-channel::before {
+    content: "# ";
   }
 }
 

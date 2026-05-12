@@ -11,29 +11,43 @@ const config: Config = {
       colors: {
         background: "var(--background)",
         foreground: "var(--foreground)",
-        void: {
-          950: "#0b1220",
-          900: "#0f172a",
-          800: "#1e293b",
-        },
+        canvas: "var(--bg)",
+        raised: "var(--bg2)",
+        card: "var(--bg3)",
+        sunken: "var(--bg4)",
+        ink: "var(--text)",
+        fog: "var(--muted)",
+        dust: "var(--dim)",
+        edge: "var(--border)",
+        g: "var(--g)",
+        g2: "var(--g2)",
+        g3: "var(--g3)",
+        amber: "var(--amber)",
+        danger: "var(--danger)",
         verso: {
-          green: "#1D9E75",
-          amber: "#F59E0B",
+          green: "var(--g)",
+          amber: "var(--amber)",
         },
       },
+      borderColor: {
+        DEFAULT: "var(--border)",
+        em: "var(--border2)",
+        brand: "var(--g)",
+      },
       fontFamily: {
+        display: ["var(--font-syne)", "ui-sans-serif", "system-ui", "sans-serif"],
         sans: [
           "var(--font-dm-sans)",
           "ui-sans-serif",
           "system-ui",
           "sans-serif",
         ],
+        mono: ["var(--font-dm-mono)", "ui-monospace", "monospace"],
       },
       letterSpacing: {
         hero: "-0.02em",
-      },
-      boxShadow: {
-        soft: "0 1px 2px rgba(15, 23, 42, 0.04), 0 8px 24px rgba(15, 23, 42, 0.06)",
+        label: "0.08em",
+        eyebrow: "0.15em",
       },
       minHeight: {
         tap: "48px",

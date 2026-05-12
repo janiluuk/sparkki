@@ -27,15 +27,15 @@ export default async function PalveluKiitosPage({ searchParams }: Props) {
     <div className="mx-auto max-w-2xl space-y-6 px-4 py-16 text-center">
       {info.ok && info.kind === "service" ? (
         <>
-          <h1 className="text-4xl font-bold text-gray-900">{t("title")}</h1>
-          <p className="text-xl text-gray-900">{t("serviceBody")}</p>
-          <p className="rounded-xl bg-white p-4 text-lg text-gray-900 shadow ring-1 ring-gray-200">
+          <h1 className="text-4xl font-bold text-ink">{t("title")}</h1>
+          <p className="text-xl text-ink">{t("serviceBody")}</p>
+          <p className="rounded-xl border border-em bg-card p-4 text-lg text-ink">
             {t("orderRef")}: <span className="font-mono">{info.orderId}</span>
           </p>
           <p>
             <Link
               href={`/tilaus/${info.orderId}`}
-              className="inline-flex min-h-tap items-center justify-center rounded-xl bg-verso-green px-6 py-3 text-lg font-semibold text-white hover:bg-[#178f68] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-verso-green"
+              className="inline-flex min-h-tap items-center justify-center rounded-xl bg-verso-green px-6 py-3 text-lg font-semibold text-canvas hover:opacity-[0.85] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-verso-green"
             >
               {t("trackOrder")}
             </Link>
@@ -43,8 +43,8 @@ export default async function PalveluKiitosPage({ searchParams }: Props) {
         </>
       ) : (
         <>
-          <h1 className="text-3xl font-bold text-gray-900">{t("genericTitle")}</h1>
-          <p className="text-lg text-gray-900">{t("genericBody")}</p>
+          <h1 className="text-3xl font-bold text-ink">{t("genericTitle")}</h1>
+          <p className="text-lg text-ink">{t("genericBody")}</p>
         </>
       )}
     </div>
