@@ -1,13 +1,22 @@
 name: CI
 
 on:
+  workflow_dispatch:
   push:
     branches: [main, master]
   pull_request:
     branches: [main, master]
 
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   test:
+    name: Lint, test, build, e2e
     runs-on: ubuntu-latest
     services:
       postgres:
