@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 import { prisma } from "@/lib/prisma";
 import { checkCompatibility } from "@/lib/compatibility";
+import { checkRateLimit, getClientIpFromHeaders } from "@/lib/rate-limit";
 
 const bodySchema = z.object({
   make: z.string(),
@@ -11,6 +12,13 @@ const bodySchema = z.object({
 });
 
 export async function POST(req: Request) {
+  const ip = getClientIpFromHeaders(req.headers);
+  if (
+    !(await checkRateLimit(`compatibility:${ip}`, { windowMs: 60_000, max: 60 }))
+  ) {
+    return NextResponse.json({ error: "rate_limited" }, { status: 429 });
+  }
+
   let json: unknown;
   try {
     json = await req.json();

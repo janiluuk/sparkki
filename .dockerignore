@@ -1,0 +1,13 @@
+# Build context slimming + avoid Next typecheck pulling in Tauri app
+node_modules
+.next
+.git
+.env
+.env.*
+!.env.example
+*.md
+coverage
+.turbo
+apps/verso-checker
+e2e/test-results
+playwright-report

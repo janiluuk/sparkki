@@ -1,0 +1,79 @@
+#!/usr/bin/env bash
+#
+# Rebuild Docker stack, rsync to lab host, bring it up.
+#
+#   ./scripts/lab-stack-up.sh
+#   ./scripts/lab-stack-up.sh --no-cache
+#   RSYNC_DELETE=1 ./scripts/lab-stack-up.sh
+#
+# Env (defaults suit 192.168.2.100 lab):
+#   LAB_HOST / DEPLOY_HOST     — default 192.168.2.100
+#   LAB_PATH / DEPLOY_PATH     — default /srv/verso
+#   LAB_USER / DEPLOY_USER     — default $USER, fallback root
+#   RSYNC_DELETE=1             — rsync --delete (careful)
+#
+set -euo pipefail
+
+NO_CACHE=""
+for arg in "$@"; do
+  case "$arg" in
+    --no-cache) NO_CACHE=1 ;;
+    -h | --help)
+      sed -n '2,20p' "$0"
+      exit 0
+      ;;
+  esac
+done
+
+HOST="${LAB_HOST:-${DEPLOY_HOST:-192.168.2.100}}"
+REMOTE_PATH="${LAB_PATH:-${DEPLOY_PATH:-/srv/verso}}"
+REMOTE_USER="${LAB_USER:-${DEPLOY_USER:-${USER:-root}}}"
+
+ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+cd "$ROOT"
+
+RSYNC_FLAGS=(-a -z)
+if [[ "${RSYNC_DELETE:-}" == "1" ]]; then
+  RSYNC_FLAGS+=(--delete)
+fi
+
+echo "==> Sync → ${REMOTE_USER}@${HOST}:${REMOTE_PATH}"
+ssh "${REMOTE_USER}@${HOST}" "mkdir -p '${REMOTE_PATH}'"
+
+rsync "${RSYNC_FLAGS[@]}" \
+  --exclude node_modules \
+  --exclude .git \
+  --exclude .next \
+  --exclude .env \
+  --exclude .env.local \
+  --exclude '.env.*.local' \
+  --exclude apps/verso-checker/node_modules \
+  --exclude apps/verso-checker/src-tauri/target \
+  ./ "${REMOTE_USER}@${HOST}:${REMOTE_PATH}/"
+
+# Published port: host APP_PORT in docker-compose (default 1337). Override locally: APP_PORT=8080 ./scripts/lab-stack-up.sh
+REMOTE_PORT="${APP_PORT:-1337}"
+
+BUILD_CMD="docker compose --profile app build"
+if [[ -n "$NO_CACHE" ]]; then
+  BUILD_CMD+=" --no-cache"
+fi
+
+echo "==> Remote: ${BUILD_CMD} && docker compose --profile app up -d"
+# shellcheck disable=SC2029
+ssh "${REMOTE_USER}@${HOST}" "cd '${REMOTE_PATH}' && ${BUILD_CMD} && docker compose --profile app up -d"
+
+BASE_URL="http://${HOST}:${REMOTE_PORT}"
+echo ""
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+echo "  Stack up:  ${BASE_URL}"
+echo "  Admin:     ${BASE_URL}/admin"
+echo "  Health:    ${BASE_URL}/api/health"
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+echo ""
+echo "If the host publishes another port, set APP_PORT when running this script (must match ${REMOTE_PATH}/.env APP_PORT for the printed URL)."
+echo "Set on the server in ${REMOTE_PATH}/.env (not rsynced):"
+echo "  NEXTAUTH_URL=${BASE_URL}"
+echo "  NEXT_PUBLIC_SITE_URL=${BASE_URL}"
+echo "  NEXTAUTH_SECRET=… (32+ chars)"
+echo ""

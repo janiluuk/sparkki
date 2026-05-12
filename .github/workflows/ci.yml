@@ -27,8 +27,8 @@ jobs:
     env:
       DATABASE_URL: postgresql://postgres:password@localhost:5432/verso
       NEXTAUTH_SECRET: ci-secret-ci-secret-ci-secret-ci-secret
-      NEXTAUTH_URL: http://127.0.0.1:3000
-      NEXT_PUBLIC_SITE_URL: http://127.0.0.1:3000
+      NEXTAUTH_URL: http://127.0.0.1:1337
+      NEXT_PUBLIC_SITE_URL: http://127.0.0.1:1337
       ADMIN_EMAIL: admin@verso.fi
       ADMIN_PASSWORD: testpassword123
 
@@ -68,4 +68,4 @@ jobs:
         run: npm run test:e2e
         env:
           CI: "true"
-          PLAYWRIGHT_BASE_URL: http://127.0.0.1:3000
+          PLAYWRIGHT_BASE_URL: http://127.0.0.1:1337

@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
+import { CalendlyEmbed } from "@/components/tuki/CalendlyEmbed";
+import { SupportContactForm } from "@/components/tuki/SupportContactForm";
 import { localePathAlternates } from "@/lib/seo";
 
 export async function generateMetadata({
@@ -28,8 +30,10 @@ export async function generateMetadata({
 
 export default async function TukiPage() {
   const t = await getTranslations("tuki");
+  const calendlyUrl = process.env.NEXT_PUBLIC_CALENDLY_EMBED_URL?.trim();
+
   return (
-    <div className="mx-auto max-w-3xl space-y-8 px-4 py-12">
+    <div className="mx-auto max-w-3xl space-y-10 px-4 py-12">
       <h1 className="text-4xl font-bold text-ink">{t("title")}</h1>
       <p className="text-xl text-ink">{t("intro")}</p>
       <section aria-labelledby="contact-title">
@@ -43,6 +47,28 @@ export default async function TukiPage() {
         <p className="mt-4 text-lg font-medium text-ink">{t("email")}</p>
         <p className="mt-1 text-lg text-ink">{t("emailValue")}</p>
         <p className="mt-2 text-lg text-ink">{t("hours")}</p>
+      </section>
+
+      <section aria-labelledby="booking-title" className="verso-card space-y-4 p-6 sm:p-8">
+        <h2 id="booking-title" className="text-2xl font-bold text-ink">
+          {t("bookingTitle")}
+        </h2>
+        <p className="text-lg text-ink">{t("bookingIntro")}</p>
+        {calendlyUrl ? (
+          <CalendlyEmbed embedUrl={calendlyUrl} title={t("bookingIframeTitle")} />
+        ) : (
+          <p className="rounded-xl border border-edge bg-card/80 px-4 py-3 text-lg text-fog">
+            {t("bookingNotConfigured")}
+          </p>
+        )}
+      </section>
+
+      <section aria-labelledby="form-title" className="verso-card space-y-4 p-6 sm:p-8">
+        <h2 id="form-title" className="text-2xl font-bold text-ink">
+          {t("formTitle")}
+        </h2>
+        <p className="text-lg text-ink">{t("formIntro")}</p>
+        <SupportContactForm />
       </section>
     </div>
   );

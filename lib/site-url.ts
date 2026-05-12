@@ -7,5 +7,5 @@ export function getSiteUrl(): string {
   if (fromEnv) return fromEnv;
   const vercel = process.env.VERCEL_URL?.replace(/^https?:\/\//, "");
   if (vercel) return `https://${vercel}`;
-  return "http://localhost:3000";
+  return "http://localhost:1337";
 }

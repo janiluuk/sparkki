@@ -5,23 +5,43 @@ import { DeliveryMethod, SupportTier } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
 import { getStripe, stripeConfigured } from "@/lib/stripe";
 import { buildServiceLineItems } from "@/lib/stripe-line-items";
-import { serviceOrderTotalCents } from "@/lib/pricing";
-import { checkRateLimit, getClientIp } from "@/lib/rate-limit";
+import { serviceOrderTotalWithMigrationCents } from "@/lib/pricing";
+import { checkRateLimit, getClientIpFromHeaders } from "@/lib/rate-limit";
+import { getSiteUrl } from "@/lib/site-url";
 
-const checkoutSchema = z.object({
-  tier: z.enum(["SSD_BASIC", "SSD_RAM", "FULL_SERVICE"]),
-  supportTier: z.nativeEnum(SupportTier),
-  deliveryMethod: z.nativeEnum(DeliveryMethod),
-  computerMake: z.string().max(200).optional().nullable(),
-  computerModel: z.string().max(200).optional().nullable(),
-  customerName: z.string().min(1).max(200),
-  customerEmail: z.string().email().max(320),
-  customerPhone: z.string().max(50).optional().nullable(),
-  address: z.string().max(500).optional().nullable(),
-  preferredDate: z.string().max(40).optional().nullable(),
-  notes: z.string().max(2000).optional().nullable(),
-  locale: z.enum(["fi", "en"]),
-});
+const checkoutSchema = z
+  .object({
+    tier: z.enum(["SSD_BASIC", "SSD_RAM", "FULL_SERVICE"]),
+    supportTier: z.nativeEnum(SupportTier),
+    deliveryMethod: z.nativeEnum(DeliveryMethod),
+    computerMake: z.string().max(200).optional().nullable(),
+    computerModel: z.string().max(200).optional().nullable(),
+    customerName: z.string().min(1).max(200),
+    customerEmail: z.string().email().max(320),
+    customerPhone: z.string().max(50).optional().nullable(),
+    address: z.string().max(500).optional().nullable(),
+    preferredDate: z.string().max(40).optional().nullable(),
+    notes: z.string().max(2000).optional().nullable(),
+    locale: z.enum(["fi", "en"]),
+    dataMigration: z.boolean().optional(),
+    dataMigrationSize: z.enum(["standard", "large"]).optional().nullable(),
+  })
+  .superRefine((val, ctx) => {
+    if (val.dataMigration && !val.dataMigrationSize) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ["dataMigrationSize"],
+        message: "required_when_data_migration",
+      });
+    }
+    if (!val.dataMigration && val.dataMigrationSize) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ["dataMigrationSize"],
+        message: "unexpected_when_disabled",
+      });
+    }
+  });
 
 export async function POST(req: Request) {
   let body: unknown;
@@ -41,7 +61,12 @@ export async function POST(req: Request) {
 
   const data = parsed.data;
 
-  if (!checkRateLimit(`checkout:${getClientIp()}`, { windowMs: 60_000, max: 25 })) {
+  if (
+    !(await checkRateLimit(`checkout:${getClientIpFromHeaders(req.headers)}`, {
+      windowMs: 60_000,
+      max: 25,
+    }))
+  ) {
     return NextResponse.json({ error: "rate_limited" }, { status: 429 });
   }
 
@@ -54,7 +79,15 @@ export async function POST(req: Request) {
 
   const stripe = getStripe()!;
 
-  const priceEur = serviceOrderTotalCents(data.tier, data.supportTier);
+  const wantsMigration = Boolean(data.dataMigration) && data.dataMigrationSize;
+  const migration = wantsMigration
+    ? { size: data.dataMigrationSize! }
+    : null;
+  const priceEur = serviceOrderTotalWithMigrationCents(
+    data.tier,
+    data.supportTier,
+    migration,
+  );
   const preferredDate =
     data.preferredDate && data.preferredDate.length > 0
       ? new Date(data.preferredDate)
@@ -63,9 +96,7 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "invalid_date" }, { status: 400 });
   }
 
-  const baseUrl =
-    process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, "") ??
-    "http://localhost:3000";
+  const baseUrl = getSiteUrl();
 
   const order = await prisma.order.create({
     data: {
@@ -82,12 +113,17 @@ export async function POST(req: Request) {
       preferredDate,
       notes: data.notes?.trim() || null,
       priceEur,
+      locale: data.locale,
+      dataMigration: migration != null,
+      dataMigrationSize: migration?.size ?? null,
     },
   });
 
   const lineItems = buildServiceLineItems(
     data.tier as Exclude<ServiceTier, "B2B">,
     data.supportTier,
+    migration,
+    data.locale,
   );
 
   try {

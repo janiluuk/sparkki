@@ -66,6 +66,33 @@ export default async function PalveluPage({
         <p className="mt-4 text-lg text-ink">{t("pricingNote")}</p>
       </section>
 
+      <section aria-labelledby="migration-faq-title" className="space-y-6">
+        <h2 id="migration-faq-title" className="text-2xl font-bold text-ink">
+          {t("migrationFaqTitle")}
+        </h2>
+        <p className="text-lg text-ink">{t("migrationFaqIntro")}</p>
+        <dl className="space-y-6 text-lg text-ink">
+          <div>
+            <dt className="font-semibold text-verso-green">
+              {t("migrationFaqQ1")}
+            </dt>
+            <dd className="mt-2 text-fog">{t("migrationFaqA1")}</dd>
+          </div>
+          <div>
+            <dt className="font-semibold text-verso-green">
+              {t("migrationFaqQ2")}
+            </dt>
+            <dd className="mt-2 text-fog">{t("migrationFaqA2")}</dd>
+          </div>
+          <div>
+            <dt className="font-semibold text-verso-green">
+              {t("migrationFaqQ3")}
+            </dt>
+            <dd className="mt-2 text-fog">{t("migrationFaqA3")}</dd>
+          </div>
+        </dl>
+      </section>
+
       <section
         aria-labelledby="b2b-title"
         className="verso-card border-verso-green/25 bg-verso-green/5 p-6 sm:p-8"

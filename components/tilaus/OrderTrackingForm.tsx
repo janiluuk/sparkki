@@ -2,6 +2,8 @@
 
 import { useMemo, useState } from "react";
 import { useLocale, useTranslations } from "next-intl";
+import { LaptopSpecsCard } from "@/components/laptop-specs/LaptopSpecsCard";
+import type { LaptopSpecsInsight } from "@/lib/laptop-specs";
 import type { PublicServiceOrder, PublicUsbOrder } from "@/lib/public-order";
 
 type Props =
@@ -18,6 +20,7 @@ export function OrderTrackingForm(props: Props) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [order, setOrder] = useState<PublicServiceOrder | PublicUsbOrder | null>(null);
+  const [laptopSpecs, setLaptopSpecs] = useState<LaptopSpecsInsight | null>(null);
 
   const idReadOnly = props.variant === "prefill";
 
@@ -30,6 +33,7 @@ export function OrderTrackingForm(props: Props) {
     e.preventDefault();
     setError(null);
     setOrder(null);
+    setLaptopSpecs(null);
     setLoading(true);
     try {
       const res = await fetch("/api/public/order-lookup", {
@@ -45,7 +49,11 @@ export function OrderTrackingForm(props: Props) {
         return;
       }
       const data = (await res.json()) as
-        | { ok: true; order: PublicServiceOrder | PublicUsbOrder }
+        | {
+            ok: true;
+            order: PublicServiceOrder | PublicUsbOrder;
+            laptopSpecs?: LaptopSpecsInsight;
+          }
         | { ok: false; code: string };
 
       if (!res.ok || !data.ok) {
@@ -53,6 +61,7 @@ export function OrderTrackingForm(props: Props) {
         return;
       }
       setOrder(data.order);
+      setLaptopSpecs(data.laptopSpecs ?? null);
     } catch {
       setError(t("errorGeneric"));
     } finally {
@@ -113,7 +122,13 @@ export function OrderTrackingForm(props: Props) {
         </p>
       ) : null}
 
-      {order ? <OrderSummary order={order} locale={locale} /> : null}
+      {order ? (
+        <OrderSummary
+          order={order}
+          locale={locale}
+          laptopSpecs={laptopSpecs}
+        />
+      ) : null}
     </div>
   );
 }
@@ -121,9 +136,11 @@ export function OrderTrackingForm(props: Props) {
 function OrderSummary({
   order,
   locale,
+  laptopSpecs,
 }: {
   order: PublicServiceOrder | PublicUsbOrder;
   locale: string;
+  laptopSpecs: LaptopSpecsInsight | null;
 }) {
   const t = useTranslations("tilaus");
   if (order.kind === "usb") {
@@ -176,6 +193,18 @@ function OrderSummary({
         <dd>{t(`support_${o.supportTier}` as "support_FULL")}</dd>
         <dt className="font-semibold text-fog">{t("fieldDelivery")}</dt>
         <dd>{t(`delivery_${o.deliveryMethod}` as "delivery_HOME_PICKUP")}</dd>
+        {o.dataMigration ? (
+          <>
+            <dt className="font-semibold text-fog">{t("fieldMigration")}</dt>
+            <dd>
+              {o.dataMigrationSize === "large"
+                ? t("migrationLarge")
+                : o.dataMigrationSize === "standard"
+                  ? t("migrationStandard")
+                  : t("emptyValue")}
+            </dd>
+          </>
+        ) : null}
         <dt className="font-semibold text-fog">{t("fieldComputer")}</dt>
         <dd>
           {[o.computerMake, o.computerModel].filter(Boolean).join(" ") || t("emptyValue")}
@@ -211,6 +240,18 @@ function OrderSummary({
           {price} €
         </dd>
       </dl>
+      {order.kind === "service" && laptopSpecs != null ? (
+        <LaptopSpecsCard
+          className="mt-6"
+          insight={laptopSpecs}
+          labels={{
+            title: t("specsTitle"),
+            loading: t("specsLoading"),
+            empty: t("specsEmpty"),
+            link: t("specsLink"),
+          }}
+        />
+      ) : null}
     </section>
   );
 }

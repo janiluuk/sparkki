@@ -18,6 +18,8 @@ export type PublicServiceOrder = {
   preferredDate: string | null;
   notes: string | null;
   priceEur: number;
+  dataMigration: boolean;
+  dataMigrationSize: string | null;
 };
 
 export type PublicUsbOrder = {
@@ -51,6 +53,8 @@ export function toPublicServiceOrder(order: Order): PublicServiceOrder {
     preferredDate: order.preferredDate ? iso(order.preferredDate) : null,
     notes: order.notes,
     priceEur: order.priceEur,
+    dataMigration: order.dataMigration,
+    dataMigrationSize: order.dataMigrationSize,
   };
 }
 

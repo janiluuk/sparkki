@@ -36,10 +36,15 @@ export default async function ItsePage({
 }) {
   const t = await getTranslations("itse");
   const { locale } = params;
-  const guides = await prisma.guide.findMany({
-    where: { published: true },
-    orderBy: [{ order: "asc" }, { titleFi: "asc" }],
-  });
+  let guides: Awaited<ReturnType<typeof prisma.guide.findMany>> = [];
+  try {
+    guides = await prisma.guide.findMany({
+      where: { published: true },
+      orderBy: [{ order: "asc" }, { titleFi: "asc" }],
+    });
+  } catch {
+    /* no DB at build time (e.g. Docker image build) */
+  }
 
   return (
     <div className="mx-auto max-w-5xl space-y-10 px-4 py-12">

@@ -1,0 +1,8 @@
+# Lab TLS in front of try-linux-proxy (self-signed / internal CA).
+# Run: docker compose -f docker-compose.yml -f docker-compose.tls.yml --profile tls up -d
+# Browsers will warn until you trust the Caddy root or use a real domain + ACME.
+
+:443 {
+  tls internal
+  reverse_proxy try-linux-proxy:80
+}

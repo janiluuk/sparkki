@@ -1,26 +1,67 @@
 import { Resend } from "resend";
 
+export type MailLocale = "fi" | "en";
+
+function normalizeMailLocale(v: string | null | undefined): MailLocale {
+  return v === "en" ? "en" : "fi";
+}
+
 function getResend(): Resend | null {
   const key = process.env.RESEND_API_KEY;
   if (!key) return null;
   return new Resend(key);
 }
 
+function orderConfirmedMigrationBlock(
+  loc: MailLocale,
+  size: "standard" | "large",
+): string {
+  if (loc === "en") {
+    const scope =
+      size === "large"
+        ? "You chose the <strong>large data</strong> transfer option."
+        : "You chose the <strong>standard</strong> data transfer option.";
+    return `<p>${scope}</p><p><strong>Before you hand in the machine</strong></p><ul><li>Back up important files to an external drive or cloud you control.</li><li>Have passwords or recovery options ready for accounts you want moved (we do not store sensitive credentials in email).</li><li>Tell us if you rely on specific apps (e.g. Outlook, Adobe) so we can plan the transfer.</li></ul>`;
+  }
+  const scope =
+    size === "large"
+      ? "Valitsit <strong>suuren tiedonsiirron</strong> (arvio &gt;100 GB dataa)."
+      : "Valitsit <strong>tavallisen tiedonsiirron</strong>.";
+  return `<p>${scope}</p><p><strong>Ennen koneen luovutusta</strong></p><ul><li>Varmuuskopioi tärkeät tiedostot ulkoiselle levylle tai pilveen, jota hallitset itse.</li><li>Pidä salasanat tai palautusvaihtoehdot käden ulottuvilla tileille, jotka haluat siirrettäväksi (emme tallenna arkaluontoisia tunnuksia sähköpostissa).</li><li>Kerro, jos käytät tiettyjä ohjelmia (esim. Outlook, Adobe), jotta siirto voidaan suunnitella.</li></ul>`;
+}
+
 export async function sendOrderConfirmedEmail(params: {
   to: string;
   orderId: string;
   customerName: string;
+  locale?: string | null;
+  dataMigration?: boolean;
+  dataMigrationSize?: "standard" | "large" | null;
 }): Promise<{ ok: boolean; error?: string }> {
   const resend = getResend();
   if (!resend) {
     return { ok: false, error: "resend_not_configured" };
   }
+  const loc = normalizeMailLocale(params.locale);
   const from = process.env.RESEND_FROM ?? "Verso <onboarding@resend.dev>";
+  const subject =
+    loc === "en"
+      ? "Order confirmed — Verso"
+      : "Tilaus vahvistettu — Verso";
+  const migrationExtra =
+    params.dataMigration &&
+    (params.dataMigrationSize === "standard" || params.dataMigrationSize === "large")
+      ? orderConfirmedMigrationBlock(loc, params.dataMigrationSize)
+      : "";
+  const html =
+    loc === "en"
+      ? `<p>Hello ${escapeHtml(params.customerName)},</p><p>Your order <strong>${escapeHtml(params.orderId)}</strong> has been confirmed and we have received your payment.</p>${migrationExtra}`
+      : `<p>Hei ${escapeHtml(params.customerName)},</p><p>Tilauksesi <strong>${escapeHtml(params.orderId)}</strong> on vahvistettu ja maksu vastaanotettu.</p>${migrationExtra}`;
   const { error } = await resend.emails.send({
     from,
     to: params.to,
-    subject: "Tilaus vahvistettu — Verso",
-    html: `<p>Hei ${escapeHtml(params.customerName)},</p><p>Tilauksesi <strong>${escapeHtml(params.orderId)}</strong> on vahvistettu ja maksu vastaanotettu.</p>`,
+    subject,
+    html,
   });
   if (error) return { ok: false, error: error.message };
   return { ok: true };
@@ -30,17 +71,27 @@ export async function sendUsbConfirmedEmail(params: {
   to: string;
   orderId: string;
   customerName: string;
+  locale?: string | null;
 }): Promise<{ ok: boolean; error?: string }> {
   const resend = getResend();
   if (!resend) {
     return { ok: false, error: "resend_not_configured" };
   }
+  const loc = normalizeMailLocale(params.locale);
   const from = process.env.RESEND_FROM ?? "Verso <onboarding@resend.dev>";
+  const subject =
+    loc === "en"
+      ? "USB order confirmed — Verso"
+      : "USB-tilaus vahvistettu — Verso";
+  const html =
+    loc === "en"
+      ? `<p>Hello ${escapeHtml(params.customerName)},</p><p>Your Linux USB stick order <strong>${escapeHtml(params.orderId)}</strong> is paid. We will ship it to the address you provided.</p>`
+      : `<p>Hei ${escapeHtml(params.customerName)},</p><p>Linux-USB-tilauksesi <strong>${escapeHtml(params.orderId)}</strong> on maksettu. Toimitamme tilauksen osoitteeseesi.</p>`;
   const { error } = await resend.emails.send({
     from,
     to: params.to,
-    subject: "USB-tilaus vahvistettu — Verso",
-    html: `<p>Hei ${escapeHtml(params.customerName)},</p><p>Linux-USB-tilauksesi <strong>${escapeHtml(params.orderId)}</strong> on maksettu. Toimitamme tilauksen osoitteeseesi.</p>`,
+    subject,
+    html,
   });
   if (error) return { ok: false, error: error.message };
   return { ok: true };
@@ -50,17 +101,27 @@ export async function sendOrderDoneEmail(params: {
   to: string;
   orderId: string;
   customerName: string;
+  locale?: string | null;
 }): Promise<{ ok: boolean; error?: string }> {
   const resend = getResend();
   if (!resend) {
     return { ok: false, error: "resend_not_configured" };
   }
+  const loc = normalizeMailLocale(params.locale);
   const from = process.env.RESEND_FROM ?? "Verso <onboarding@resend.dev>";
+  const subject =
+    loc === "en"
+      ? "Your service is complete — Verso"
+      : "Palvelu valmis — Verso";
+  const html =
+    loc === "en"
+      ? `<p>Hello ${escapeHtml(params.customerName)},</p><p>Your order <strong>${escapeHtml(params.orderId)}</strong> is marked complete. Thank you for choosing Verso!</p>`
+      : `<p>Hei ${escapeHtml(params.customerName)},</p><p>Tilauksesi <strong>${escapeHtml(params.orderId)}</strong> on merkitty valmiiksi. Kiitos kun käytit Versoa!</p>`;
   const { error } = await resend.emails.send({
     from,
     to: params.to,
-    subject: "Palvelu valmis — Verso",
-    html: `<p>Hei ${escapeHtml(params.customerName)},</p><p>Tilauksesi <strong>${escapeHtml(params.orderId)}</strong> on merkitty valmiiksi. Kiitos kun käytit Versoa!</p>`,
+    subject,
+    html,
   });
   if (error) return { ok: false, error: error.message };
   return { ok: true };
@@ -105,6 +166,33 @@ export async function sendB2bQuoteRequestEmail(params: {
     to: params.notifyTo,
     subject,
     html: `<p>${params.locale === "en" ? "Quote request from the website." : "Tarjouspyyntö verkkosivulta."}</p><table style="border-collapse:collapse">${htmlRows}</table>`,
+  });
+  if (error) return { ok: false, error: error.message };
+  return { ok: true };
+}
+
+export async function sendSupportContactEmail(params: {
+  notifyTo: string;
+  name: string;
+  email: string;
+  message: string;
+  locale: "fi" | "en";
+}): Promise<{ ok: boolean; error?: string }> {
+  const resend = getResend();
+  if (!resend) {
+    return { ok: false, error: "resend_not_configured" };
+  }
+  const from = process.env.RESEND_FROM ?? "Verso <onboarding@resend.dev>";
+  const subject =
+    params.locale === "en"
+      ? "Support message from verso.fi — /tuki"
+      : "Tukipyyntö verkkosivulta — /tuki";
+  const { error } = await resend.emails.send({
+    from,
+    to: params.notifyTo,
+    replyTo: params.email,
+    subject,
+    html: `<p>${params.locale === "en" ? "From:" : "Lähettäjä:"} ${escapeHtml(params.name)} &lt;${escapeHtml(params.email)}&gt;</p><p>${escapeHtml(params.message)}</p>`,
   });
   if (error) return { ok: false, error: error.message };
   return { ok: true };

@@ -43,6 +43,11 @@ export default async function InfoPage() {
           {t("tryLinuxTitle")}
         </h2>
         <p className="text-lg leading-relaxed text-ink">{t("tryLinuxIntro")}</p>
+        {urls ? (
+          <p className="rounded-xl border border-edge bg-card/80 px-4 py-3 text-base leading-relaxed text-ink">
+            {t("tryLinuxSecurityHint")}
+          </p>
+        ) : null}
 
         {urls ? (
           <ul className="grid gap-4 sm:grid-cols-2">

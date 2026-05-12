@@ -25,4 +25,47 @@ describe("POST /api/checkout validation", () => {
     const j = (await res.json()) as { error?: string };
     expect(j.error).toBe("validation_error");
   });
+
+  it("returns 400 when dataMigration is true but size is missing", async () => {
+    const res = await checkoutPost(
+      new Request("http://localhost/api/checkout", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          tier: "SSD_BASIC",
+          supportTier: "FULL",
+          deliveryMethod: "SELF",
+          customerName: "A",
+          customerEmail: "a@b.co",
+          locale: "fi",
+          dataMigration: true,
+        }),
+      }),
+    );
+    expect(res.status).toBe(400);
+    const j = (await res.json()) as { error?: string };
+    expect(j.error).toBe("validation_error");
+  });
+
+  it("returns 400 when dataMigrationSize is set but dataMigration is false", async () => {
+    const res = await checkoutPost(
+      new Request("http://localhost/api/checkout", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          tier: "SSD_BASIC",
+          supportTier: "FULL",
+          deliveryMethod: "SELF",
+          customerName: "A",
+          customerEmail: "a@b.co",
+          locale: "fi",
+          dataMigration: false,
+          dataMigrationSize: "standard",
+        }),
+      }),
+    );
+    expect(res.status).toBe(400);
+    const j = (await res.json()) as { error?: string };
+    expect(j.error).toBe("validation_error");
+  });
 });

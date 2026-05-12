@@ -28,6 +28,26 @@ export function serviceOrderTotalCents(
   return Math.max(base + adj, Math.floor(base * 0.7));
 }
 
+/** Optional file migration add-on (FEATURES.md #1), EUR cents. */
+export const DATA_MIGRATION_STANDARD_CENTS = 35_00;
+export const DATA_MIGRATION_LARGE_CENTS = 50_00;
+
+export function dataMigrationAddonCents(
+  size: "standard" | "large",
+): number {
+  return size === "large" ? DATA_MIGRATION_LARGE_CENTS : DATA_MIGRATION_STANDARD_CENTS;
+}
+
+export function serviceOrderTotalWithMigrationCents(
+  tier: ServiceTier,
+  supportTier: SupportTier,
+  migration: { size: "standard" | "large" } | null,
+): number {
+  const base = serviceOrderTotalCents(tier, supportTier);
+  if (!migration) return base;
+  return base + dataMigrationAddonCents(migration.size);
+}
+
 export const USB_ORDER_CENTS = 990;
 
 const TIER_ENV_KEYS: Record<Exclude<ServiceTier, "B2B">, string> = {

@@ -1,9 +1,15 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useTranslations } from "next-intl";
 import type { DeliveryMethod, SupportTier } from "@prisma/client";
-import { serviceOrderTotalCents } from "@/lib/pricing";
+import { LaptopSpecsCard } from "@/components/laptop-specs/LaptopSpecsCard";
+import type { LaptopSpecsInsight } from "@/lib/laptop-specs";
+import {
+  DATA_MIGRATION_LARGE_CENTS,
+  DATA_MIGRATION_STANDARD_CENTS,
+  serviceOrderTotalWithMigrationCents,
+} from "@/lib/pricing";
 
 type Tier = "SSD_BASIC" | "SSD_RAM" | "FULL_SERVICE";
 
@@ -34,6 +40,10 @@ export function OrderWizard({ locale }: { locale: string }) {
   const [compatLoading, setCompatLoading] = useState(false);
 
   const [tier, setTier] = useState<Tier | null>(null);
+  const [dataMigration, setDataMigration] = useState(false);
+  const [dataMigrationSize, setDataMigrationSize] = useState<
+    "standard" | "large" | null
+  >(null);
   const [delivery, setDelivery] = useState<DeliveryMethod | null>(null);
   const [support, setSupport] = useState<SupportTier | null>(null);
   const [customerName, setCustomerName] = useState("");
@@ -46,14 +56,76 @@ export function OrderWizard({ locale }: { locale: string }) {
   const [checkoutError, setCheckoutError] = useState<string | null>(null);
   const [checkoutLoading, setCheckoutLoading] = useState(false);
 
+  const [specs, setSpecs] = useState<LaptopSpecsInsight | null>(null);
+  const [specsLoading, setSpecsLoading] = useState(false);
+  const [specsTouched, setSpecsTouched] = useState(false);
+
+  useEffect(() => {
+    const mk = make.trim();
+    const mo = model.trim();
+    if (mk.length < 2 || mo.length < 2) {
+      setSpecs(null);
+      setSpecsLoading(false);
+      setSpecsTouched(false);
+      return;
+    }
+    const ac = new AbortController();
+    const tid = window.setTimeout(() => {
+      setSpecsTouched(true);
+      void (async () => {
+        setSpecsLoading(true);
+        try {
+          const res = await fetch("/api/public/laptop-specs", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ make: mk, model: mo }),
+            signal: ac.signal,
+          });
+          const data = (await res.json()) as {
+            ok?: boolean;
+            summary?: string | null;
+            specUrl?: string | null;
+          };
+          if (ac.signal.aborted) return;
+          if (data.ok) {
+            setSpecs({
+              summary: data.summary ?? null,
+              specUrl: data.specUrl ?? null,
+            });
+          } else {
+            setSpecs(null);
+          }
+        } catch {
+          if (!ac.signal.aborted) setSpecs(null);
+        } finally {
+          if (!ac.signal.aborted) setSpecsLoading(false);
+        }
+      })();
+    }, 750);
+    return () => {
+      window.clearTimeout(tid);
+      ac.abort();
+    };
+  }, [make, model]);
+
+  const showSpecsPanel =
+    (step === 0 || step === 1 || step === 5) &&
+    make.trim().length >= 2 &&
+    model.trim().length >= 2 &&
+    specsTouched;
+
   const pricePreview = useMemo(() => {
     if (!tier || !support) return null;
     try {
-      return serviceOrderTotalCents(tier, support);
+      const migration =
+        dataMigration && dataMigrationSize
+          ? { size: dataMigrationSize }
+          : null;
+      return serviceOrderTotalWithMigrationCents(tier, support, migration);
     } catch {
       return null;
     }
-  }, [tier, support]);
+  }, [tier, support, dataMigration, dataMigrationSize]);
 
   async function loadCompatibility() {
     setCompatLoading(true);
@@ -99,6 +171,8 @@ export function OrderWizard({ locale }: { locale: string }) {
           preferredDate: preferredDate || null,
           notes: notes || null,
           locale,
+          dataMigration,
+          dataMigrationSize: dataMigration ? dataMigrationSize : null,
         }),
       });
       const data = (await res.json()) as { url?: string; error?: string };
@@ -122,7 +196,8 @@ export function OrderWizard({ locale }: { locale: string }) {
 
   const canNextFrom0 = make.trim().length > 0 && model.trim().length > 0;
   const canNextFrom1 = compat != null && !compatLoading;
-  const canNextFrom2 = tier != null;
+  const canNextFrom2 =
+    tier != null && (!dataMigration || dataMigrationSize != null);
   const canNextFrom3 = delivery != null;
   const canNextFrom4 =
     support != null &&
@@ -168,12 +243,39 @@ export function OrderWizard({ locale }: { locale: string }) {
               autoComplete="off"
             />
           </div>
+          {showSpecsPanel && step === 0 ? (
+            <>
+              <p className="text-sm text-fog">{w("specsHint")}</p>
+              <LaptopSpecsCard
+                insight={specs}
+                loading={specsLoading}
+                labels={{
+                  title: w("specsTitle"),
+                  loading: w("specsLoading"),
+                  empty: w("specsEmpty"),
+                  link: w("specsLink"),
+                }}
+              />
+            </>
+          ) : null}
         </div>
       ) : null}
 
       {step === 1 ? (
         <div className="mt-8 space-y-6">
           <h3 className="text-2xl font-semibold text-ink">{w("step2Title")}</h3>
+          {showSpecsPanel ? (
+            <LaptopSpecsCard
+              insight={specs}
+              loading={specsLoading}
+              labels={{
+                title: w("specsTitle"),
+                loading: w("specsLoading"),
+                empty: w("specsEmpty"),
+                link: w("specsLink"),
+              }}
+            />
+          ) : null}
           {!compat && !compatLoading ? (
             <button
               type="button"
@@ -220,7 +322,9 @@ export function OrderWizard({ locale }: { locale: string }) {
               <button
                 key={value}
                 type="button"
-                onClick={() => setTier(value)}
+                onClick={() => {
+                  setTier(value);
+                }}
                 className={`min-h-tap rounded-2xl border-2 p-6 text-left font-semibold focus-visible:outline focus-visible:outline-2 focus-visible:outline-verso-green ${
                   tier === value
                     ? "border-verso-green bg-verso-green/10"
@@ -231,6 +335,77 @@ export function OrderWizard({ locale }: { locale: string }) {
               </button>
             ))}
           </div>
+          {tier ? (
+            <div className="mt-8 rounded-2xl border border-edge bg-card p-6">
+              <p className="text-lg font-semibold text-ink">
+                {w("migrationTitle")}
+              </p>
+              <p className="mt-2 text-fog">{w("migrationHint")}</p>
+              <div className="mt-4 flex flex-wrap gap-3">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setDataMigration(false);
+                    setDataMigrationSize(null);
+                  }}
+                  className={`min-h-tap rounded-xl border-2 px-4 py-2 font-semibold ${
+                    !dataMigration
+                      ? "border-verso-green bg-verso-green/10"
+                      : "border-edge"
+                  }`}
+                >
+                  {w("migrationNo")}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setDataMigration(true)}
+                  className={`min-h-tap rounded-xl border-2 px-4 py-2 font-semibold ${
+                    dataMigration
+                      ? "border-verso-green bg-verso-green/10"
+                      : "border-edge"
+                  }`}
+                >
+                  {w("migrationYes")}
+                </button>
+              </div>
+              {dataMigration ? (
+                <div className="mt-6 grid gap-3 md:grid-cols-2">
+                  <button
+                    type="button"
+                    onClick={() => setDataMigrationSize("standard")}
+                    className={`min-h-tap rounded-xl border-2 p-4 text-left font-semibold ${
+                      dataMigrationSize === "standard"
+                        ? "border-verso-green bg-verso-green/10"
+                        : "border-edge"
+                    }`}
+                  >
+                    <span className="block">{w("migrationStandard")}</span>
+                    <span className="mt-1 block text-sm font-normal text-fog">
+                      {w("migrationStandardHint", {
+                        price: (DATA_MIGRATION_STANDARD_CENTS / 100).toFixed(0),
+                      })}
+                    </span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setDataMigrationSize("large")}
+                    className={`min-h-tap rounded-xl border-2 p-4 text-left font-semibold ${
+                      dataMigrationSize === "large"
+                        ? "border-verso-green bg-verso-green/10"
+                        : "border-edge"
+                    }`}
+                  >
+                    <span className="block">{w("migrationLarge")}</span>
+                    <span className="mt-1 block text-sm font-normal text-fog">
+                      {w("migrationLargeHint", {
+                        price: (DATA_MIGRATION_LARGE_CENTS / 100).toFixed(0),
+                      })}
+                    </span>
+                  </button>
+                </div>
+              ) : null}
+            </div>
+          ) : null}
         </div>
       ) : null}
 
@@ -367,12 +542,32 @@ export function OrderWizard({ locale }: { locale: string }) {
       {step === 5 ? (
         <div className="mt-8 space-y-4 text-lg text-ink">
           <h3 className="text-2xl font-semibold">{w("step6Title")}</h3>
+          {showSpecsPanel ? (
+            <LaptopSpecsCard
+              insight={specs}
+              loading={specsLoading}
+              labels={{
+                title: w("specsTitle"),
+                loading: w("specsLoading"),
+                empty: w("specsEmpty"),
+                link: w("specsLink"),
+              }}
+            />
+          ) : null}
           <p>
             <strong>{w("summaryComputer")}:</strong> {make} {model}
           </p>
           <p>
             <strong>{w("summaryTier")}:</strong> {tier}
           </p>
+          {dataMigration && dataMigrationSize ? (
+            <p>
+              <strong>{w("summaryMigration")}:</strong>{" "}
+              {dataMigrationSize === "large"
+                ? w("summaryMigrationLarge")
+                : w("summaryMigrationStandard")}
+            </p>
+          ) : null}
           <p>
             <strong>{w("summarySupport")}:</strong> {support}
           </p>

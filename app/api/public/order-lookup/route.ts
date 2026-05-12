@@ -5,7 +5,8 @@ import {
   toPublicServiceOrder,
   toPublicUsbOrder,
 } from "@/lib/public-order";
-import { checkRateLimit, getClientIp } from "@/lib/rate-limit";
+import { resolveLaptopSpecs, withSpecsTimeout } from "@/lib/laptop-specs";
+import { checkRateLimit, getClientIpFromHeaders } from "@/lib/rate-limit";
 
 const bodySchema = z.object({
   orderId: z.string().min(8).max(40),
@@ -13,8 +14,10 @@ const bodySchema = z.object({
 });
 
 export async function POST(req: Request) {
-  const ip = getClientIp();
-  if (!checkRateLimit(`order-lookup:${ip}`, { windowMs: 60_000, max: 30 })) {
+  const ip = getClientIpFromHeaders(req.headers);
+  if (
+    !(await checkRateLimit(`order-lookup:${ip}`, { windowMs: 60_000, max: 30 }))
+  ) {
     return NextResponse.json(
       { ok: false, code: "not_found" } as const,
       { status: 429 },
@@ -48,9 +51,20 @@ export async function POST(req: Request) {
   });
 
   if (service) {
+    const mk = service.computerMake?.trim();
+    const md = service.computerModel?.trim();
+    let laptopSpecs: Awaited<ReturnType<typeof resolveLaptopSpecs>> | undefined;
+    if (mk && md && process.env.SPECS_LOOKUP_ENABLED !== "false") {
+      laptopSpecs =
+        (await withSpecsTimeout(resolveLaptopSpecs(mk, md), 14_000)) ?? {
+          summary: null,
+          specUrl: null,
+        };
+    }
     return NextResponse.json({
       ok: true,
       order: toPublicServiceOrder(service),
+      ...(laptopSpecs !== undefined ? { laptopSpecs } : {}),
     });
   }
 

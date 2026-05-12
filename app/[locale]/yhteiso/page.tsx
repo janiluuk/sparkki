@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
+import { DiscordWidgetEmbed } from "@/components/yhteiso/DiscordWidgetEmbed";
 import { localePathAlternates } from "@/lib/seo";
 
 export async function generateMetadata({
@@ -29,6 +30,7 @@ export async function generateMetadata({
 export default async function YhteisoPage() {
   const t = await getTranslations("yhteiso");
   const invite = process.env.NEXT_PUBLIC_DISCORD_INVITE;
+  const widgetGuildId = process.env.NEXT_PUBLIC_DISCORD_WIDGET_GUILD_ID?.trim();
   const youtubeUrl = process.env.NEXT_PUBLIC_YOUTUBE_CHANNEL_URL?.trim();
   const showYoutube = Boolean(youtubeUrl && youtubeUrl !== "#");
 
@@ -52,6 +54,17 @@ export default async function YhteisoPage() {
           </a>
         </div>
       ) : null}
+
+      {widgetGuildId ? (
+        <section aria-labelledby="discord-widget-title" className="space-y-3">
+          <h2 id="discord-widget-title" className="text-2xl font-bold text-ink">
+            {t("widgetTitle")}
+          </h2>
+          <p className="text-lg text-ink">{t("widgetIntro")}</p>
+          <DiscordWidgetEmbed guildId={widgetGuildId} title={t("widgetIframeTitle")} />
+        </section>
+      ) : null}
+
       {showYoutube ? (
         <div className="space-y-3">
           <p className="text-lg text-ink">{t("youtubeIntro")}</p>

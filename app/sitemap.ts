@@ -3,7 +3,7 @@ import { routing } from "@/i18n/routing";
 import { prisma } from "@/lib/prisma";
 import { getSiteUrl } from "@/lib/site-url";
 
-const STATIC_PATHS = ["", "/palvelu", "/palvelu/b2b", "/itse", "/sovellukset", "/tuki", "/info", "/about", "/tilaus", "/yhteiso"] as const;
+const STATIC_PATHS = ["", "/palvelu", "/palvelu/b2b", "/itse", "/sovellukset", "/tuki", "/info", "/about", "/tietosuoja", "/tilaus", "/yhteiso"] as const;
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const base = getSiteUrl();
@@ -20,10 +20,15 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     }
   }
 
-  const guides = await prisma.guide.findMany({
-    where: { published: true },
-    select: { slug: true, updatedAt: true },
-  });
+  let guides: { slug: string; updatedAt: Date }[] = [];
+  try {
+    guides = await prisma.guide.findMany({
+      where: { published: true },
+      select: { slug: true, updatedAt: true },
+    });
+  } catch {
+    /* Docker image build and other no-DB contexts: ship static URLs only */
+  }
 
   for (const locale of routing.locales) {
     for (const g of guides) {

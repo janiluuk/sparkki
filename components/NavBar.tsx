@@ -2,6 +2,7 @@
 
 import { useTranslations } from "next-intl";
 import { Link, usePathname } from "@/i18n/navigation";
+import { dispatchBackgroundNavInteraction } from "@/lib/background-nav";
 
 const links = [
   { href: "/", key: "home" as const },
@@ -34,12 +35,14 @@ function BrandMark({ name }: { name: string }) {
 export function NavBar({ locale }: { locale: string }) {
   const t = useTranslations("nav");
   const pathname = usePathname();
+  const onNavClick = () => dispatchBackgroundNavInteraction();
 
   return (
     <header className="sticky top-0 z-30 border-b border-edge bg-[rgba(8,12,10,0.92)] backdrop-blur-xl">
       <div className="mx-auto flex max-w-[1100px] flex-wrap items-center justify-between gap-4 px-6 py-4 sm:px-12 sm:py-5">
         <Link
           href="/"
+          onClick={onNavClick}
           className="flex min-h-tap items-center focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-g"
         >
           <BrandMark name={t("brand")} />
@@ -56,6 +59,7 @@ export function NavBar({ locale }: { locale: string }) {
               <Link
                 key={key}
                 href={href}
+                onClick={onNavClick}
                 className={`min-h-tap rounded-lg px-3 py-2 text-sm font-normal transition-colors duration-150 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-g ${
                   active
                     ? "text-g"
@@ -71,6 +75,7 @@ export function NavBar({ locale }: { locale: string }) {
           <Link
             href={pathname}
             locale="fi"
+            onClick={onNavClick}
             className={`min-h-tap rounded-md px-3 py-2 text-sm font-semibold tracking-wide transition-colors duration-150 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-g ${
               locale === "fi"
                 ? "bg-g text-canvas"
@@ -83,6 +88,7 @@ export function NavBar({ locale }: { locale: string }) {
           <Link
             href={pathname}
             locale="en"
+            onClick={onNavClick}
             className={`min-h-tap rounded-md px-3 py-2 text-sm font-semibold tracking-wide transition-colors duration-150 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-g ${
               locale === "en"
                 ? "bg-g text-canvas"

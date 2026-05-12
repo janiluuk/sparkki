@@ -1,10 +1,17 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { LaptopSpecsCard } from "@/components/laptop-specs/LaptopSpecsCard";
+import {
+  resolveLaptopSpecs,
+  withSpecsTimeout,
+  type LaptopSpecsInsight,
+} from "@/lib/laptop-specs";
 import { requireAdmin } from "@/lib/require-admin";
 import { prisma } from "@/lib/prisma";
 import fiMessages from "@/messages/fi.json";
 import {
   sendOrderDone,
+  updateDataMigrationNotes,
   updateOrderNotes,
   updateOrderStatus,
 } from "../actions";
@@ -36,13 +43,31 @@ export default async function AdminOrderDetailPage({ params, searchParams }: Pro
 
   const emailFlash = searchParams.email;
 
+  const mk = order.computerMake?.trim();
+  const md = order.computerModel?.trim();
+  let adminSpecs: LaptopSpecsInsight | undefined;
+  if (mk && md && process.env.SPECS_LOOKUP_ENABLED !== "false") {
+    adminSpecs =
+      (await withSpecsTimeout(resolveLaptopSpecs(mk, md), 14_000)) ?? {
+        summary: null,
+        specUrl: null,
+      };
+  }
+
   return (
     <div className="mx-auto max-w-3xl px-4 py-10">
       <Link href="/admin/orders" className="text-verso-green underline">
         ← {a.orderBack}
       </Link>
-      <h1 className="mt-6 text-3xl font-bold">
-        {a.orderDetailTitle} · {order.id.slice(0, 8)}…
+      <h1 className="mt-6 flex flex-wrap items-center gap-3 text-3xl font-bold">
+        <span>
+          {a.orderDetailTitle} · {order.id.slice(0, 8)}…
+        </span>
+        {order.dataMigration ? (
+          <span className="inline-flex items-center rounded-full bg-verso-amber/90 px-3 py-1 text-base font-semibold text-ink">
+            {a.migrationBadge}
+          </span>
+        ) : null}
       </h1>
 
       {emailFlash === "sent" ? (
@@ -62,6 +87,10 @@ export default async function AdminOrderDetailPage({ params, searchParams }: Pro
           <dd className="font-mono text-ink">{order.id}</dd>
         </div>
         <div>
+          <dt className="font-semibold text-fog">{a.fieldLocale}</dt>
+          <dd>{order.locale === "en" ? "EN" : "FI"}</dd>
+        </div>
+        <div>
           <dt className="font-semibold text-fog">{a.colStatus}</dt>
           <dd>{statusLabel(order.status)}</dd>
         </div>
@@ -78,11 +107,36 @@ export default async function AdminOrderDetailPage({ params, searchParams }: Pro
           <dd>{order.deliveryMethod}</dd>
         </div>
         <div>
+          <dt className="font-semibold text-fog">{a.colMigration}</dt>
+          <dd>
+            {order.dataMigration
+              ? order.dataMigrationSize === "large"
+                ? `${a.migrationSizeLabel}: ${a.migrationSizeLarge}`
+                : order.dataMigrationSize === "standard"
+                  ? `${a.migrationSizeLabel}: ${a.migrationSizeStandard}`
+                  : "—"
+              : "—"}
+          </dd>
+        </div>
+        <div>
           <dt className="font-semibold text-fog">{a.colComputer}</dt>
           <dd>
             {order.computerMake} {order.computerModel}
           </dd>
         </div>
+        {adminSpecs !== undefined ? (
+          <div className="col-span-full max-w-none">
+            <LaptopSpecsCard
+              insight={adminSpecs}
+              labels={{
+                title: a.specsTitle,
+                loading: a.specsLoading,
+                empty: a.specsEmpty,
+                link: a.specsLink,
+              }}
+            />
+          </div>
+        ) : null}
         <div>
           <dt className="font-semibold text-fog">{a.colCustomer}</dt>
           <dd>
@@ -110,6 +164,12 @@ export default async function AdminOrderDetailPage({ params, searchParams }: Pro
           <dt className="font-semibold text-fog">{a.colNotes}</dt>
           <dd className="whitespace-pre-wrap">{order.notes ?? "—"}</dd>
         </div>
+        {order.dataMigration && order.dataMigrationNotes ? (
+          <div>
+            <dt className="font-semibold text-fog">{a.migrationNotesLabel}</dt>
+            <dd className="whitespace-pre-wrap">{order.dataMigrationNotes}</dd>
+          </div>
+        ) : null}
       </dl>
 
       <section className="mt-10 space-y-6 border-t border-edge pt-8">
@@ -158,6 +218,30 @@ export default async function AdminOrderDetailPage({ params, searchParams }: Pro
             {a.saveNotes}
           </button>
         </form>
+
+        {order.dataMigration ? (
+          <form action={updateDataMigrationNotes} className="space-y-3">
+            <input type="hidden" name="orderId" value={order.id} />
+            <label htmlFor="dataMigrationNotes" className="block font-semibold">
+              {a.migrationNotesLabel}
+            </label>
+            <textarea
+              id="dataMigrationNotes"
+              name="dataMigrationNotes"
+              rows={4}
+              maxLength={4000}
+              defaultValue={order.dataMigrationNotes ?? ""}
+              placeholder={a.migrationNotesPlaceholder}
+              className="w-full rounded-lg border border-em px-4 py-3 text-lg"
+            />
+            <button
+              type="submit"
+              className="min-h-tap rounded-lg border border-verso-amber bg-verso-amber/15 px-5 py-2 font-semibold text-ink"
+            >
+              {a.saveMigrationNotes}
+            </button>
+          </form>
+        ) : null}
 
         <form action={sendOrderDone}>
           <input type="hidden" name="orderId" value={order.id} />

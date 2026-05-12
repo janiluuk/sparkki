@@ -210,6 +210,12 @@ export default async function AdminDashboardPage() {
           {a.orders}
         </Link>
         <Link
+          href="/admin/usb-orders"
+          className="min-h-tap rounded-xl border border-em bg-card px-5 py-3 font-semibold transition-colors duration-150 hover:border-g"
+        >
+          {a.usbOrders}
+        </Link>
+        <Link
           href="/admin/models"
           className="min-h-tap rounded-xl border border-em bg-card px-5 py-3 font-semibold transition-colors duration-150 hover:border-g"
         >

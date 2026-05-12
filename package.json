@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
+    "dev": "next dev -p 1337",
     "build": "prisma generate && next build",
     "start": "sh -c 'cd .next/standalone && exec node server.js'",
     "lint": "next lint",
@@ -20,6 +20,8 @@
     "@hookform/resolvers": "^5.2.2",
     "@prisma/client": "5.22.0",
     "@stripe/stripe-js": "^9.4.0",
+    "@upstash/ratelimit": "^2.0.8",
+    "@upstash/redis": "^1.38.0",
     "bcryptjs": "^3.0.3",
     "gray-matter": "^4.0.3",
     "next": "14.2.18",

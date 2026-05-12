@@ -4,7 +4,8 @@ import { prisma } from "@/lib/prisma";
 import { getStripe, stripeConfigured } from "@/lib/stripe";
 import { buildUsbLineItems } from "@/lib/stripe-line-items";
 import { USB_ORDER_CENTS, getUsbStripePriceId } from "@/lib/pricing";
-import { checkRateLimit, getClientIp } from "@/lib/rate-limit";
+import { checkRateLimit, getClientIpFromHeaders } from "@/lib/rate-limit";
+import { getSiteUrl } from "@/lib/site-url";
 
 const usbSchema = z.object({
   customerName: z.string().min(1).max(200),
@@ -31,7 +32,12 @@ export async function POST(req: Request) {
 
   const data = parsed.data;
 
-  if (!checkRateLimit(`checkout-usb:${getClientIp()}`, { windowMs: 60_000, max: 25 })) {
+  if (
+    !(await checkRateLimit(`checkout-usb:${getClientIpFromHeaders(req.headers)}`, {
+      windowMs: 60_000,
+      max: 25,
+    }))
+  ) {
     return NextResponse.json({ error: "rate_limited" }, { status: 429 });
   }
 
@@ -43,9 +49,7 @@ export async function POST(req: Request) {
   }
 
   const stripe = getStripe()!;
-  const baseUrl =
-    process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, "") ??
-    "http://localhost:3000";
+  const baseUrl = getSiteUrl();
 
   const usb = await prisma.usbOrder.create({
     data: {
@@ -53,6 +57,7 @@ export async function POST(req: Request) {
       customerName: data.customerName.trim(),
       customerEmail: data.customerEmail.trim().toLowerCase(),
       address: data.address.trim(),
+      locale: data.locale,
     },
   });
 

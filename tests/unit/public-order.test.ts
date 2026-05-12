@@ -22,6 +22,10 @@ const baseOrder = {
   priceEur: 19900,
   adminNotes: "secret",
   completedAt: null,
+  locale: "fi",
+  dataMigration: false,
+  dataMigrationSize: null,
+  dataMigrationNotes: null,
 } satisfies Order;
 
 const baseUsb = {
@@ -32,6 +36,7 @@ const baseUsb = {
   customerEmail: "usb@example.com",
   address: "Line 1\nFI-00100 Helsinki",
   stripeSessionId: null,
+  locale: "fi",
 } satisfies UsbOrder;
 
 describe("public order DTOs", () => {

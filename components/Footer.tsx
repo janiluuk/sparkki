@@ -1,5 +1,5 @@
 import { getTranslations } from "next-intl/server";
-import { Link } from "@/i18n/navigation";
+import { FooterNavLinks } from "@/components/FooterNavLinks";
 
 export async function Footer() {
   const t = await getTranslations("footer");
@@ -18,24 +18,14 @@ export async function Footer() {
             </p>
           </div>
           <div className="flex flex-col gap-2 sm:items-end">
-            <Link
-              href="/tuki"
-              className="min-h-tap rounded-lg px-1 py-2 text-lg font-normal text-fog underline-offset-4 transition-colors duration-150 hover:text-ink hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-g"
-            >
-              {t("support")}
-            </Link>
-            <Link
-              href="/about"
-              className="min-h-tap rounded-lg px-1 py-2 text-lg font-normal text-fog underline-offset-4 transition-colors duration-150 hover:text-ink hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-g"
-            >
-              {t("about")}
-            </Link>
-            <Link
-              href="/tilaus"
-              className="min-h-tap rounded-lg px-1 py-2 text-lg font-normal text-fog underline-offset-4 transition-colors duration-150 hover:text-ink hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-g"
-            >
-              {t("orderTracking")}
-            </Link>
+            <FooterNavLinks
+              items={[
+                { href: "/tuki", label: t("support") },
+                { href: "/about", label: t("about") },
+                { href: "/tietosuoja", label: t("privacy") },
+                { href: "/tilaus", label: t("orderTracking") },
+              ]}
+            />
             {showYoutube ? (
               <a
                 href={youtubeUrl}

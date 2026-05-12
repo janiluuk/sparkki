@@ -23,3 +23,22 @@ test("service page shows order wizard", async ({ page }) => {
     page.getByRole("heading", { name: /Tilaus|Order/i }),
   ).toBeVisible();
 });
+
+test("privacy page loads", async ({ page }) => {
+  await page.goto("/fi/tietosuoja");
+  await expect(
+    page.getByRole("heading", { level: 1, name: /Tietosuoja|Privacy/i }),
+  ).toBeVisible();
+});
+
+test("locale switch EN shows English home hero", async ({ page }) => {
+  await page.goto("/fi");
+  await page.getByRole("link", { name: "EN", exact: true }).click();
+  await expect(page).toHaveURL(/\/en$/);
+  await expect(
+    page.getByRole("heading", {
+      level: 1,
+      name: /Your computer deserves a second life|toisen elämän/i,
+    }),
+  ).toBeVisible();
+});

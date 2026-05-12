@@ -6,5 +6,9 @@ services:
     image: nginx:1.27-alpine
     ports:
       - "${HTTP_PORT:-8080}:80"
+    environment:
+      TRY_LINUX_ACCESS_TOKEN: ${TRY_LINUX_ACCESS_TOKEN:-}
     volumes:
+      - ./nginx/conf.d/00-limits.conf:/etc/nginx/conf.d/00-limits.conf:ro
       - ./nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
+      - ./docker-entrypoint.d/99-try-linux-gate.sh:/docker-entrypoint.d/99-try-linux-gate.sh:ro

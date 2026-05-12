@@ -2,6 +2,10 @@
 
 import { useEffect, useRef } from "react";
 import * as THREE from "three";
+import {
+  VERSO_BG_NAV_EVENT,
+  type VersoBgNavDetail,
+} from "@/lib/background-nav";
 
 /** Decorative ambient canvas — DESIGN_SYSTEM.md + ROADMAP */
 export function BackgroundCanvas() {
@@ -36,7 +40,27 @@ export function BackgroundCanvas() {
 
     type MeshWithVel = THREE.Mesh & {
       _vel: THREE.Vector3;
+      _phase: number;
     };
+
+    /** Brief boost when user navigates (decays each frame). */
+    let navImpulse = 0;
+
+    const bumpNavImpulse = (e: Event) => {
+      const ce = e as CustomEvent<VersoBgNavDetail>;
+      const s =
+        typeof ce.detail?.strength === "number" && ce.detail.strength > 0
+          ? ce.detail.strength
+          : 1;
+      navImpulse = Math.min(1, navImpulse + 0.48 * s);
+    };
+
+    const onPopState = () => {
+      navImpulse = Math.min(1, navImpulse + 0.28);
+    };
+
+    window.addEventListener(VERSO_BG_NAV_EVENT, bumpNavImpulse);
+    window.addEventListener("popstate", onPopState);
 
     if (reducedMotion) {
       const mat = new THREE.MeshBasicMaterial({
@@ -76,6 +100,7 @@ export function BackgroundCanvas() {
           (Math.random() - 0.5) * 0.003,
           0,
         );
+        mesh._phase = Math.random() * Math.PI * 2;
         scene.add(mesh);
         meshes.push(mesh);
       }
@@ -89,12 +114,33 @@ export function BackgroundCanvas() {
       if (now - last < 33) return;
       last = now;
 
-      if (!reducedMotion) {
+      const impulse = navImpulse;
+      navImpulse *= 0.9;
+
+      if (reducedMotion) {
+        const m = meshes[0];
+        const base = 1.45;
+        m.scale.setScalar(base + impulse * 0.42);
+        m.rotation.z += 0.0012 + impulse * 0.014;
+        m.rotation.y += 0.0006 + impulse * 0.006;
+      } else {
         meshes.forEach((m) => {
           const mm = m as MeshWithVel;
-          mm.position.add(mm._vel);
-          m.rotation.x += 0.002;
-          m.rotation.y += 0.001;
+          const speed = 1 + impulse * 2.4;
+          mm.position.addScaledVector(mm._vel, speed);
+
+          const bob =
+            Math.sin(now * 0.00016 + mm._phase) * 0.0022 +
+            Math.sin(now * 0.00011 + mm._phase * 1.7) * 0.0011;
+          mm.position.x += bob * 0.55;
+          mm.position.y +=
+            Math.cos(now * 0.00014 + mm._phase * 0.85) * 0.0018;
+
+          const spin = 1 + impulse * 2.2;
+          m.rotation.x += 0.002 * spin;
+          m.rotation.y += 0.001 * spin;
+          m.rotation.z += Math.sin(now * 0.00012 + mm._phase) * 0.00035;
+
           if (Math.abs(m.position.x) > 22) mm._vel.x *= -1;
           if (Math.abs(m.position.y) > 17) mm._vel.y *= -1;
         });
@@ -111,10 +157,10 @@ export function BackgroundCanvas() {
 
     const onVisibility = () => {
       if (document.hidden) cancelAnimationFrame(animId);
-      else if (!reducedMotion) animId = requestAnimationFrame(animate);
+      else animId = requestAnimationFrame(animate);
     };
 
-    if (!reducedMotion && !document.hidden) {
+    if (!document.hidden) {
       animId = requestAnimationFrame(animate);
     }
     window.addEventListener("resize", onResize);
@@ -122,6 +168,8 @@ export function BackgroundCanvas() {
 
     return () => {
       cancelAnimationFrame(animId);
+      window.removeEventListener(VERSO_BG_NAV_EVENT, bumpNavImpulse);
+      window.removeEventListener("popstate", onPopState);
       window.removeEventListener("resize", onResize);
       document.removeEventListener("visibilitychange", onVisibility);
       renderer.dispose();

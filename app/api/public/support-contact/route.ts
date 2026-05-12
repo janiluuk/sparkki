@@ -1,0 +1,66 @@
+import { NextResponse } from "next/server";
+import { z } from "zod";
+import { sendSupportContactEmail } from "@/lib/email";
+import { checkRateLimit, getClientIpFromHeaders } from "@/lib/rate-limit";
+
+const bodySchema = z.object({
+  name: z.string().trim().min(1).max(200),
+  email: z.string().trim().email().max(320),
+  message: z.string().trim().min(1).max(4000),
+  locale: z.enum(["fi", "en"]),
+});
+
+export async function POST(req: Request) {
+  const ip = getClientIpFromHeaders(req.headers);
+  if (
+    !(await checkRateLimit(`support-contact:${ip}`, {
+      windowMs: 60_000,
+      max: 8,
+    }))
+  ) {
+    return NextResponse.json({ ok: false, code: "rate_limited" } as const, {
+      status: 429,
+    });
+  }
+
+  let json: unknown;
+  try {
+    json = await req.json();
+  } catch {
+    return NextResponse.json({ ok: false, code: "invalid_input" } as const, {
+      status: 400,
+    });
+  }
+
+  const parsed = bodySchema.safeParse(json);
+  if (!parsed.success) {
+    return NextResponse.json({ ok: false, code: "invalid_input" } as const, {
+      status: 400,
+    });
+  }
+
+  const notifyTo = process.env.SUPPORT_NOTIFY_EMAIL?.trim();
+  if (!notifyTo) {
+    return NextResponse.json({ ok: false, code: "not_configured" } as const, {
+      status: 503,
+    });
+  }
+
+  const { name, email, message, locale } = parsed.data;
+  const result = await sendSupportContactEmail({
+    notifyTo,
+    name,
+    email,
+    message,
+    locale,
+  });
+
+  if (!result.ok) {
+    return NextResponse.json(
+      { ok: false, code: "send_failed" } as const,
+      { status: 502 },
+    );
+  }
+
+  return NextResponse.json({ ok: true } as const);
+}

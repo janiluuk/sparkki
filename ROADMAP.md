@@ -22,6 +22,12 @@
 
 ---
 
+## Feature expansion backlog
+
+Prioritised product specs (11 features: data migration add-on, Verso Care, `/koneet` database, spec checker PDF, components transparency, starter kit, Verso for Good, group bookings, corporate donations, workshops, annual hardware report) live in **`FEATURES.md`**. Default implementation order is the priority table there unless you are told otherwise. Stack and phases: this file (**`ROADMAP.md`**). UI: **`DESIGN_SYSTEM.md`**.
+
+---
+
 ## Design principles
 
 These are non-negotiable and apply to every page and component. **Canonical tokens, typography, motion, and component recipes** live in **`DESIGN_SYSTEM.md`** — read that file before building or restyling UI.
@@ -544,10 +550,10 @@ ADMIN_EMAIL="admin@verso.fi"
 
 **Goal:** Runnable project with DB, auth, and Three.js background working locally.
 
-- [ ] `npx create-next-app@latest verso --typescript --tailwind --app --src-dir no`
-- [ ] Install deps: `three @types/three prisma @prisma/client next-auth @auth/prisma-adapter next-intl contentlayer next-contentlayer resend stripe @stripe/stripe-js react-hook-form zod`
-- [ ] `npx prisma init` — configure `schema.prisma` with full schema from this file
-- [ ] Docker compose for local Postgres:
+- [x] `npx create-next-app@latest verso --typescript --tailwind --app --src-dir no`
+- [x] Install deps: `three @types/three prisma @prisma/client next-auth @auth/prisma-adapter next-intl contentlayer next-contentlayer resend stripe @stripe/stripe-js react-hook-form zod`
+- [x] `npx prisma init` — configure `schema.prisma` with full schema from this file
+- [x] Docker compose for local Postgres:
   ```yaml
   # docker-compose.yml
   services:
@@ -559,16 +565,16 @@ ADMIN_EMAIL="admin@verso.fi"
       ports:
         - "5432:5432"
   ```
-- [ ] `npx prisma migrate dev --name init`
-- [ ] `npx prisma db seed` — seeds one AdminUser (from `ADMIN_EMAIL` env)
-- [ ] Implement `lib/prisma.ts` singleton pattern (prevent hot-reload connection leak)
-- [ ] Implement `BackgroundCanvas.tsx` with Three.js — see spec above
-- [ ] Add `BackgroundCanvas` to `app/layout.tsx`
-- [ ] Verify canvas renders, does not overlap text, respects reduced motion
-- [ ] Set up next-intl: `messages/fi.json`, `messages/en.json`, middleware
-- [ ] Set up NextAuth with PrismaAdapter + CredentialsProvider (email/password for admin)
-- [ ] Admin layout with auth guard: redirect to `/admin/login` if no session
-- [ ] Deploy to Vercel: connect GitHub repo, set env vars, run first migration
+- [x] `npx prisma migrate dev --name init`
+- [x] `npx prisma db seed` — seeds one AdminUser (from `ADMIN_EMAIL` env)
+- [x] Implement `lib/prisma.ts` singleton pattern (prevent hot-reload connection leak)
+- [x] Implement `BackgroundCanvas.tsx` with Three.js — see spec above
+- [x] Add `BackgroundCanvas` to `app/layout.tsx`
+- [x] Verify canvas renders, does not overlap text, respects reduced motion
+- [x] Set up next-intl: `messages/fi.json`, `messages/en.json`, middleware
+- [x] Set up NextAuth with PrismaAdapter + CredentialsProvider (email/password for admin)
+- [x] Admin layout with auth guard: redirect to `/admin/login` if no session
+- [x] Deploy to Vercel: connect GitHub repo, set env vars, run first migration
 
 **Deliverable:** `http://localhost:3000` loads with animated background, correct font sizes, FI language. `/admin/login` works.
 
@@ -579,18 +585,18 @@ ADMIN_EMAIL="admin@verso.fi"
 **Goal:** All 5 public pages built and navigable. No backend wiring yet except USB order.
 
 #### Homepage `/`
-- [ ] Hero section: large headline (text-4xl min), subline, two CTA buttons
-- [ ] `SpeedBar` component: animated CSS bar showing HDD boot time collapsing to SSD time. Use `IntersectionObserver` to trigger animation on scroll into view. No JS library.
-- [ ] 1-2-3 step strip: icons (Tabler), short text, large font
-- [ ] Pricing cards: 3 tiers, each showing price + customer saving badge
-- [ ] Benefits grid: 4 cards — CO₂ / Cost / Apps / Support
-- [ ] Trust strip: 90-day support, Verkkokauppa parts, delivery options
+- [x] Hero section: large headline (text-4xl min), subline, two CTA buttons
+- [x] `SpeedBar` component: animated CSS bar showing HDD boot time collapsing to SSD time. Use `IntersectionObserver` to trigger animation on scroll into view. No JS library.
+- [x] 1-2-3 step strip: icons (Tabler), short text, large font
+- [x] Pricing cards: 3 tiers, each showing price + customer saving badge
+- [x] Benefits grid: 4 cards — CO₂ / Cost / Apps / Support
+- [x] Trust strip: 90-day support, Verkkokauppa parts, delivery options
 
 #### `/palvelu` — Service detail
-- [ ] How it works: 5-step visual (stepper component, large numbers)
-- [ ] `PricingTable` with B2C/B2B toggle — all tiers including "urgent-off" discount
-- [ ] Support tier comparison: Full / Email-only / Discord-only — what each includes
-- [ ] `OrderWizard` (see Phase 2 for backend wiring):
+- [x] How it works: 5-step visual (stepper component, large numbers)
+- [x] `PricingTable` with B2C/B2B toggle — all tiers including "urgent-off" discount
+- [x] Support tier comparison: Full / Email-only / Discord-only — what each includes
+- [x] `OrderWizard` (see Phase 2 for backend wiring):
   - Step 1: Enter computer make + model (text) or upload spec file
   - Step 2: Compatibility verdict display (use `lib/compatibility.ts`)
   - Step 3: Select service tier
@@ -599,30 +605,30 @@ ADMIN_EMAIL="admin@verso.fi"
   - Step 6: Summary + "Proceed to payment" → Stripe
 
 #### `/itse` — DIY hub
-- [ ] `GuideCard` grid: title, difficulty badge (color-coded), time estimate, category icon
-- [ ] Individual guide page: `app/itse/[slug]/page.tsx` — renders MDX via Contentlayer
-- [ ] Guide page layout: large step numbers, images, tip boxes, video embed at top if videoUrl set
-- [ ] `VideoGrid`: YouTube embeds in responsive grid (lazy-load iframes)
-- [ ] USB stick order card: product image, description, price €9.90, order button → Stripe
+- [x] `GuideCard` grid: title, difficulty badge (color-coded), time estimate, category icon
+- [x] Individual guide page: `app/itse/[slug]/page.tsx` — renders MDX via Contentlayer
+- [x] Guide page layout: large step numbers, images, tip boxes, video embed at top if videoUrl set
+- [x] `VideoGrid`: YouTube embeds in responsive grid (lazy-load iframes)
+- [x] USB stick order card: product image, description, price €9.90, order button → Stripe
 
 #### `/sovellukset` — App alternatives
-- [ ] Load `data/apps.json` at build time (static, no DB)
-- [ ] `AppGrid`: icon (Tabler or image), app name, category
-- [ ] Filter pills: Toimisto / Selain / Sähköposti / Musiikki / Kuvat / Viestintä / Tietoturva / Pelit
-- [ ] Click app → `AppAlternativePanel` expands inline (accordion, not modal — modal breaks elder UX)
-- [ ] Panel shows: alternative name, description, "Esiasennettu" badge, link to homepage
+- [x] Load `data/apps.json` at build time (static, no DB)
+- [x] `AppGrid`: icon (Tabler or image), app name, category
+- [x] Filter pills: Toimisto / Selain / Sähköposti / Musiikki / Kuvat / Viestintä / Tietoturva / Pelit
+- [x] Click app → `AppAlternativePanel` expands inline (accordion, not modal — modal breaks elder UX)
+- [x] Panel shows: alternative name, description, "Esiasennettu" badge, link to homepage
 
 #### `/tuki` — Support
-- [ ] Support tier cards: Full / Email / Discord-only — icons, what's included, price delta
-- [ ] Urgent-off explanation box: clear text, savings shown
-- [ ] Contact section: phone number (large), hours, email with response time
-- [ ] Booking embed: Calendly iframe or simple date-picker form
-- [ ] Discord CTA: large button, channel list preview
+- [x] Support tier cards: Full / Email / Discord-only — icons, what's included, price delta
+- [x] Urgent-off explanation box: clear text, savings shown
+- [x] Contact section: phone number (large), hours, email with response time
+- [x] Booking embed: Calendly iframe or simple date-picker form — **`NEXT_PUBLIC_CALENDLY_EMBED_URL`** inline iframe on `/tuki` when set.
+- [x] Discord CTA: large button, channel list preview
 
 #### `/yhteiso` — Community
-- [ ] Discord widget embed (uses Discord widget API: `https://discord.com/widget?id=GUILD_ID`)
-- [ ] Community guidelines (short, friendly)
-- [ ] Link back to `/itse`
+- [x] Discord widget embed (uses Discord widget API: `https://discord.com/widget?id=GUILD_ID`) — when **`NEXT_PUBLIC_DISCORD_WIDGET_GUILD_ID`** is set on `/yhteiso`.
+- [x] Community guidelines (short, friendly)
+- [x] Link back to `/itse`
 
 **Deliverable:** All public pages navigable. Content readable. Three.js background on all pages.
 
@@ -632,14 +638,14 @@ ADMIN_EMAIL="admin@verso.fi"
 
 **Goal:** Real orders flow from wizard → Stripe → DB → email confirmation.
 
-- [ ] Service order: `app/api/checkout/route.ts` — creates Stripe Checkout session, saves order to DB with status PENDING
-- [ ] USB order: `app/api/checkout/usb/route.ts` — same pattern
-- [ ] Stripe webhook: `app/api/webhooks/stripe/route.ts` — handles `checkout.session.completed`, updates order status to CONFIRMED
-- [ ] Webhook signature verification: `stripe.webhooks.constructEvent()`
-- [ ] Order confirmation email via Resend: sends on CONFIRMED event
-- [ ] Support request email: sent when customer submits contact form on `/tuki`
-- [ ] `lib/compatibility.ts`: pure function `checkCompatibility(make, model, ramGb, diskType) → { status, reasons, speedGainEstimate }`. Status: 'compatible' | 'borderline' | 'incompatible'. Wire to wizard Step 2.
-- [ ] Prisma query: look up `ComputerModel` by make+model, return stored verdict if exists
+- [x] Service order: `app/api/checkout/route.ts` — creates Stripe Checkout session, saves order to DB with status PENDING
+- [x] USB order: `app/api/checkout/usb/route.ts` — same pattern
+- [x] Stripe webhook: `app/api/webhooks/stripe/route.ts` — handles `checkout.session.completed`, updates order status to CONFIRMED
+- [x] Webhook signature verification: `stripe.webhooks.constructEvent()`
+- [x] Order confirmation email via Resend: sends on CONFIRMED event
+- [x] Support request email: sent when customer submits contact form on `/tuki` — `POST /api/public/support-contact` + **`SUPPORT_NOTIFY_EMAIL`** + Resend.
+- [x] `lib/compatibility.ts`: pure function `checkCompatibility(make, model, ramGb, diskType) → { status, reasons, speedGainEstimate }`. Status: 'compatible' | 'borderline' | 'incompatible'. Wire to wizard Step 2.
+- [x] Prisma query: look up `ComputerModel` by make+model, return stored verdict if exists
 
 **Deliverable:** Place a test order end-to-end. Stripe test payment succeeds. Email received. Order in DB.
 
@@ -650,38 +656,41 @@ ADMIN_EMAIL="admin@verso.fi"
 **Goal:** Working admin interface for orders, model backlog, and guide management.
 
 #### Auth
-- [ ] `app/admin/login/page.tsx` — email + password form (large inputs, accessible)
-- [ ] NextAuth CredentialsProvider — validates against `AdminUser` table
-- [ ] Admin layout: sidebar nav (Orders / Models / Guides), logout button, session display
+- [x] `app/admin/login/page.tsx` — email + password form (large inputs, accessible)
+- [x] NextAuth CredentialsProvider — validates against `AdminUser` table
+- [x] Admin layout: sidebar nav (Orders / Models / Guides), logout button, session display
 
 #### Orders (`/admin/orders`)
-- [ ] Sortable, filterable table: columns = ID, name, tier, status, date, price
-- [ ] Filter bar: status pills (PENDING / IN_PROGRESS / DONE / CANCELLED)
-- [ ] Search by name or email
-- [ ] Click row → `/admin/orders/[id]`:
+- [x] Sortable, filterable table: columns = date, customer, tier, status, price (header links; URL `sort` / `dir`)
+- [x] Filter bar: status pills (PENDING / IN_PROGRESS / DONE / CANCELLED)
+- [x] Search by name or email
+- [x] Pagination (25 per page)
+- [x] USB orders list — `/admin/usb-orders`
+- [x] USB order detail — `/admin/usb-orders/[id]`
+- [x] Click row → `/admin/orders/[id]`:
   - All order fields displayed
   - Status dropdown (select + save button)
-  - Admin notes textarea (auto-saves on blur)
+  - Admin notes textarea (save via submit button)
   - "Send done email" button (triggers Resend)
 
 #### Model backlog (`/admin/models`)
-- [ ] Table: make, model, year, status — sorted UNCHECKED first
-- [ ] Filter: UNCHECKED / IN_REVIEW / APPROVED / REJECTED
-- [ ] "Add model" button → inline form row or modal
-- [ ] Click row → `/admin/models/[id]`:
+- [x] Table: make, model, year, status — sorted UNCHECKED first
+- [x] Filter: UNCHECKED / IN_REVIEW / APPROVED / REJECTED
+- [x] "Add model" button → inline form row or modal
+- [x] Click row → `/admin/models/[id]`:
   - Compatible toggle (big yes/no buttons)
   - SSD slot, max RAM, verdict text fields
   - Internal notes
   - Save → stamps checkedAt, checkedBy (session email), updates status
 
 #### Guide editor (`/admin/guides`)
-- [ ] List all guides: title, slug, published toggle (live, calls PATCH API route)
-- [ ] "New guide" → `/admin/guides/new`:
+- [x] List all guides: title, slug, published toggle (live, calls PATCH API route)
+- [x] "New guide" → `/admin/guides/new`:
   - Fields: slug (auto-generated from title, editable), titleFi, titleEn, descFi, descEn, category, difficulty, minutes, videoUrl, order
   - MDX content: `<textarea>` with monospace font, line numbers optional
   - Live preview panel (renders MDX on client using `next-mdx-remote`)
   - Save → server action: write MDX file + upsert `Guide` record in DB
-- [ ] Edit existing: same form, pre-filled
+- [x] Edit existing: same form, pre-filled
 
 **Deliverable:** Admin can log in, see all orders, update model backlog, publish a guide.
 
@@ -689,33 +698,36 @@ ADMIN_EMAIL="admin@verso.fi"
 
 ### Phase 4 — Polish, SEO & accessibility `Week 10–11`
 
-- [ ] SEO: `generateMetadata()` on all pages. og:image per page (static or dynamic via `next/og`).
-- [ ] `app/sitemap.ts` — auto-generates sitemap from pages + published guides
-- [ ] `app/robots.ts` — disallow `/admin`
-- [ ] Accessibility audit: run `axe-core` in dev. Fix all critical/serious issues.
+- [x] SEO: `generateMetadata()` on all pages. og:image per page (static or dynamic via `next/og`).
+- [x] `app/sitemap.ts` — auto-generates sitemap from pages + published guides
+- [x] `app/robots.ts` — disallow `/admin`
+- [x] Accessibility audit: run `axe-core` in dev. Fix all critical/serious issues.
   - All images have `alt`
   - All forms have `<label>` or `aria-label`
   - Focus ring visible on all interactive elements (add `focus-visible:ring-2 ring-green-600` in Tailwind)
   - Skip-to-content link at top of layout
-- [ ] Performance: `next/image` on all images. Lazy-load YouTube iframes. Verify Lighthouse ≥ 90.
-- [ ] Three.js: verify it does not affect LCP or CLS scores. Canvas must not block paint.
-- [ ] Add Plausible script to `app/layout.tsx`
-- [ ] Add language toggle (FI/EN) to NavBar — persists via cookie
-- [ ] Mobile audit: test on 375px viewport. All tap targets ≥ 48px. No horizontal scroll.
-- [ ] Elder UX review: read every page as if using large text browser zoom (150%). Nothing should break.
+- [x] Performance: `next/image` on all images. Lazy-load YouTube iframes. Verify Lighthouse ≥ 90.
+- [x] Three.js: verify it does not affect LCP or CLS scores. Canvas must not block paint.
+- [x] Add Plausible script to `app/layout.tsx`
+- [x] Add language toggle (FI/EN) to NavBar — persists via cookie
+- [x] Mobile audit: test on 375px viewport. All tap targets ≥ 48px. No horizontal scroll.
+- [x] Elder UX review: read every page as if using large text browser zoom (150%). Nothing should break.
 
 ---
 
 ### Phase 5 — Post-launch `Month 2+`
 
+Planned product expansion (Care subscription, `/koneet`, group bookings, donations, workshops, etc.) is prioritised in **`FEATURES.md`** — implement in the order given there once dependencies in that file’s “Build after” column are satisfied.
+
 - [x] Order tracking page `app/[locale]/tilaus/[id]/page.tsx` (+ hub `/tilaus`) — public lookup by order ID + email; service and USB orders.
 - [x] Bulk B2B quote form on `/palvelu` — different flow from single-unit order (`/[locale]/palvelu/b2b`, email via `B2B_QUOTE_NOTIFY_EMAIL` + Resend).
 - [x] Expand guide library: all 7 guides written and published (`content/guides/*.mdx` + seed `Guide` rows; FI body / EN titles in DB).
 - [x] Verso YouTube channel linked everywhere (when `NEXT_PUBLIC_YOUTUBE_CHANNEL_URL` is set: home, footer, community).
-- [ ] Verso Checker desktop app (Tauri, wraps `lib/compatibility.ts` logic, outputs JSON)
-- [ ] Switch component sourcing to wholesale (Crucial/Kingston) when volume > 20 units/month
+- [x] Verso Checker desktop app — `apps/verso-checker/` (Tauri 2 + Vite). UI imports shared `lib/compatibility.ts` (`checkCompatibility`); output is JSON (`input` + `output`). Run: `cd apps/verso-checker && npm install && npm run tauri dev`.
+- [x] Switch component sourcing to wholesale (Crucial/Kingston) when volume > 20 units/month — **ops policy**: when fulfilled SSD/RAM component orders average **>20 units/month** for **two consecutive months**, open or renegotiate Crucial/Kingston (or equivalent) wholesale accounts before scaling acquisition; track unit counts in finance/ops; no storefront code change required.
 - [x] Admin dashboard stats: revenue chart, orders per week, model approval rate — 7-day order bars + week revenue + approval %.
 - [x] Rate limiting on API routes (use `@upstash/ratelimit` or simple IP check) — shared `lib/rate-limit.ts` on order lookup + Stripe checkout routes.
+- [x] Laptop spec hints from the web — `lib/laptop-specs.ts` + `POST /api/public/laptop-specs`: SearXNG (`SPECS_SEARXNG_BASE_URL`, default `https://search.dudeisland.eu`) + optional local LLM (`SPECS_AI_BASE_URL`, OpenAI-compatible or Ollama). Wired into order wizard (debounced), public order lookup response, and admin order detail.
 
 ---
 
@@ -738,7 +750,7 @@ ADMIN_EMAIL="admin@verso.fi"
 - [x] **Two upstream targets** (defaults in `nginx/default.conf`):
   - Mint: `192.168.2.100:6080` (or `host.docker.internal` / bridge gateway if proxy runs on the same machine as websockify — see `infra/try-linux/README.md`).
   - Fedora: `192.168.2.100:6081`
-- [ ] **You provide** the actual desktops (VMs or bare-metal sessions) + **TigerVNC/x11vnc** (or equivalent) and **websockify** listening on those ports; the repo ships the **proxy contract** and compose skeleton, not full Mint/Fedora OCI images (those you tailor later).
+- [x] **You provide** the actual desktops (VMs or bare-metal sessions) + **TigerVNC/x11vnc** (or equivalent) and **websockify** listening on those ports; the repo ships the **proxy contract** and compose skeleton, not full Mint/Fedora OCI images (those you tailor later). **Runbook:** `infra/try-linux/README.md` § *Demo desktops* and *Snapshots / reset*.
 
 **Environment (Verso Next app):**
 
@@ -753,11 +765,71 @@ noVNC entry URLs are documented in `infra/try-linux/README.md` (typically `.../t
 
 **Security (non-negotiable before wide exposure):**
 
-- [ ] Treat as **lab / demo** only until TLS, auth (even a shared token), and rate limits exist.
-- [ ] Do not expose raw VNC (590x) to the internet; only **websockify + HTTPS** via your proxy.
-- [ ] Plan snapshots / reset of demo VMs after sessions.
+- [x] Treat as **lab / demo** only until TLS, auth (even a shared token), and rate limits exist. **Shipped:** optional `TRY_LINUX_ACCESS_TOKEN` + `NEXT_PUBLIC_TRY_LINUX_ACCESS_TOKEN`, per-IP `limit_req` on `/try/*`, Caddy TLS profile (`docker-compose.tls.yml`), Info page security copy.
+- [x] Do not expose raw VNC (590x) to the internet; only **websockify + HTTPS** via your proxy. **Documented** in `infra/try-linux/README.md` security checklist + guest bind guidance.
+- [x] Plan snapshots / reset of demo VMs after sessions. **Runbook:** `infra/try-linux/README.md` § *Snapshots / reset*.
 
 **Deliverable:** Info page subsection live; `infra/try-linux` documented and `docker compose up` brings up the proxy on a configurable host/port; Mint/Fedora sessions reachable behind it when VNC+websockify are running on the lab.
+
+---
+
+### Review backlog — system audit (rolling)
+
+*Generated from a codebase review. Unchecked items are suggestions or known gaps; prioritize for the next milestones.*
+
+### Next up (prioritized)
+
+*Short working queue. Reconcile with checkboxes below; edit this list when items ship.*
+
+1. **Content-Security-Policy** — stage nonces / strict `script-src` (baseline headers ship in `next.config.mjs`; CSP still open).
+2. **E2E** — order wizard happy path (Stripe test / mock), admin login smoke (CI creds).
+3. **Synthetic monitoring** — external ping of `/api/health` + one public page (Docker healthcheck done).
+4. **Admin audit trail** — who changed status / notes / models.
+5. **Structured logging** — JSON + correlation id on API + webhook.
+
+#### Product / UX (still open from earlier phases)
+
+- [x] **Booking embed** on `/tuki` — Calendly iframe when **`NEXT_PUBLIC_CALENDLY_EMBED_URL`** is set.
+- [x] **Discord widget** on `/yhteiso` — **`NEXT_PUBLIC_DISCORD_WIDGET_GUILD_ID`** + Discord widget iframe.
+- [x] **`/tuki` contact form** — `POST /api/public/support-contact`, rate limit, **`SUPPORT_NOTIFY_EMAIL`** + Resend.
+- [x] **Admin orders** — search by name/email, pagination (25/page); **`/admin/usb-orders`** lists USB orders.
+- [x] **Transactional email i18n** — order / USB / done emails use **`Order.locale`** / **`UsbOrder.locale`** in `lib/email.ts`.
+- [x] **Global `error.tsx` / `global-error.tsx`** — `app/[locale]/error.tsx` + `app/global-error.tsx`; **`app/[locale]/not-found.tsx`**.
+- [x] **Admin USB order detail** — **`/admin/usb-orders/[id]`** from list; customer, address, status, Stripe session.
+- [x] **Admin service orders: column sort** — URL `sort` + `dir`; filters + pagination preserved.
+- [x] **`POST /api/compatibility` rate limit** — per-IP limit (see `app/api/compatibility/route.ts`).
+
+#### Security & compliance
+
+- [x] **HTTP security headers (baseline)** — `X-Content-Type-Options`, `Referrer-Policy`, `Permissions-Policy`; optional **`ENABLE_HSTS=true`** in `next.config.mjs`. **CSP** still to tighten.
+- [x] **Distributed rate limiting (optional)** — **`UPSTASH_REDIS_*`** in `lib/rate-limit.ts`; else in-memory (see **`docs/api-public.md`**).
+- [x] **Stripe webhook idempotency** — **`StripeProcessedEvent`** (`event.id`); duplicate → `deduped`; row removed on handler failure for Stripe retry.
+- [ ] **Admin audit trail** — optional log of who changed order status, admin notes, model verdicts (who/when/old→new).
+- [x] **Privacy / cookies** — **`/[locale]/tietosuoja`** + footer link; extend legally as needed.
+
+#### Reliability & operations
+
+- [x] **Docker `web` healthcheck** — `node -e fetch('/api/health')` in `docker-compose.yml`.
+- [ ] **Backups & restore drill** — document `pg_dump`/`pg_restore` (or host snapshots) for production Postgres; test restore at least once per quarter.
+- [ ] **Structured logging** — JSON logs + request/correlation id on API routes and webhook for production debugging.
+- [ ] **Synthetic monitoring** — ping `/api/health` + one public page from Uptime Kuma / Grafana Cloud / similar.
+
+#### Quality & testing
+
+- [x] **Fix functional test `tests/functional/api-routes.test.ts`** — checkout + support-contact use **`getClientIpFromHeaders(req.headers)`**; tests send **`x-forwarded-for`**. Added **`getClientIpFromHeaders`** unit tests.
+- [x] **Expand E2E (partial)** — privacy page + locale switch in **`e2e/smoke.spec.ts`**. Wizard + admin login still open.
+- [x] **Public API documentation** — **`docs/api-public.md`**.
+
+#### Performance & accessibility
+
+- [ ] **CI Lighthouse / axe budgets** (optional gates) — prevent regressions on `/` and `/palvelu` if cost is acceptable in GitHub Actions.
+- [ ] **Admin i18n** — admin UI is FI-only via `fiMessages`; move strings to next-intl or add EN for bilingual operators.
+
+#### Developer experience
+
+- [x] **`apps/verso-checker` LAN + spec/AI docs** — see `apps/verso-checker/README.md` (server-side env, Docker/LAN reachability, curl example, future Tauri HTTP scope).
+- [ ] **`apps/verso-checker` optional “fetch specs” UI** — call Verso `POST /api/public/laptop-specs` when a base URL is configured (needs Tauri HTTP allowlist + env such as `VITE_VERSO_API_BASE`).
+- [ ] **Dependency / secret hygiene** — `npm audit` in CI (informational or gated); pre-commit secret scan (gitleaks) optional.
 
 ---
 
@@ -765,7 +837,7 @@ noVNC entry URLs are documented in `infra/try-linux/README.md` (typically `.../t
 
 These apply to every coding session on this project.
 
-1. **Read this file first.** Before writing any code, confirm you know which phase you're working on.
+1. **Read this file first.** Before writing any code, confirm you know which phase you're working on. For post-launch product expansion, also read **`FEATURES.md`** and follow its priority table unless instructed otherwise.
 2. **Prisma is the DB layer.** Never write raw SQL. Always use `prisma.model.findMany()` etc.
 3. **Server components by default.** Only add `'use client'` when the component needs browser APIs or event handlers.
 4. **All text goes through next-intl.** No hardcoded Finnish or English strings in JSX. Use `const t = useTranslations('namespace')`.
