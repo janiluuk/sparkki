@@ -1,15 +1,15 @@
-# Verso — Design System & Style Instructions
-> For coding agents. This file is the canonical design reference in this repo (`DESIGN_SYSTEM.md`).
+# Vire — Design System & Style Instructions
+
+> For coding agents. Drop this in your repo as `DESIGN_SYSTEM.md`.
 > These rules override any generic defaults. Read before writing a single line of UI code.
-> **2026 update:** expanded IA, navigation, footer, delivery strip, and status tokens are documented in **Spec addendum (Verso — 2026)** at the end of this file.
 
 ---
 
 ## Philosophy
 
-Verso's visual identity is **dark, confident, and precise**. The aesthetic is inspired by high-craft developer tools and music software — not SaaS dashboards. It should feel like something a skilled person built with intention, not a template.
+Vire's visual identity is **dark, confident, and precise**. The aesthetic is inspired by high-craft developer tools and music software — not SaaS dashboards. It should feel like something a skilled person built with intention, not a template.
 
-**One rule above all others:** if it looks like a generic Tailwind site, it's wrong. Every screen should feel unmistakably Verso.
+**One rule above all others:** if it looks like a generic Tailwind site, it's wrong. Every screen should feel unmistakably Vire.
 
 ---
 
@@ -51,6 +51,7 @@ Define these as CSS custom properties on `:root`. Never hardcode hex values in c
 ```
 
 **Colour rules:**
+
 - `--g` is used for: primary CTAs, active nav links, featured card borders, check icons, accent text, eyebrow lines, progress fills, stat deltas.
 - `--amber` is used for: medium difficulty badges, warning states, pending status, secondary accent when green would clash.
 - Never use `--g` and `--amber` on the same element.
@@ -77,6 +78,7 @@ font-family: 'DM Mono', monospace;
 ```
 
 Load from Google Fonts:
+
 ```html
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -84,6 +86,7 @@ Load from Google Fonts:
 ```
 
 Tailwind config:
+
 ```js
 // tailwind.config.ts
 theme: {
@@ -100,7 +103,7 @@ theme: {
 ### Type scale
 
 | Role | Font | Size | Weight | Colour | Notes |
-|---|---|---|---|---|---|
+|------|------|------|--------|--------|-------|
 | Hero title | Syne | 64–80px | 800 | `--text` | `letter-spacing: -2px` |
 | Section title | Syne | 36–48px | 800 | `--text` | `letter-spacing: -1px` |
 | Card title | Syne | 18–24px | 700 | `--text` | |
@@ -115,6 +118,7 @@ theme: {
 | Badge | DM Mono | 10–11px | 400–500 | varies | `letter-spacing: 0.05em` |
 
 **Typography rules:**
+
 - `Syne 800` is reserved for display text — hero, section titles, prices, stat numbers. Never use it for body or captions.
 - `DM Mono` is used for anything that is data, not prose: IDs, dates, counts, category labels, eyebrows, filter pills, badge text, monospace metadata.
 - `DM Sans 300` (light) is the default body weight. Use 400 for important body copy. Never 500+ for body paragraphs.
@@ -129,7 +133,7 @@ theme: {
 Use an 8px base unit. All spacing is a multiple of 8.
 
 | Token | Value | Usage |
-|---|---|---|
+|-------|-------|-------|
 | `xs` | 4px | Icon gap, badge padding |
 | `sm` | 8px | Internal card gap, tight rows |
 | `md` | 16px | Card padding sides, grid gap |
@@ -139,6 +143,7 @@ Use an 8px base unit. All spacing is a multiple of 8.
 | `3xl` | 64px | Page section padding |
 
 **Tailwind mapping:**
+
 - `gap-2` = 8px, `gap-3` = 12px, `gap-4` = 16px, `gap-6` = 24px, `gap-8` = 32px, `gap-12` = 48px, `gap-16` = 64px
 - Section padding: `px-12 py-16` (48px / 64px)
 - Nav padding: `px-12 py-5` (48px / 20px)
@@ -163,11 +168,12 @@ border-top: 1px solid var(--border);
 ```
 
 **Border rules:**
+
 - All borders are `1px solid`. Never `2px` except featured cards and focus rings.
 - Border radius: `8px` (badges, inputs, small elements), `12px` (admin table, stat cards), `16px` (page cards, main sections).
 - Tailwind: `rounded-lg` = 8px, `rounded-xl` = 12px, `rounded-2xl` = 16px — match these to context.
 - No box shadows anywhere. Depth is achieved through layered background colours (`--bg` → `--bg2` → `--bg3` → `--bg4`), not shadows.
-- No gradients on backgrounds except the Discord block (which uses a fixed indigo gradient — see Components section).
+- No gradients on backgrounds except the **Discord block** (fixed indigo gradient — see Components) and the **Vire for Good** banner (subtle green gradient — see § Vire for Good tier).
 
 ---
 
@@ -224,7 +230,7 @@ Always use `gap-4` (16px) between cards, `gap-3` (12px) between tight grids.
 
 ```html
 <nav class="site-nav">
-  <!-- Logo: Syne 800 24px, --g colour for "Verso" brand mark -->
+  <!-- Logo: Syne 800 24px, --g colour for "Vire" brand mark -->
   <div class="logo">Ver<span style="color: var(--text)">so</span></div>
 
   <!-- Links: DM Sans 14px --muted, hover → --text -->
@@ -420,6 +426,7 @@ Minimum button height: **48px** on all public-facing pages (elder accessibility)
 ```
 
 The verdict box below the bars:
+
 ```css
 .speed-verdict {
   margin-top: 20px;
@@ -607,6 +614,7 @@ Animate the fill bars on page load using `IntersectionObserver`. CSS `transition
 Same structure as pricing cards. Featured card (`border: 1px solid var(--g)`) is the "Täysi tuki" tier.
 
 Include/exclude rows:
+
 ```css
 .support-item {
   font-size: 13px;
@@ -724,6 +732,7 @@ The only place with a non-dark-green palette. Use a fixed indigo gradient — do
 ```
 
 Colour the stat value when it has semantic meaning:
+
 - Pending count → `color: var(--amber)`
 - Done count → `color: var(--g)`
 - Revenue → `color: var(--text)` (neutral)
@@ -766,6 +775,7 @@ Colour the stat value when it has semantic meaning:
 ## Three.js background (BackgroundCanvas)
 
 **Behaviour spec:**
+
 - 80–120 `IcosahedronGeometry(0.3, 0)` meshes
 - Random sizes: scale 0.3–1.5 uniform
 - `MeshBasicMaterial` with `wireframe: true`
@@ -807,6 +817,7 @@ transform-origin: left;
 ```
 
 **Animation rules:**
+
 - No bounce, spring, or physics on any UI element (those belong to Three.js only).
 - No full-page transitions or route animations in MVP.
 - The speed bar fill is the hero animation — it must feel satisfying. Use the cubic-bezier above, not `ease` or `linear`.
@@ -842,10 +853,6 @@ export default {
         text:   '#E8F2EE',
         muted:  '#7A9A8E',
         dim:    '#3D5248',
-        statusPending:  '#F5A623',
-        statusProgress: '#6495ED',
-        statusDone:     '#1DF5A0',
-        statusCancel:   '#FF6B6B',
       },
       borderColor: {
         DEFAULT: 'rgba(29,245,160,0.12)',
@@ -858,8 +865,6 @@ export default {
 } satisfies Config
 ```
 
-> **Implementation note:** In this repo, theme colours are wired to the same tokens as `:root` in `app/globals.css` (e.g. `canvas` → `var(--bg)`) so Tailwind utilities stay aligned with the “no hardcoded hex in components” rule. Prefer utilities like `bg-card`, `text-ink`, and `border-em` from `tailwind.config.ts`.
-
 ---
 
 ## Accessibility rules
@@ -870,12 +875,14 @@ These are non-negotiable and apply to every component.
 - Minimum font size anywhere: **11px** (DM Mono labels only)
 - Minimum tap target size: **48×48px** on all public pages, 36px in admin
 - All interactive elements must have a visible focus ring:
+
   ```css
   :focus-visible {
     outline: 2px solid var(--g);
     outline-offset: 2px;
   }
   ```
+
 - All images must have `alt` attributes. Decorative images use `alt=""`
 - All form inputs must have a visible `<label>` or `aria-label`
 - Colour contrast: `--text` on `--bg3` meets WCAG AA. `--muted` on `--bg` does not — never use `--muted` for body text that users need to read.
@@ -888,7 +895,7 @@ These are non-negotiable and apply to every component.
 
 - Use `Inter`, `Roboto`, `Arial`, or any system font stack
 - Use `box-shadow` for depth (use layered backgrounds instead)
-- Use gradients except on the Discord block
+- Use gradients except on the Discord block or the documented Vire for Good banner
 - Use any colour outside the defined palette
 - Use `--muted` for body text that requires reading (contrast too low)
 - Use `--g` for large text blocks (too bright, causes eye strain)
@@ -900,73 +907,460 @@ These are non-negotiable and apply to every component.
 
 ---
 
-## Spec addendum (Verso — 2026)
+## Site structure & navigation (updated)
 
-This addendum incorporates the expanded product IA and component specs. **Brand in this repository is Verso** (`verso.fi`). Where the source template referred to another codename, routes below point at what exists in code today.
+### Route map
 
-### Route map — target vs current
+```
+vire.fi/
+├── /                          Homepage
+├── /palvelu                   Service detail + order wizard
+├── /tietoa                    Info hub (sidebar layout)
+│   ├── /tietoa/linux          About Linux Mint
+│   ├── /tietoa/vakaus         Stability & comfort
+│   ├── /tietoa/huolia         Common concerns (FAQ)
+│   ├── /tietoa/sovellukset/windows   App alternatives — Windows tab
+│   └── /tietoa/sovellukset/mac       App alternatives — Mac tab
+├── /itse                      DIY hub (guides, videos, USB, Starter Kit)
+├── /meista                    About us
+│   └── /meista/yhteiso        Community & Discord (subsection)
+├── /tuki                      Support
+├── /care                      Vire Care subscription
+├── /koneet                    Compatibility database
+│   └── /koneet/[slug]         Individual model page
+├── /vire-for-good             Social pricing tier
+└── /admin                     Admin panel (protected)
+```
 
-| Area | Target IA | Current Verso path |
-|------|-----------|-------------------|
-| Home | `/` | `/` |
-| Service + wizard | `/palvelu` | `/palvelu` |
-| Info hub (sidebar) | `/tietoa`, `/tietoa/linux`, … | `/info` (single hub until split) |
-| App alternatives | `/tietoa/sovellukset/windows`, `/mac` | `/sovellukset` (add OS tabs + `sourceOs` in data when ready) |
-| DIY | `/itse` | `/itse` |
-| About | `/meista` | `/about` |
-| Community | `/meista/yhteiso` | `/yhteiso` |
-| Support | `/tuki` | `/tuki` |
-| Care subscription | `/care` | *planned* |
-| Compatibility DB | `/koneet` | *planned* |
-| Social tier | `/vire-for-good` | *planned — rename to `/verso-for-good` when shipping* |
+### Navigation component — updated structure
 
-### Primary navigation (implemented)
+Primary nav links:
 
-1. **Palvelu** → `/palvelu`  
-2. **Tietoa ▾** — dropdown: Linux / vakaus / huolia → `/info`; Sovellukset Windows & Mac → `/sovellukset`  
-3. **Tee itse** → `/itse`  
-4. **Meistä ▾** — Yritys → `/about`; Yhteisö & Discord → `/yhteiso`  
-5. **Tuki** → `/tuki`  
-6. **Tilaa →** (CTA, right) → `/palvelu`  
+1. **Palvelu** — direct link to `/palvelu`
+2. **Tietoa ▾** — dropdown with:
+   - Linux Mintistä → `/tietoa/linux`
+   - Vakaus & mukavuus → `/tietoa/vakaus`
+   - Yleisiä huolia → `/tietoa/huolia`
+   - Sovellukset — Windows → `/tietoa/sovellukset/windows`
+   - Sovellukset — Mac → `/tietoa/sovellukset/mac`
+3. **Tee itse** — direct link to `/itse`
+4. **Meistä ▾** — dropdown with:
+   - Yritys → `/meista`
+   - Yhteisö & Discord → `/meista/yhteiso`
+5. **Tuki** — direct link to `/tuki`
+6. **Tilaa →** (CTA button, always rightmost)
 
-Dropdown shell: `background: var(--bg3)`, `border: 1px solid var(--border2)`, `border-radius: 10px`, `padding: 8px`, `min-width: 200px`. Row links: `padding: 7px 12px`, `border-radius: 6px`, hover `color: var(--g)` and `background: rgba(29,245,160,0.08)`. Implemented with native `<details>` / `<summary>` for keyboard + mobile without extra JS.
+Dropdown styling:
 
-### Delivery strip (homepage, below nav)
+```css
+.sub-menu {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  background: var(--bg3);
+  border: 1px solid var(--border2);
+  border-radius: 10px;
+  padding: 8px;
+  display: none;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 200px;
+  z-index: 50;
+  margin-top: 4px;
+}
+.dropdown:hover .sub-menu { display: flex; }
+.sub-menu a {
+  display: block;
+  padding: 7px 12px;
+  border-radius: 6px;
+  color: var(--muted);
+  font-size: 13px;
+}
+.sub-menu a:hover { color: var(--g); background: rgba(29,245,160,0.08); }
+```
 
-Five equal columns, `border-top` + `border-bottom` on strip, `background: var(--bg2)`. Each cell: icon (green), title (`--text`, 13px semibold), subtitle (`--muted`, 13px light). Copy order: nouto kotoa → postitus → omatoiminen tuonti → 2–5 arkipäivää → 90 pv tuki. Implemented as `DeliveryStrip` + `DeliveryStripGate` (home only).
+---
 
-### Footer (four columns)
+## Delivery strip component
 
-Grid: `1.5fr` brand column + three equal columns on large screens. **Palvelu:** miten toimii (`/#steps-title`), hinnat (`/#pricing-title`), B2B (`/palvelu/b2b`), tilaa (`/palvelu`). **Tietoa:** Linux Mintistä (`/info`), sovellukset (`/sovellukset`), tee itse (`/itse`), yhteisö (`/yhteiso`). **Yhteys:** email, tuki (`/tuki`), tietosuoja (`/tietosuoja`).
+Appears directly below the nav on the homepage. Communicates all three delivery options at first glance. 5 columns, no scroll.
 
-### Order wizard — HDD removal step (planned)
+```css
+.delivery-strip {
+  display: flex;
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  background: var(--bg2);
+}
+.d-item {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 20px;
+  border-right: 1px solid var(--border);
+}
+.d-item:last-child { border-right: none; }
+.d-icon { font-size: 18px; color: var(--g); flex-shrink: 0; }
+.d-text { font-size: 13px; color: var(--muted); font-weight: 300; }
+.d-text strong { color: var(--text); font-weight: 500; display: block; font-size: 13px; }
+```
 
-Card between delivery and support: amber-tinted border `rgba(245,166,35,0.25)`, background `rgba(245,166,35,0.07)`. Three radio options: Vire removes HDD (+€20, default), customer removes (+€0), keep HDD (+€0, not recommended). **Not implemented until pricing + Prisma + Stripe reflect the fee.**
+Items (in order):
 
-### Delivery wizard cards (planned)
+1. 🚚 **Nouto kotoa** / Helsinki-alueella
+2. 📦 **Postitus** / Koko Suomeen
+3. 🏠 **Omatoiminen tuonti** / Tuo & hae itse
+4. ⚡ **2–5 arkipäivää** / Palautusaika
+5. 🛡️ **90 pv tuki** / Sisältyy hintaan
 
-Three-column selectable cards with green border on selection; copy as in spec. Align with `DeliveryMethod` in Prisma when shipping postage surcharges.
+---
 
-### Info hub `/tietoa` layout (planned)
+## Info hub — sidebar layout (`/tietoa`)
 
-Two-column: fixed `220px` sidebar (`--bg2`), body `padding: 32px 36px`. Mirror admin sidebar pattern.
+The `/tietoa` section uses a two-column layout: fixed sidebar on left, content area on right. Same pattern as the admin panel sidebar but public-facing.
 
-### Common concerns `/tietoa/huolia` (planned)
+```css
+.info-layout {
+  display: grid;
+  grid-template-columns: 220px 1fr;
+  min-height: 560px;
+}
+.info-sidebar {
+  background: var(--bg2);
+  border-right: 1px solid var(--border);
+  padding: 24px 0;
+}
+.info-body {
+  padding: 32px 36px;
+  background: var(--bg);
+}
+```
 
-Two-column concern cards: question row with amber icon, answer body `13px` `--muted`, `strong` in `--g`.
+Active sidebar item: `border-left: 2px solid var(--g); color: var(--g); background: rgba(29,245,160,0.05)`.
 
-### Vire Care `/care` (planned)
+---
 
-Three-tier cards; timeline Day 75 / 88 / 90 / 91+. Use status colours for timeline cells.
+## App alternatives — Windows / Mac tabs
 
-### Compatibility `/koneet` (planned)
+The app alternatives directory lives at `/tietoa/sovellukset` as a subsection of the Info hub. It has two top-level OS tabs.
 
-Search bar + model cards + status badges (`badge-g` / `badge-a` / `badge-r`).
+```css
+.os-tabs { display: flex; gap: 6px; margin-bottom: 24px; }
+.os-tab {
+  padding: 8px 20px;
+  border-radius: 8px;
+  border: 1px solid var(--border2);
+  font-size: 13px;
+  color: var(--muted);
+  cursor: pointer;
+  font-family: 'DM Mono', monospace;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  transition: all 0.15s;
+}
+.os-tab.active {
+  background: rgba(29,245,160,0.1);
+  color: var(--g);
+  border-color: var(--g);
+}
+```
 
-### Starter kit + Verso for Good (planned)
+Tab labels:
 
-Specs as in source template; use `--g` for featured prices, no extra gradients except Discord block and documented “for good” banner gradient.
+- `🪟 Windows → Linux` — shows Windows app replacements
+- `🍎 Mac → Linux` — shows macOS app replacements
 
-### Status badge tokens
+Each tab renders the same `<AppGrid>` + `<AppAlternativePanel>` components, filtered by source OS. The `apps.json` data model gains a `sourceOs` field: `"windows" | "mac" | "both"`.
 
-Use `statusPending`, `statusProgress`, `statusDone`, `statusCancel` from Tailwind (mapped to `--status-*`) for badge **text**; fills at 12–15% opacity per colour rules in **Colours** section above.
+Alt panel expands inline (accordion, never modal). Clicking a different app closes the open panel and opens the new one.
+
+---
+
+## Common concerns section (`/tietoa/huolia`)
+
+Grid of concern cards. Each card has a question (amber icon + text) and a plain-language answer.
+
+```css
+.concern-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-top: 20px;
+}
+.concern-card {
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 20px;
+}
+.cc-q {
+  font-family: 'Syne', sans-serif;
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 8px;
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+}
+.cc-q-icon { color: var(--amber); flex-shrink: 0; }
+.cc-a { font-size: 13px; color: var(--muted); line-height: 1.6; font-weight: 300; }
+.cc-a strong { color: var(--g); font-weight: 500; }
+```
+
+Required concern cards (minimum):
+
+1. "Menetänkö tiedostoni?" — data safety answer
+2. "Osanko käyttää Linuxia?" — familiarity answer
+3. "Entä Word ja Excel?" — app compatibility answer
+4. "Onko se turvallinen?" — security answer
+5. "Toimiiko kamerani / tulostimeni?" — hardware compatibility answer
+6. "Mitä jos jokin menee pieleen?" — support answer
+
+---
+
+## Order wizard — HDD removal step
+
+The HDD removal question is a dedicated card in the wizard, between the delivery method selection and the support tier selection. Style it with an amber border to signal it is an important decision, not just a preference.
+
+```css
+.hdd-callout {
+  background: rgba(245,166,35,0.07);
+  border: 1px solid rgba(245,166,35,0.25);
+  border-radius: 10px;
+  padding: 16px 18px;
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+  margin-top: 12px;
+}
+.hdd-icon { font-size: 20px; color: var(--amber); flex-shrink: 0; }
+.hdd-title { font-size: 14px; font-weight: 600; color: var(--text); margin-bottom: 4px; }
+.hdd-desc { font-size: 13px; color: var(--muted); line-height: 1.55; font-weight: 300; }
+.hdd-desc strong { color: var(--amber); font-weight: 500; }
+```
+
+Three options (radio-style `<WizOpt>` components):
+
+1. **Vire poistaa HDD:n puolestani** (+€20) — recommended, selected by default
+2. **Poistan HDD:n itse** (+€0) — includes link to guide
+3. **Pidän HDD:n koneessa** (+€0) — not recommended note
+
+The card's outer border is `rgba(245,166,35,0.25)` — amber, not green — to visually differentiate it from neutral wizard steps.
+
+---
+
+## Delivery options — wizard card
+
+Three-column grid inside the wizard. Selected card gets green border.
+
+```css
+.del-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+.del-card {
+  background: var(--bg4);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 16px;
+  cursor: pointer;
+  text-align: center;
+  transition: all 0.15s;
+}
+.del-card.sel { border-color: var(--g); background: rgba(29,245,160,0.05); }
+.del-card-icon { font-size: 24px; margin-bottom: 8px; color: var(--g); }
+.del-card-title { font-size: 13px; font-weight: 600; color: var(--text); margin-bottom: 3px; }
+.del-card-sub { font-size: 11px; color: var(--muted); line-height: 1.4; font-weight: 300; }
+.del-note { font-family: 'DM Mono', monospace; font-size: 10px; color: var(--g); margin-top: 5px; }
+```
+
+Cards (in order):
+
+1. 🚚 **Nouto kotoa** / "Haemme koneen kotioveltasi" / Helsinki-alue · +€0
+2. 📦 **Postitus** / "Lähetät meille, me lähetämme takaisin" / Koko Suomi · +€15
+3. 🏠 **Omatoiminen tuonti** / "Tuo itse sovitulle pisteelle" / Helsinki · +€0
+
+---
+
+## About us — community subsection
+
+The `/meista/yhteiso` page is a subsection of About Us, accessible via the Meistä dropdown. It contains the Discord block component (already defined) plus:
+
+- Member count stat
+- Channel list (`#yleinen`, `#linux-ohjeet`, `#asennusongelmat`, `#esittele-koneesi`, `#sovellukset`, `#palaute`)
+- Community guidelines (brief, friendly)
+- Link back to `/itse` guides
+
+The Discord block uses the fixed indigo gradient — same as previously defined. Do not apply Vire green tokens to this block.
+
+---
+
+## Vire Care subscription page (`/care`)
+
+Three-tier card layout matching the pricing cards pattern. Tiers: Perus / Care+ (featured) / Care Pro.
+
+```css
+.care-price {
+  font-family: 'Syne', sans-serif;
+  font-size: 38px;
+  font-weight: 800;
+  color: var(--g);
+  letter-spacing: -1px;
+  margin: 8px 0 4px;
+}
+.care-price span { font-size: 16px; color: var(--muted); font-weight: 400; }
+.care-period { font-family: 'DM Mono', monospace; font-size: 10px; color: var(--muted); margin-bottom: 16px; }
+```
+
+Email sequence timeline (shown on the page):
+
+- Day 75: amber — soft reminder
+- Day 88: amber — final reminder
+- Day 90: neutral — support ends
+- Day 91+: green — Care begins
+
+Timeline CSS: four equal-width cells in a flex row, left three with standard `--bg3` + `--border`, rightmost with `rgba(29,245,160,0.06)` background and `var(--g)` border.
+
+---
+
+## Compatibility database (`/koneet`)
+
+### Search bar
+
+```css
+.compat-search {
+  background: var(--bg3);
+  border: 1px solid var(--border2);
+  border-radius: 10px;
+  padding: 12px 16px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+.compat-input {
+  flex: 1;
+  background: transparent;
+  border: none;
+  outline: none;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 15px;
+  color: var(--text);
+  font-weight: 300;
+}
+```
+
+### Model card
+
+```css
+.model-card {
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 20px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  cursor: pointer;
+  transition: border-color 0.15s;
+}
+.model-card:hover { border-color: var(--border2); }
+.model-name { font-size: 14px; font-weight: 600; color: var(--text); margin-bottom: 3px; }
+.model-meta { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--dim); }
+.model-spec { font-size: 11px; color: var(--muted); background: var(--bg4); padding: 3px 8px; border-radius: 99px; }
+```
+
+Status badge on model card: `badge-g` (compatible), `badge-a` (borderline), `badge-r` (incompatible). Always leftmost in the card flex row.
+
+---
+
+## Starter kit product card
+
+Lives on `/itse` below the USB stick order. Flex row: visual (emoji placeholder), content, price.
+
+```css
+.kit-card {
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 28px;
+  display: flex;
+  align-items: center;
+  gap: 32px;
+}
+.kit-visual {
+  width: 120px; height: 80px;
+  background: var(--bg4);
+  border-radius: 12px;
+  border: 1px solid var(--border2);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 32px; flex-shrink: 0;
+}
+.kit-price { font-family: 'Syne', sans-serif; font-size: 36px; font-weight: 800; color: var(--g); letter-spacing: -1px; }
+.kit-item { font-size: 13px; color: var(--muted); display: flex; align-items: center; gap: 7px; font-weight: 300; }
+.kit-item::before { content: '—'; color: var(--g); font-size: 12px; }
+```
+
+---
+
+## Vire for Good tier
+
+Banner component on `/vire-for-good` and linked from pricing cards with a subtle "Hae alennettu hinta" link.
+
+```css
+.good-banner {
+  background: linear-gradient(135deg, rgba(29,245,160,0.08) 0%, rgba(29,245,160,0.03) 100%);
+  border: 1px solid var(--border2);
+  border-radius: 14px;
+  padding: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+}
+.good-price .was { font-family: 'DM Mono', monospace; font-size: 12px; color: var(--dim); text-decoration: line-through; }
+.good-price .now { font-family: 'Syne', sans-serif; font-size: 32px; font-weight: 800; color: var(--g); letter-spacing: -1px; }
+```
+
+Eligible groups shown as `badge-g` pills: Eläkeläiset / Työttömät / Opiskelijat / SPR-asiakkaat / Pelastusarmeija.
+
+Pricing (shown in a two-column breakdown card beside the banner):
+
+- SSD Basic: €99 (was €149)
+- SSD + RAM: €129 (was €189)
+
+---
+
+## Updated pricing cards — HDD note
+
+Each pricing card now includes a dim note about HDD removal:
+
+```css
+/* After the last .pf feature row, before the CTA button */
+.pf-note {
+  font-size: 11px;
+  color: var(--dim);
+  padding: 4px 0;
+  display: flex;
+  align-items: flex-start;
+  gap: 7px;
+  font-style: italic;
+}
+```
+
+- SSD Basic: "HDD-poisto +€20 tai itse"
+- SSD + RAM: "HDD-poisto +€20 tai itse"
+- Full Service: "HDD-poisto sisältyy" (green, not dim)
+
+---
+
+## Updated footer structure
+
+Footer columns (4-column grid):
+
+1. **Logo + tagline** (wider: `1.5fr`)
+2. **Palvelu** — Miten toimii, Hinnat, B2B, Tilaa
+3. **Tietoa** — Linux Mintistä, Sovellukset, Tee itse, Yhteisö (links to `/meista/yhteiso`)
+4. **Yhteys** — hei@vire.fi, Tuki, Tietosuoja
+
+Community link in footer goes to `/meista/yhteiso`, not a standalone `/yhteiso` route.

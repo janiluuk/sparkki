@@ -42,7 +42,6 @@ export default function AdminLoginPage() {
           </label>
           <input
             id="email"
-            name="email"
             type="email"
             autoComplete="username"
             required
@@ -57,7 +56,6 @@ export default function AdminLoginPage() {
           </label>
           <input
             id="password"
-            name="password"
             type="password"
             autoComplete="current-password"
             required

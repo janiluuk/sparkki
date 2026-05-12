@@ -1,6 +1,6 @@
 /**
  * Public URLs for browser try-Linux (noVNC behind infra/try-linux proxy).
- * Set NEXT_PUBLIC_TRY_LINUX_PROXY_BASE (no trailing slash), e.g. http://192.168.2.100:8080
+ * Set NEXT_PUBLIC_TRY_LINUX_PROXY_BASE (no trailing slash), e.g. http://127.0.0.1:8080
  * Optional NEXT_PUBLIC_TRY_LINUX_ACCESS_TOKEN — same value as proxy TRY_LINUX_ACCESS_TOKEN; appended as ?access_token=
  */
 function withAccessToken(url: string, token: string | undefined): string {

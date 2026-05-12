@@ -85,9 +85,8 @@ export function parseAiInsight(o: Record<string, unknown> | null): LaptopSpecsIn
 }
 
 async function searxSearch(query: string): Promise<SearxResult[]> {
-  const base =
-    process.env.SPECS_SEARXNG_BASE_URL?.replace(/\/$/, "") ??
-    "https://search.dudeisland.eu";
+  const base = process.env.SPECS_SEARXNG_BASE_URL?.replace(/\/$/, "");
+  if (!base) return [];
   const u = new URL(`${base}/search`);
   u.searchParams.set("q", query);
   u.searchParams.set("format", "json");

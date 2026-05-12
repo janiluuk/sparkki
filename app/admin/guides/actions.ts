@@ -4,8 +4,9 @@ import fs from "node:fs/promises";
 import path from "node:path";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
-import { getServerSession } from "next-auth";
+import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth-options";
+import { recordAdminAudit } from "@/lib/admin-audit";
 import { prisma } from "@/lib/prisma";
 import { guideMdxPath } from "@/lib/guide-content";
 import { stringifyGuideMdx } from "@/lib/guide-mdx";
@@ -41,7 +42,7 @@ function assertDifficulty(
 }
 
 export async function saveGuide(formData: FormData) {
-  await requireAdminSession();
+  const session = await requireAdminSession();
   const editorSlug = String(formData.get("editorSlug") ?? "").trim() || null;
 
   const slug = String(formData.get("slug") ?? "").trim().toLowerCase();
@@ -112,6 +113,14 @@ export async function saveGuide(formData: FormData) {
     },
   });
 
+  await recordAdminAudit({
+    actorEmail: session.user?.email ?? "unknown",
+    action: "guide.save",
+    entity: "Guide",
+    entityId: slug,
+    metadata: { published },
+  });
+
   revalidatePath("/admin/guides");
   revalidatePath(`/admin/guides/${slug}`);
   revalidatePath("/fi/itse");
@@ -122,10 +131,17 @@ export async function saveGuide(formData: FormData) {
 }
 
 export async function setGuidePublishedToggle(slug: string, published: boolean) {
-  await requireAdminSession();
+  const session = await requireAdminSession();
   await prisma.guide.update({
     where: { slug },
     data: { published },
+  });
+  await recordAdminAudit({
+    actorEmail: session.user?.email ?? "unknown",
+    action: "guide.published",
+    entity: "Guide",
+    entityId: slug,
+    metadata: { published },
   });
   revalidatePath("/admin/guides");
   revalidatePath("/fi/itse");

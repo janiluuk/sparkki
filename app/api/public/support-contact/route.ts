@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { sendSupportContactEmail } from "@/lib/email";
+import { getRequestId, logApiEvent } from "@/lib/log";
 import { checkRateLimit, getClientIpFromHeaders } from "@/lib/rate-limit";
 
 const bodySchema = z.object({
@@ -11,6 +12,7 @@ const bodySchema = z.object({
 });
 
 export async function POST(req: Request) {
+  const requestId = getRequestId(req);
   const ip = getClientIpFromHeaders(req.headers);
   if (
     !(await checkRateLimit(`support-contact:${ip}`, {
@@ -18,6 +20,7 @@ export async function POST(req: Request) {
       max: 8,
     }))
   ) {
+    logApiEvent(requestId, "support_contact.rate_limited", { ip });
     return NextResponse.json({ ok: false, code: "rate_limited" } as const, {
       status: 429,
     });
@@ -27,6 +30,7 @@ export async function POST(req: Request) {
   try {
     json = await req.json();
   } catch {
+    logApiEvent(requestId, "support_contact.invalid_json", {});
     return NextResponse.json({ ok: false, code: "invalid_input" } as const, {
       status: 400,
     });
@@ -34,6 +38,7 @@ export async function POST(req: Request) {
 
   const parsed = bodySchema.safeParse(json);
   if (!parsed.success) {
+    logApiEvent(requestId, "support_contact.validation_error", {});
     return NextResponse.json({ ok: false, code: "invalid_input" } as const, {
       status: 400,
     });
@@ -41,6 +46,7 @@ export async function POST(req: Request) {
 
   const notifyTo = process.env.SUPPORT_NOTIFY_EMAIL?.trim();
   if (!notifyTo) {
+    logApiEvent(requestId, "support_contact.not_configured", {});
     return NextResponse.json({ ok: false, code: "not_configured" } as const, {
       status: 503,
     });
@@ -56,11 +62,13 @@ export async function POST(req: Request) {
   });
 
   if (!result.ok) {
+    logApiEvent(requestId, "support_contact.send_failed", { locale });
     return NextResponse.json(
       { ok: false, code: "send_failed" } as const,
       { status: 502 },
     );
   }
 
+  logApiEvent(requestId, "support_contact.sent", { locale });
   return NextResponse.json({ ok: true } as const);
 }

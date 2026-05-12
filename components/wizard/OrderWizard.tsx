@@ -206,6 +206,7 @@ export function OrderWizard({ locale }: { locale: string }) {
 
   return (
     <section
+      data-testid="order-wizard"
       className="verso-card mx-auto max-w-4xl p-6 md:p-10"
       aria-labelledby="wizard-title"
     >

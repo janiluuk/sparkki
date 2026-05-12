@@ -727,7 +727,7 @@ Planned product expansion (Care subscription, `/koneet`, group bookings, donatio
 - [x] Switch component sourcing to wholesale (Crucial/Kingston) when volume > 20 units/month — **ops policy**: when fulfilled SSD/RAM component orders average **>20 units/month** for **two consecutive months**, open or renegotiate Crucial/Kingston (or equivalent) wholesale accounts before scaling acquisition; track unit counts in finance/ops; no storefront code change required.
 - [x] Admin dashboard stats: revenue chart, orders per week, model approval rate — 7-day order bars + week revenue + approval %.
 - [x] Rate limiting on API routes (use `@upstash/ratelimit` or simple IP check) — shared `lib/rate-limit.ts` on order lookup + Stripe checkout routes.
-- [x] Laptop spec hints from the web — `lib/laptop-specs.ts` + `POST /api/public/laptop-specs`: SearXNG (`SPECS_SEARXNG_BASE_URL`, default `https://search.dudeisland.eu`) + optional local LLM (`SPECS_AI_BASE_URL`, OpenAI-compatible or Ollama). Wired into order wizard (debounced), public order lookup response, and admin order detail.
+- [x] Laptop spec hints from the web — `lib/laptop-specs.ts` + `POST /api/public/laptop-specs`: SearXNG when `SPECS_SEARXNG_BASE_URL` is set + optional local LLM (`SPECS_AI_BASE_URL`, OpenAI-compatible or Ollama). Wired into order wizard (debounced), public order lookup response, and admin order detail.
 
 ---
 
@@ -757,8 +757,8 @@ Planned product expansion (Care subscription, `/koneet`, group bookings, donatio
 ```bash
 # Public base URL of the try-linux proxy (no trailing slash). Example:
 # NEXT_PUBLIC_TRY_LINUX_PROXY_BASE="https://try-linux.example.com"
-# Lab default for local/LAN testing:
-NEXT_PUBLIC_TRY_LINUX_PROXY_BASE="http://192.168.2.100:8080"
+# Lab / local testing (change host to match your proxy):
+NEXT_PUBLIC_TRY_LINUX_PROXY_BASE="http://127.0.0.1:8080"
 ```
 
 noVNC entry URLs are documented in `infra/try-linux/README.md` (typically `.../try/mint/vnc_lite.html` and `.../try/fedora/vnc_lite.html` once paths match nginx).
@@ -781,11 +781,11 @@ noVNC entry URLs are documented in `infra/try-linux/README.md` (typically `.../t
 
 *Short working queue. Reconcile with checkboxes below; edit this list when items ship.*
 
-1. **Content-Security-Policy** — stage nonces / strict `script-src` (baseline headers ship in `next.config.mjs`; CSP still open).
-2. **E2E** — order wizard happy path (Stripe test / mock), admin login smoke (CI creds).
-3. **Synthetic monitoring** — external ping of `/api/health` + one public page (Docker healthcheck done).
-4. **Admin audit trail** — who changed status / notes / models.
-5. **Structured logging** — JSON + correlation id on API + webhook.
+1. **Content-Security-Policy** — **`ENABLE_CSP_REPORT_ONLY=true`** emits report-only CSP from **`next.config.mjs`**; tighten policy using violation reports (**`docs/operations.md`**). Enforcing CSP with nonces still open.
+2. **E2E** — **Shipped:** order wizard happy path with mocked checkout in **`e2e/wizard-order.spec.ts`** (Playwright fills make/model and contact fields). Admin login: **`e2e/admin-login.spec.ts`**.
+3. **Synthetic monitoring** — external ping of `/api/health` + one public page — **runbook:** **`docs/operations.md`** (Docker healthcheck already in compose).
+4. **Admin audit trail** — **shipped:** `AdminAuditLog` + order detail log; guides/models mutations logged; extend UI as needed.
+5. **Structured logging** — **shipped:** JSON + request id on checkout, support-contact, Stripe webhook (`lib/log.ts`, **`docs/operations.md`**).
 
 #### Product / UX (still open from earlier phases)
 
@@ -801,23 +801,23 @@ noVNC entry URLs are documented in `infra/try-linux/README.md` (typically `.../t
 
 #### Security & compliance
 
-- [x] **HTTP security headers (baseline)** — `X-Content-Type-Options`, `Referrer-Policy`, `Permissions-Policy`; optional **`ENABLE_HSTS=true`** in `next.config.mjs`. **CSP** still to tighten.
+- [x] **HTTP security headers (baseline)** — `X-Content-Type-Options`, `Referrer-Policy`, `Permissions-Policy`; optional **`ENABLE_HSTS=true`** in `next.config.mjs`. **CSP:** optional **`ENABLE_CSP_REPORT_ONLY=true`** (report-only); enforcing strict CSP still open.
 - [x] **Distributed rate limiting (optional)** — **`UPSTASH_REDIS_*`** in `lib/rate-limit.ts`; else in-memory (see **`docs/api-public.md`**).
 - [x] **Stripe webhook idempotency** — **`StripeProcessedEvent`** (`event.id`); duplicate → `deduped`; row removed on handler failure for Stripe retry.
-- [ ] **Admin audit trail** — optional log of who changed order status, admin notes, model verdicts (who/when/old→new).
+- [x] **Admin audit trail** — optional log of who changed order status, admin notes, model verdicts (who/when/old→new).
 - [x] **Privacy / cookies** — **`/[locale]/tietosuoja`** + footer link; extend legally as needed.
 
 #### Reliability & operations
 
 - [x] **Docker `web` healthcheck** — `node -e fetch('/api/health')` in `docker-compose.yml`.
-- [ ] **Backups & restore drill** — document `pg_dump`/`pg_restore` (or host snapshots) for production Postgres; test restore at least once per quarter.
-- [ ] **Structured logging** — JSON logs + request/correlation id on API routes and webhook for production debugging.
-- [ ] **Synthetic monitoring** — ping `/api/health` + one public page from Uptime Kuma / Grafana Cloud / similar.
+- [x] **Backups & restore drill** — document `pg_dump`/`pg_restore` (or host snapshots) for production Postgres; test restore at least once per quarter. **Runbook:** **`docs/operations.md`** § Database backups.
+- [x] **Structured logging** — JSON logs + request/correlation id on API routes and webhook for production debugging.
+- [x] **Synthetic monitoring** — ping `/api/health` + one public page from Uptime Kuma / Grafana Cloud / similar.
 
 #### Quality & testing
 
 - [x] **Fix functional test `tests/functional/api-routes.test.ts`** — checkout + support-contact use **`getClientIpFromHeaders(req.headers)`**; tests send **`x-forwarded-for`**. Added **`getClientIpFromHeaders`** unit tests.
-- [x] **Expand E2E (partial)** — privacy page + locale switch in **`e2e/smoke.spec.ts`**. Wizard + admin login still open.
+- [x] **Expand E2E** — privacy + locale in **`e2e/smoke.spec.ts`**; admin login **`e2e/admin-login.spec.ts`**; order wizard (mocked checkout) **`e2e/wizard-order.spec.ts`** (field fills in the spec).
 - [x] **Public API documentation** — **`docs/api-public.md`**.
 
 #### Performance & accessibility

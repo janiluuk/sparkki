@@ -36,10 +36,25 @@ function statusLabel(s: string): string {
   return (a[key] as string) ?? s;
 }
 
+function auditMetaCell(value: unknown): string {
+  if (value == null) return "—";
+  try {
+    return JSON.stringify(value);
+  } catch {
+    return String(value);
+  }
+}
+
 export default async function AdminOrderDetailPage({ params, searchParams }: Props) {
   await requireAdmin();
   const order = await prisma.order.findUnique({ where: { id: params.id } });
   if (!order) notFound();
+
+  const audits = await prisma.adminAuditLog.findMany({
+    where: { entity: "Order", entityId: order.id },
+    orderBy: { createdAt: "desc" },
+    take: 40,
+  });
 
   const emailFlash = searchParams.email;
 
@@ -252,6 +267,47 @@ export default async function AdminOrderDetailPage({ params, searchParams }: Pro
             {a.sendDone}
           </button>
         </form>
+      </section>
+
+      <section className="mt-12 border-t border-edge pt-8" aria-labelledby="order-audit-title">
+        <h2 id="order-audit-title" className="text-xl font-bold text-ink">
+          {a.orderAuditTitle}
+        </h2>
+        {audits.length === 0 ? (
+          <p className="mt-4 text-lg text-fog">{a.orderAuditEmpty}</p>
+        ) : (
+          <div className="mt-4 overflow-x-auto">
+            <table className="w-full min-w-[36rem] border-collapse text-left text-base">
+              <thead>
+                <tr className="border-b border-edge text-fog">
+                  <th className="py-2 pr-4 font-semibold">{a.orderAuditTime}</th>
+                  <th className="py-2 pr-4 font-semibold">{a.orderAuditActor}</th>
+                  <th className="py-2 pr-4 font-semibold">{a.orderAuditAction}</th>
+                  <th className="py-2 font-semibold">{a.orderAuditMeta}</th>
+                </tr>
+              </thead>
+              <tbody>
+                {audits.map((row) => (
+                  <tr key={row.id} className="border-b border-edge/60 align-top">
+                    <td className="py-2 pr-4 font-mono text-sm text-ink whitespace-nowrap">
+                      {new Intl.DateTimeFormat("fi-FI", {
+                        dateStyle: "short",
+                        timeStyle: "medium",
+                      }).format(row.createdAt)}
+                    </td>
+                    <td className="py-2 pr-4 text-ink">{row.actorEmail}</td>
+                    <td className="py-2 pr-4 font-mono text-sm text-ink">
+                      {row.action}
+                    </td>
+                    <td className="py-2 font-mono text-xs text-fog break-all">
+                      {auditMetaCell(row.metadata)}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
       </section>
     </div>
   );

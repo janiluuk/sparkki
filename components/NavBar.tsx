@@ -30,7 +30,7 @@ function navLinkClass(active: boolean) {
 }
 
 function subMenuLinkClass() {
-  return "block rounded-md px-3 py-2 text-[13px] text-fog transition-colors duration-150 hover:bg-g/[0.08] hover:text-g focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-g";
+  return "vire-sub-menu-link block rounded-md px-3 py-[7px] text-[13px] text-fog transition-colors duration-150 hover:bg-g/[0.08] hover:text-g focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-g";
 }
 
 export function NavBar({ locale }: { locale: string }) {
@@ -50,6 +50,8 @@ export function NavBar({ locale }: { locale: string }) {
   const aboutHubActive =
     pathname === "/about" ||
     pathname.startsWith("/about/") ||
+    pathname === "/meista" ||
+    pathname.startsWith("/meista/") ||
     pathname === "/yhteiso" ||
     pathname.startsWith("/yhteiso/");
 
@@ -62,8 +64,8 @@ export function NavBar({ locale }: { locale: string }) {
   ];
 
   const aboutLinks = [
-    { href: "/about", key: "aboutCompany" as const },
-    { href: "/yhteiso", key: "aboutCommunity" as const },
+    { href: "/meista", key: "aboutCompany" as const },
+    { href: "/meista/yhteiso", key: "aboutCommunity" as const },
   ];
 
   return (
@@ -102,7 +104,7 @@ export function NavBar({ locale }: { locale: string }) {
                 </span>
               </summary>
               <ul
-                className="absolute left-0 top-full z-50 mt-1 min-w-[220px] rounded-[10px] border border-em bg-card py-2 shadow-none"
+                className="vire-sub-menu flex flex-col absolute left-0 top-full z-50 mt-1 min-w-[200px] rounded-[10px] border border-em bg-card p-2 shadow-none"
                 role="menu"
               >
                 {infoLinks.map(({ href, key }) => (
@@ -139,7 +141,10 @@ export function NavBar({ locale }: { locale: string }) {
                   </span>
                 </span>
               </summary>
-              <ul className="absolute left-0 top-full z-50 mt-1 min-w-[220px] rounded-[10px] border border-em bg-card py-2">
+              <ul
+                className="vire-sub-menu flex flex-col absolute left-0 top-full z-50 mt-1 min-w-[200px] rounded-[10px] border border-em bg-card p-2 shadow-none"
+                role="menu"
+              >
                 {aboutLinks.map(({ href, key }) => (
                   <li key={key} role="none">
                     <Link

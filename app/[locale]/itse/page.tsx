@@ -66,14 +66,18 @@ export default async function ItsePage({
               <li key={g.id}>
                 <Link
                   href={`/itse/${g.slug}`}
-                  className="block min-h-tap rounded-2xl border border-edge bg-card p-6 transition hover:border-verso-green focus-visible:outline focus-visible:outline-2 focus-visible:outline-verso-green"
+                  className="guide-card block min-h-tap no-underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-verso-green"
                 >
-                  <span className="text-xs font-semibold uppercase tracking-wide text-verso-green">
-                    {g.category} · {g.difficulty}
-                  </span>
-                  <h3 className="mt-2 text-xl font-bold text-ink">{title}</h3>
-                  <p className="mt-2 text-lg text-ink">{desc}</p>
-                  <span className="mt-4 inline-block font-semibold text-verso-green">
+                  <p className="guide-num">
+                    {t("guideMeta", {
+                      minutes: g.minutesFi,
+                      category: g.category,
+                      difficulty: g.difficulty,
+                    })}
+                  </p>
+                  <h3 className="guide-title mt-2">{title}</h3>
+                  <p className="mt-2 text-lg text-fog">{desc}</p>
+                  <span className="mt-4 inline-block text-base font-semibold text-verso-green">
                     {t("readGuide")} →
                   </span>
                 </Link>

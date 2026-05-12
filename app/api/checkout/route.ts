@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 import type { ServiceTier } from "@prisma/client";
 import { DeliveryMethod, SupportTier } from "@prisma/client";
+import { getRequestId, logApiEvent } from "@/lib/log";
 import { prisma } from "@/lib/prisma";
 import { getStripe, stripeConfigured } from "@/lib/stripe";
 import { buildServiceLineItems } from "@/lib/stripe-line-items";
@@ -44,15 +45,20 @@ const checkoutSchema = z
   });
 
 export async function POST(req: Request) {
+  const requestId = getRequestId(req);
   let body: unknown;
   try {
     body = await req.json();
   } catch {
+    logApiEvent(requestId, "checkout.invalid_json", {});
     return NextResponse.json({ error: "invalid_json" }, { status: 400 });
   }
 
   const parsed = checkoutSchema.safeParse(body);
   if (!parsed.success) {
+    logApiEvent(requestId, "checkout.validation_error", {
+      issues: parsed.error.issues.length,
+    });
     return NextResponse.json(
       { error: "validation_error", details: parsed.error.flatten() },
       { status: 400 },
@@ -67,10 +73,14 @@ export async function POST(req: Request) {
       max: 25,
     }))
   ) {
+    logApiEvent(requestId, "checkout.rate_limited", {
+      ip: getClientIpFromHeaders(req.headers),
+    });
     return NextResponse.json({ error: "rate_limited" }, { status: 429 });
   }
 
   if (!stripeConfigured() || !getStripe()) {
+    logApiEvent(requestId, "checkout.stripe_not_configured", {});
     return NextResponse.json(
       { error: "stripe_not_configured" },
       { status: 503 },
@@ -93,6 +103,7 @@ export async function POST(req: Request) {
       ? new Date(data.preferredDate)
       : null;
   if (preferredDate && Number.isNaN(preferredDate.getTime())) {
+    logApiEvent(requestId, "checkout.invalid_date", {});
     return NextResponse.json({ error: "invalid_date" }, { status: 400 });
   }
 
@@ -146,16 +157,27 @@ export async function POST(req: Request) {
 
     if (!session.url) {
       await prisma.order.delete({ where: { id: order.id } });
+      logApiEvent(requestId, "checkout.stripe_no_checkout_url", {
+        orderId: order.id,
+      });
       return NextResponse.json(
         { error: "stripe_no_checkout_url" },
         { status: 502 },
       );
     }
 
+    logApiEvent(requestId, "checkout.session_created", {
+      orderId: order.id,
+      locale: data.locale,
+      tier: data.tier,
+    });
     return NextResponse.json({ url: session.url, orderId: order.id });
   } catch (e) {
     await prisma.order.delete({ where: { id: order.id } }).catch(() => {});
-    console.error("checkout session error", e);
+    logApiEvent(requestId, "checkout.stripe_error", {
+      orderId: order.id,
+      message: e instanceof Error ? e.message : "unknown",
+    });
     return NextResponse.json({ error: "stripe_error" }, { status: 502 });
   }
 }

@@ -50,11 +50,16 @@ const config: Config = {
       },
       letterSpacing: {
         hero: "-0.02em",
+        display: "-0.02em",
+        section: "-0.01em",
         label: "0.08em",
         eyebrow: "0.15em",
       },
       minHeight: {
         tap: "48px",
+      },
+      maxWidth: {
+        content: "1100px",
       },
     },
   },

@@ -133,6 +133,20 @@ model AdminUser {
   role         AdminRole @default(EDITOR)
 }
 
+/// Append-only log of admin mutations (orders, models, guides, etc.).
+model AdminAuditLog {
+  id         String   @id @default(cuid())
+  createdAt  DateTime @default(now())
+  actorEmail String
+  action     String
+  entity     String
+  entityId   String?
+  metadata   Json?
+
+  @@index([entity, entityId])
+  @@index([createdAt])
+}
+
 enum AdminRole {
   SUPER
   EDITOR

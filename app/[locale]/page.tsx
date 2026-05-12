@@ -34,7 +34,7 @@ export default async function HomePage() {
   const showYoutube = Boolean(youtubeUrl && youtubeUrl !== "#");
 
   return (
-    <div className="mx-auto max-w-[1100px] space-y-20 px-6 py-12 sm:px-12 sm:py-16">
+    <div className="mx-auto max-w-content space-y-20 px-6 py-12 sm:px-12 sm:py-16">
       <section className="verso-hero">
         <div className="verso-hero-inner">
           <p className="verso-eyebrow">{t("eyebrow")}</p>
@@ -56,7 +56,7 @@ export default async function HomePage() {
             <p className="mt-6 text-center">
               <a
                 href={youtubeUrl}
-                className="text-lg font-semibold text-verso-green underline-offset-4 hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-verso-green"
+                className="text-lg font-semibold text-g underline-offset-4 hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-g"
                 rel="noopener noreferrer"
                 target="_blank"
               >
@@ -72,45 +72,83 @@ export default async function HomePage() {
       <section aria-labelledby="steps-title">
         <h2
           id="steps-title"
-          className="font-display text-3xl font-extrabold tracking-tight text-ink"
+          className="font-display text-3xl font-extrabold tracking-section text-ink"
         >
           {t("stepsTitle")}
         </h2>
-        <ol className="mt-8 grid gap-6 sm:grid-cols-3">
-          {(["step1", "step2", "step3"] as const).map((key, i) => (
-            <li key={key} className="verso-card-hover p-6 sm:p-7">
-              <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-verso-green/12 text-xl font-bold text-verso-green ring-1 ring-verso-green/20">
-                {i + 1}
+        <div className="step-strip mt-8" role="list">
+          {(
+            [
+              { step: "step1" as const, icon: "step1Icon" as const },
+              { step: "step2" as const, icon: "step2Icon" as const },
+              { step: "step3" as const, icon: "step3Icon" as const },
+            ] as const
+          ).map(({ step, icon }, i) => (
+            <div key={step} className="step-item" role="listitem">
+              <div className="step-num">{String(i + 1).padStart(2, "0")}</div>
+              <span className="step-icon" aria-hidden>
+                {t(icon)}
               </span>
-              <p className="mt-5 text-lg font-medium leading-snug text-ink">
-                {t(key)}
-              </p>
-            </li>
+              <p className="step-body">{t(step)}</p>
+            </div>
           ))}
-        </ol>
+        </div>
       </section>
 
       <section aria-labelledby="pricing-title">
         <h2
           id="pricing-title"
-          className="font-display text-3xl font-extrabold tracking-tight text-ink"
+          className="font-display text-3xl font-extrabold tracking-section text-ink"
         >
           {t("pricingTitle")}
         </h2>
         <div className="mt-8 grid gap-6 md:grid-cols-3">
-          {(["tierBasic", "tierRam", "tierFull"] as const).map((key) => (
+          {(
+            [
+              {
+                tierKey: "tierBasic" as const,
+                noteKey: "tierNoteBasic" as const,
+                featured: false,
+              },
+              {
+                tierKey: "tierRam" as const,
+                noteKey: "tierNoteRam" as const,
+                featured: true,
+              },
+              {
+                tierKey: "tierFull" as const,
+                noteKey: "tierNoteFull" as const,
+                featured: false,
+              },
+            ] as const
+          ).map(({ tierKey, noteKey, featured }) => (
             <div
-              key={key}
-              className="verso-card-hover flex flex-col p-7 text-center"
+              key={tierKey}
+              className={`verso-card-hover relative flex flex-col p-7 text-center ${
+                featured ? "pricing-card-featured" : ""
+              }`}
             >
+              {featured ? (
+                <span className="pricing-badge-featured">
+                  {t("pricingBadgeFeatured")}
+                </span>
+              ) : null}
               <div className="mx-auto mb-3 h-1 w-10 rounded-full bg-verso-green/40" />
               <h3 className="font-display text-xl font-bold tracking-tight text-ink">
-                {t(key)}
+                {t(tierKey)}
               </h3>
               <p className="mt-4 text-lg text-fog">—</p>
+              <p
+                className={`pf-note mt-4 text-left ${
+                  tierKey === "tierFull" ? "pf-note--included" : ""
+                }`}
+              >
+                {t(noteKey)}
+              </p>
             </div>
           ))}
         </div>
+        <p className="pf-note mt-8 max-w-2xl text-pretty">{t("pricingFootnote")}</p>
       </section>
 
       <section aria-labelledby="benefits-title">

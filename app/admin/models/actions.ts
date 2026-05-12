@@ -2,8 +2,9 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
-import { getServerSession } from "next-auth";
+import { getServerSession } from "next-auth/next";
 import { ModelCheckStatus } from "@prisma/client";
+import { recordAdminAudit } from "@/lib/admin-audit";
 import { authOptions } from "@/lib/auth-options";
 import { prisma } from "@/lib/prisma";
 
@@ -16,7 +17,7 @@ async function requireAdminSession() {
 }
 
 export async function createComputerModel(formData: FormData) {
-  await requireAdminSession();
+  const session = await requireAdminSession();
   const make = String(formData.get("make") ?? "").trim();
   const model = String(formData.get("model") ?? "").trim();
   const yf = String(formData.get("yearFrom") ?? "").trim();
@@ -38,6 +39,13 @@ export async function createComputerModel(formData: FormData) {
         yearTo,
         status: "UNCHECKED",
       },
+    });
+    await recordAdminAudit({
+      actorEmail: session.user?.email ?? "unknown",
+      action: "model.create",
+      entity: "ComputerModel",
+      entityId: row.id,
+      metadata: { make, model },
     });
     revalidatePath("/admin/models");
     redirect(`/admin/models/${row.id}`);
@@ -73,6 +81,15 @@ export async function updateComputerModel(formData: FormData) {
 
   const status: ModelCheckStatus = compatible ? "APPROVED" : "REJECTED";
 
+  const prev = await prisma.computerModel.findUnique({
+    where: { id },
+    select: {
+      compatible: true,
+      verdict: true,
+      status: true,
+    },
+  });
+
   await prisma.computerModel.update({
     where: { id },
     data: {
@@ -84,6 +101,22 @@ export async function updateComputerModel(formData: FormData) {
       status,
       checkedAt: new Date(),
       checkedBy: session.user?.email ?? session.user?.id ?? "admin",
+    },
+  });
+  await recordAdminAudit({
+    actorEmail: session.user?.email ?? "unknown",
+    action: "model.verdict",
+    entity: "ComputerModel",
+    entityId: id,
+    metadata: {
+      from: prev
+        ? {
+            compatible: prev.compatible,
+            verdict: prev.verdict,
+            status: prev.status,
+          }
+        : null,
+      to: { compatible, verdict, status },
     },
   });
   revalidatePath("/admin/models");

@@ -1,4 +1,5 @@
 import Stripe from "stripe";
+import { getRequestId, logApiEvent } from "@/lib/log";
 import { prisma } from "@/lib/prisma";
 import { getStripe } from "@/lib/stripe";
 import { sendOrderConfirmedEmail, sendUsbConfirmedEmail } from "@/lib/email";
@@ -72,9 +73,11 @@ async function handleCheckoutSessionCompleted(session: Stripe.Checkout.Session) 
 }
 
 export async function POST(req: Request) {
+  const requestId = getRequestId(req);
   const stripe = getStripe();
   const secret = process.env.STRIPE_WEBHOOK_SECRET;
   if (!stripe || !secret) {
+    logApiEvent(requestId, "stripe_webhook.not_configured", {});
     return new Response(JSON.stringify({ error: "not_configured" }), {
       status: 503,
       headers: { "Content-Type": "application/json" },
@@ -83,6 +86,7 @@ export async function POST(req: Request) {
 
   const sig = req.headers.get("stripe-signature");
   if (!sig) {
+    logApiEvent(requestId, "stripe_webhook.missing_signature", {});
     return new Response(JSON.stringify({ error: "missing_signature" }), {
       status: 400,
       headers: { "Content-Type": "application/json" },
@@ -94,11 +98,17 @@ export async function POST(req: Request) {
   try {
     event = stripe.webhooks.constructEvent(buf, sig, secret);
   } catch {
+    logApiEvent(requestId, "stripe_webhook.invalid_signature", {});
     return new Response(JSON.stringify({ error: "invalid_signature" }), {
       status: 400,
       headers: { "Content-Type": "application/json" },
     });
   }
+
+  logApiEvent(requestId, "stripe_webhook.event", {
+    type: event.type,
+    id: event.id,
+  });
 
   if (event.type !== "checkout.session.completed") {
     return new Response(JSON.stringify({ received: true }), {
@@ -111,6 +121,7 @@ export async function POST(req: Request) {
     await prisma.stripeProcessedEvent.create({ data: { id: event.id } });
   } catch (e: unknown) {
     if (isPrismaUniqueViolation(e)) {
+      logApiEvent(requestId, "stripe_webhook.deduped", { eventId: event.id });
       return new Response(JSON.stringify({ received: true, deduped: true }), {
         status: 200,
         headers: { "Content-Type": "application/json" },
@@ -123,8 +134,15 @@ export async function POST(req: Request) {
 
   try {
     await handleCheckoutSessionCompleted(session);
+    logApiEvent(requestId, "stripe_webhook.checkout_completed_ok", {
+      eventId: event.id,
+      kind: session.metadata?.kind ?? null,
+    });
   } catch (e) {
-    console.error("stripe webhook handler error", e);
+    logApiEvent(requestId, "stripe_webhook.handler_error", {
+      eventId: event.id,
+      message: e instanceof Error ? e.message : "unknown",
+    });
     await prisma.stripeProcessedEvent
       .delete({ where: { id: event.id } })
       .catch(() => {});

@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev -p 1337",
-    "build": "prisma generate && next build",
+    "build": "prisma generate && next build && mkdir -p .next/standalone/.next && rm -rf .next/standalone/.next/static .next/standalone/public && cp -r .next/static .next/standalone/.next/static && cp -r public .next/standalone/public",
     "start": "sh -c 'cd .next/standalone && exec node server.js'",
     "lint": "next lint",
     "test": "npm run test:unit && npm run test:functional",

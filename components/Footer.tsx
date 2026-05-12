@@ -71,7 +71,7 @@ export async function Footer() {
                 </PulseLink>
               </li>
               <li>
-                <PulseLink href="/yhteiso" className={`${linkMuted} px-1`}>
+                <PulseLink href="/meista/yhteiso" className={`${linkMuted} px-1`}>
                   {t("community")}
                 </PulseLink>
               </li>

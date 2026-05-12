@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
+import { getRequestId, logApiEvent } from "@/lib/log";
 import { prisma } from "@/lib/prisma";
 import { getStripe, stripeConfigured } from "@/lib/stripe";
 import { buildUsbLineItems } from "@/lib/stripe-line-items";
@@ -15,15 +16,20 @@ const usbSchema = z.object({
 });
 
 export async function POST(req: Request) {
+  const requestId = getRequestId(req);
   let body: unknown;
   try {
     body = await req.json();
   } catch {
+    logApiEvent(requestId, "checkout_usb.invalid_json", {});
     return NextResponse.json({ error: "invalid_json" }, { status: 400 });
   }
 
   const parsed = usbSchema.safeParse(body);
   if (!parsed.success) {
+    logApiEvent(requestId, "checkout_usb.validation_error", {
+      issues: parsed.error.issues.length,
+    });
     return NextResponse.json(
       { error: "validation_error", details: parsed.error.flatten() },
       { status: 400 },
@@ -38,10 +44,14 @@ export async function POST(req: Request) {
       max: 25,
     }))
   ) {
+    logApiEvent(requestId, "checkout_usb.rate_limited", {
+      ip: getClientIpFromHeaders(req.headers),
+    });
     return NextResponse.json({ error: "rate_limited" }, { status: 429 });
   }
 
   if (!stripeConfigured() || !getStripe()) {
+    logApiEvent(requestId, "checkout_usb.stripe_not_configured", {});
     return NextResponse.json(
       { error: "stripe_not_configured" },
       { status: 503 },
@@ -83,16 +93,26 @@ export async function POST(req: Request) {
 
     if (!session.url) {
       await prisma.usbOrder.delete({ where: { id: usb.id } });
+      logApiEvent(requestId, "checkout_usb.stripe_no_checkout_url", {
+        orderId: usb.id,
+      });
       return NextResponse.json(
         { error: "stripe_no_checkout_url" },
         { status: 502 },
       );
     }
 
+    logApiEvent(requestId, "checkout_usb.session_created", {
+      orderId: usb.id,
+      locale: data.locale,
+    });
     return NextResponse.json({ url: session.url, orderId: usb.id });
   } catch (e) {
     await prisma.usbOrder.delete({ where: { id: usb.id } }).catch(() => {});
-    console.error("usb checkout session error", e);
+    logApiEvent(requestId, "checkout_usb.stripe_error", {
+      orderId: usb.id,
+      message: e instanceof Error ? e.message : "unknown",
+    });
     return NextResponse.json({ error: "stripe_error" }, { status: 502 });
   }
 }

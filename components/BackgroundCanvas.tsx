@@ -7,7 +7,7 @@ import {
   type VersoBgNavDetail,
 } from "@/lib/background-nav";
 
-/** Decorative ambient canvas — DESIGN_SYSTEM.md + ROADMAP */
+/** Decorative ambient canvas — DESIGN_SYSTEM.md (Three.js background spec) */
 export function BackgroundCanvas() {
   const ref = useRef<HTMLCanvasElement>(null);
 
@@ -40,10 +40,8 @@ export function BackgroundCanvas() {
 
     type MeshWithVel = THREE.Mesh & {
       _vel: THREE.Vector3;
-      _phase: number;
     };
 
-    /** Brief boost when user navigates (decays each frame). */
     let navImpulse = 0;
 
     const bumpNavImpulse = (e: Event) => {
@@ -62,6 +60,13 @@ export function BackgroundCanvas() {
     window.addEventListener(VERSO_BG_NAV_EVENT, bumpNavImpulse);
     window.addEventListener("popstate", onPopState);
 
+    const onResize = () => {
+      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(window.innerWidth, window.innerHeight);
+      renderer.render(scene, camera);
+    };
+
     if (reducedMotion) {
       const mat = new THREE.MeshBasicMaterial({
         color: 0x1df5a0,
@@ -75,35 +80,39 @@ export function BackgroundCanvas() {
       scene.add(mesh);
       meshes.push(mesh);
       renderer.render(scene, camera);
-    } else {
-      const count = 100;
-      for (let i = 0; i < count; i++) {
-        const amber = Math.random() < 0.15;
-        const mat = new THREE.MeshBasicMaterial({
-          color: amber ? 0xf5a623 : 0x1df5a0,
-          transparent: true,
-          opacity: amber
-            ? 0.05 + Math.random() * 0.05
-            : 0.06 + Math.random() * 0.12,
-          wireframe: true,
-        });
-        const mesh = new THREE.Mesh(geometry, mat) as unknown as MeshWithVel;
-        mesh.position.set(
-          (Math.random() - 0.5) * 40,
-          (Math.random() - 0.5) * 30,
-          (Math.random() - 0.5) * 20,
-        );
-        const s = 0.3 + Math.random() * 1.2;
-        mesh.scale.setScalar(s);
-        mesh._vel = new THREE.Vector3(
-          (Math.random() - 0.5) * 0.003,
-          (Math.random() - 0.5) * 0.003,
-          0,
-        );
-        mesh._phase = Math.random() * Math.PI * 2;
-        scene.add(mesh);
-        meshes.push(mesh);
-      }
+      window.addEventListener("resize", onResize);
+
+      return () => {
+        window.removeEventListener(VERSO_BG_NAV_EVENT, bumpNavImpulse);
+        window.removeEventListener("popstate", onPopState);
+        window.removeEventListener("resize", onResize);
+        mat.dispose();
+        geometry.dispose();
+        renderer.dispose();
+      };
+    }
+
+    const count = Math.floor(80 + Math.random() * 41);
+    for (let i = 0; i < count; i++) {
+      const amber = Math.random() < 0.15;
+      const mat = new THREE.MeshBasicMaterial({
+        color: amber ? 0xf5a623 : 0x1df5a0,
+        transparent: true,
+        opacity: amber
+          ? 0.05 + Math.random() * 0.05
+          : 0.06 + Math.random() * 0.12,
+        wireframe: true,
+      });
+      const mesh = new THREE.Mesh(geometry, mat) as unknown as MeshWithVel;
+      mesh.position.set((Math.random() - 0.5) * 40, (Math.random() - 0.5) * 30, 0);
+      mesh.scale.setScalar(0.3 + Math.random() * 1.2);
+      mesh._vel = new THREE.Vector3(
+        (Math.random() - 0.5) * 0.003,
+        (Math.random() - 0.5) * 0.003,
+        0,
+      );
+      scene.add(mesh);
+      meshes.push(mesh);
     }
 
     let animId = 0;
@@ -117,42 +126,20 @@ export function BackgroundCanvas() {
       const impulse = navImpulse;
       navImpulse *= 0.9;
 
-      if (reducedMotion) {
-        const m = meshes[0];
-        const base = 1.45;
-        m.scale.setScalar(base + impulse * 0.42);
-        m.rotation.z += 0.0012 + impulse * 0.014;
-        m.rotation.y += 0.0006 + impulse * 0.006;
-      } else {
-        meshes.forEach((m) => {
-          const mm = m as MeshWithVel;
-          const speed = 1 + impulse * 2.4;
-          mm.position.addScaledVector(mm._vel, speed);
+      const spin = 1 + impulse * 0.35;
+      meshes.forEach((m) => {
+        const mm = m as MeshWithVel;
+        const speed = 1 + impulse * 0.45;
+        mm.position.addScaledVector(mm._vel, speed);
 
-          const bob =
-            Math.sin(now * 0.00016 + mm._phase) * 0.0022 +
-            Math.sin(now * 0.00011 + mm._phase * 1.7) * 0.0011;
-          mm.position.x += bob * 0.55;
-          mm.position.y +=
-            Math.cos(now * 0.00014 + mm._phase * 0.85) * 0.0018;
+        m.rotation.x += 0.002 * spin;
+        m.rotation.y += 0.001 * spin;
 
-          const spin = 1 + impulse * 2.2;
-          m.rotation.x += 0.002 * spin;
-          m.rotation.y += 0.001 * spin;
-          m.rotation.z += Math.sin(now * 0.00012 + mm._phase) * 0.00035;
-
-          if (Math.abs(m.position.x) > 22) mm._vel.x *= -1;
-          if (Math.abs(m.position.y) > 17) mm._vel.y *= -1;
-        });
-      }
+        if (Math.abs(m.position.x) > 22) mm._vel.x *= -1;
+        if (Math.abs(m.position.y) > 17) mm._vel.y *= -1;
+      });
 
       renderer.render(scene, camera);
-    };
-
-    const onResize = () => {
-      camera.aspect = window.innerWidth / window.innerHeight;
-      camera.updateProjectionMatrix();
-      renderer.setSize(window.innerWidth, window.innerHeight);
     };
 
     const onVisibility = () => {
@@ -172,6 +159,10 @@ export function BackgroundCanvas() {
       window.removeEventListener("popstate", onPopState);
       window.removeEventListener("resize", onResize);
       document.removeEventListener("visibilitychange", onVisibility);
+      meshes.forEach((m) => {
+        (m.material as THREE.Material).dispose();
+      });
+      geometry.dispose();
       renderer.dispose();
     };
   }, []);

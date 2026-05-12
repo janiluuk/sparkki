@@ -47,6 +47,11 @@
   h2,
   h3 {
     @apply font-display font-extrabold tracking-tight text-ink;
+    letter-spacing: -0.01em;
+  }
+
+  h1 {
+    letter-spacing: -0.02em;
   }
 }
 
@@ -130,6 +135,161 @@ body {
 
   details.verso-nav-disclosure > summary::-webkit-details-marker {
     display: none;
+  }
+
+  /* Design system: guide cards (itse), pricing footnote */
+  .guide-card {
+    position: relative;
+    overflow: hidden;
+    border-radius: 16px;
+    border: 1px solid var(--border);
+    background: var(--bg3);
+    padding: 28px;
+    transition: border-color 0.2s;
+  }
+
+  .guide-card::after {
+    content: "";
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: var(--g);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.2s;
+  }
+
+  .guide-card:hover::after {
+    transform: scaleX(1);
+  }
+
+  .guide-card:hover {
+    border-color: var(--border2);
+  }
+
+  .guide-num {
+    font-family: var(--font-dm-mono), ui-monospace, monospace;
+    font-size: 10px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--dim);
+  }
+
+  .guide-title {
+    font-family: var(--font-display), ui-sans-serif, system-ui, sans-serif;
+    font-size: 17px;
+    font-weight: 700;
+    line-height: 1.3;
+    color: var(--text);
+  }
+
+  /* DESIGN_SYSTEM.md — pricing HDD footnotes */
+  .pf-note {
+    display: flex;
+    align-items: flex-start;
+    gap: 7px;
+    padding: 4px 0;
+    font-size: 11px;
+    line-height: 1.5;
+    font-style: italic;
+    color: var(--dim);
+    font-weight: 300;
+  }
+
+  .pf-note--included {
+    font-style: normal;
+    color: var(--g);
+    font-weight: 500;
+  }
+
+  /* Homepage step strip (DESIGN_SYSTEM.md) */
+  .step-strip {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    border-top: 1px solid var(--border);
+  }
+
+  .step-item {
+    position: relative;
+    border-right: 1px solid var(--border);
+    padding: 36px 28px 36px 32px;
+  }
+
+  @media (max-width: 639px) {
+    .step-strip {
+      grid-template-columns: 1fr;
+    }
+
+    .step-item {
+      border-right: none;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .step-item:last-child {
+      border-bottom: none;
+    }
+  }
+
+  .step-item:last-child {
+    border-right: none;
+  }
+
+  .step-num {
+    font-family: var(--font-syne), ui-sans-serif, system-ui, sans-serif;
+    font-size: 52px;
+    font-weight: 800;
+    line-height: 1;
+    letter-spacing: -2px;
+    color: rgba(29, 245, 160, 0.08);
+    margin-bottom: 12px;
+  }
+
+  .step-icon {
+    position: absolute;
+    top: 36px;
+    right: 28px;
+    font-size: 20px;
+    line-height: 1;
+    opacity: 0.3;
+  }
+
+  .step-body {
+    font-size: 1.125rem;
+    font-weight: 400;
+    line-height: 1.5;
+    color: var(--text);
+  }
+
+  /* Nav dropdown: gap 2px between items (DESIGN_SYSTEM.md) */
+  .vire-sub-menu {
+    gap: 2px;
+  }
+
+  .vire-sub-menu-link {
+    width: 100%;
+  }
+
+  /* Featured pricing tier + badge (i18n adds visible badge element) */
+  .pricing-card-featured {
+    position: relative;
+    border-color: var(--g);
+    background: rgba(29, 245, 160, 0.04);
+  }
+
+  .pricing-badge-featured {
+    position: absolute;
+    top: -12px;
+    left: 24px;
+    border-radius: 999px;
+    background: var(--g);
+    color: var(--bg);
+    padding: 3px 10px;
+    font-family: var(--font-dm-mono), ui-monospace, monospace;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.05em;
   }
 }
 
