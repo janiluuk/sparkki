@@ -709,13 +709,13 @@ ADMIN_EMAIL="admin@verso.fi"
 ### Phase 5 — Post-launch `Month 2+`
 
 - [x] Order tracking page `app/[locale]/tilaus/[id]/page.tsx` (+ hub `/tilaus`) — public lookup by order ID + email; service and USB orders.
-- [ ] Bulk B2B quote form on `/palvelu` — different flow from single-unit order
+- [x] Bulk B2B quote form on `/palvelu` — different flow from single-unit order (`/[locale]/palvelu/b2b`, email via `B2B_QUOTE_NOTIFY_EMAIL` + Resend).
 - [ ] Expand guide library: all 7 guides written and published
-- [ ] Verso YouTube channel linked everywhere
+- [x] Verso YouTube channel linked everywhere (when `NEXT_PUBLIC_YOUTUBE_CHANNEL_URL` is set: home, footer, community).
 - [ ] Verso Checker desktop app (Tauri, wraps `lib/compatibility.ts` logic, outputs JSON)
 - [ ] Switch component sourcing to wholesale (Crucial/Kingston) when volume > 20 units/month
-- [ ] Admin dashboard stats: revenue chart, orders per week, model approval rate
-- [ ] Rate limiting on API routes (use `@upstash/ratelimit` or simple IP check)
+- [x] Admin dashboard stats: revenue chart, orders per week, model approval rate — 7-day order bars + week revenue + approval %.
+- [x] Rate limiting on API routes (use `@upstash/ratelimit` or simple IP check) — shared `lib/rate-limit.ts` on order lookup + Stripe checkout routes.
 
 ---
 

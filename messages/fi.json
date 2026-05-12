@@ -104,7 +104,8 @@
     "support": "Asiakaspalvelu",
     "about": "Tietoa meistä",
     "orderTracking": "Tilauksen seuranta",
-    "discord": "Discord-yhteisö"
+    "discord": "Discord-yhteisö",
+    "youtube": "YouTube-kanava"
   },
   "home": {
     "eyebrow": "Uusiokäyttö",
@@ -112,6 +113,7 @@
     "subtitle": "Asennamme SSD:n, lisäämme muistia ja Linuxin. Nopea käynnistys, turvallinen käyttö, pienempi hiilijalanjälki.",
     "ctaService": "Tilaa palvelu",
     "ctaDiy": "Tee itse — oppaat",
+    "youtubeCta": "Katso videoita YouTubessa",
     "speedBefore": "Ennen: HDD-käynnistys",
     "speedAfter": "Jälkeen: SSD + Linux",
     "stepsTitle": "Näin helppoa se on",
@@ -142,6 +144,8 @@
     "how5": "Maksat turvallisesti Stripen kautta — saat vahvistuksen sähköpostiin.",
     "pricingTitle": "Paketit",
     "pricingNote": "Hinnat sisältävät arvonlisäveron. Tarkka summa näkyy kassalla.",
+    "b2bBanner": "Tarvitsetko useita koneita tai yritysmyyntiä?",
+    "b2bCta": "Pyydä tarjous",
     "wizardLegalHint": "Jatkamalla hyväksyt tilauksen ehdot ja henkilötietojen käsittelyn tilauksen toteuttamiseksi.",
     "wizard": {
       "title": "Tilaus",
@@ -195,6 +199,24 @@
         "missing_make_or_model": "Täytä merkki ja malli."
       }
     },
+    "b2b": {
+      "title": "Yritys- ja määrätilaukset",
+      "metaDescription": "Pyydä tarjous useammasta koneesta tai yrityskohtaisesta palvelusta.",
+      "intro": "Kerro tarpeestasi — palaamme sähköpostilla. Kuluttajille tarkoitettu tilauspolku on alla; tämä lomake on tarkoitettu yrityksille ja isommille erille.",
+      "backToService": "← Palvelu-sivulle",
+      "sentOk": "Tarjouspyyntö lähetettiin. Otamme yhteyttä mahdollisimman pian.",
+      "errorValidation": "Tarkista kentät ja yritä uudelleen.",
+      "errorConfig": "Tarjouspyyntöjen vastaanotto ei ole vielä käytössä tässä ympäristössä. Ota yhteyttä suoraan osoitteeseen tuki@verso.fi.",
+      "errorSend": "Lähetys epäonnistui. Yritä hetken kuluttua tai lähetä viesti osoitteeseen tuki@verso.fi.",
+      "fieldCompany": "Yrityksen nimi",
+      "fieldContact": "Yhteyshenkilö",
+      "fieldEmail": "Sähköposti",
+      "fieldPhone": "Puhelin (valinnainen)",
+      "fieldUnits": "Arvioitu määrä tai laajuus",
+      "fieldUnitsPlaceholder": "esim. 15 kannettavaa / 1 toimisto",
+      "fieldMessage": "Viesti ja aikataulu",
+      "submit": "Lähetä tarjouspyyntö"
+    },
     "thanks": {
       "title": "Kiitos tilauksesta!",
       "serviceBody": "Maksu on vastaanotettu. Lähetämme vahvistuksen sähköpostiin.",
@@ -245,6 +267,8 @@
   "yhteiso": {
     "title": "Yhteisö",
     "intro": "Liity Discordiin — kysymyksiä, vinkkejä ja vertaistukea.",
+    "youtubeIntro": "Katso lyhyitä ohjeita ja demoja YouTube-kanavalla.",
+    "youtubeCta": "Avaa YouTube-kanava",
     "guidelinesTitle": "Pelisäännöt",
     "guidelinesBody": "Ole ystävällinen, ei roskapostia. Keskity tietokoneisiin ja Linuxiin.",
     "discordCta": "Avaa Discord"
@@ -267,6 +291,12 @@
     "statTodayOrders": "Tilauksia tänään",
     "statTodayRevenue": "Liikevaihto tänään",
     "statModelsUnchecked": "Tarkistamatta olevia malleja",
+    "statWeekOrders": "Tilauksia (7 pv)",
+    "statWeekOrdersHint": "Palvelutilaukset päivittäin",
+    "statWeekRevenue": "Liikevaihto 7 pv",
+    "statModelApproval": "Mallien hyväksyntä",
+    "statModelApprovalHint": "Hyväksytty / (hyväksytty + hylätty)",
+    "statModelApprovalEmpty": "Ei vielä päätettyjä malleja",
     "statEur": "€",
     "ordersStub": "Hallitse tilauksia ja tilaa valmiiksi -sähköposteja.",
     "ordersIntro": "Viimeisimmät tilaukset.",

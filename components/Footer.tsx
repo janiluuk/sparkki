@@ -3,6 +3,8 @@ import { Link } from "@/i18n/navigation";
 
 export async function Footer() {
   const t = await getTranslations("footer");
+  const youtubeUrl = process.env.NEXT_PUBLIC_YOUTUBE_CHANNEL_URL?.trim();
+  const showYoutube = Boolean(youtubeUrl && youtubeUrl !== "#");
   return (
     <footer className="mt-auto border-t border-void-800/20 bg-void-950 text-gray-100">
       <div className="mx-auto max-w-6xl px-4 py-12 sm:py-14">
@@ -34,6 +36,16 @@ export async function Footer() {
             >
               {t("orderTracking")}
             </Link>
+            {showYoutube ? (
+              <a
+                href={youtubeUrl}
+                className="min-h-tap rounded-lg px-1 py-2 text-lg font-medium text-gray-200 underline-offset-4 hover:text-white hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-verso-green"
+                rel="noopener noreferrer"
+                target="_blank"
+              >
+                {t("youtube")}
+              </a>
+            ) : null}
             <a
               href={process.env.NEXT_PUBLIC_DISCORD_INVITE ?? "#"}
               className="min-h-tap rounded-lg px-1 py-2 text-lg font-medium text-gray-200 underline-offset-4 hover:text-white hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-verso-green"

@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
+import { Link } from "@/i18n/navigation";
 import { localePathAlternates } from "@/lib/seo";
 import { OrderWizard } from "@/components/wizard/OrderWizard";
 
@@ -63,6 +64,22 @@ export default async function PalveluPage({
           {t("pricingTitle")}
         </h2>
         <p className="mt-4 text-lg text-gray-900">{t("pricingNote")}</p>
+      </section>
+
+      <section
+        aria-labelledby="b2b-title"
+        className="verso-card border-verso-green/25 bg-verso-green/5 p-6 sm:p-8"
+      >
+        <h2 id="b2b-title" className="text-2xl font-bold text-gray-900">
+          {t("b2bBanner")}
+        </h2>
+        <p className="mt-4 text-lg text-gray-800">{t("b2b.intro")}</p>
+        <Link
+          href="/palvelu/b2b"
+          className="verso-btn-secondary mt-6 inline-flex min-h-tap items-center justify-center"
+        >
+          {t("b2bCta")}
+        </Link>
       </section>
 
       <OrderWizard locale={locale} />

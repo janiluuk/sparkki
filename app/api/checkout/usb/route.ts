@@ -4,6 +4,7 @@ import { prisma } from "@/lib/prisma";
 import { getStripe, stripeConfigured } from "@/lib/stripe";
 import { buildUsbLineItems } from "@/lib/stripe-line-items";
 import { USB_ORDER_CENTS, getUsbStripePriceId } from "@/lib/pricing";
+import { checkRateLimit, getClientIp } from "@/lib/rate-limit";
 
 const usbSchema = z.object({
   customerName: z.string().min(1).max(200),
@@ -29,6 +30,10 @@ export async function POST(req: Request) {
   }
 
   const data = parsed.data;
+
+  if (!checkRateLimit(`checkout-usb:${getClientIp()}`, { windowMs: 60_000, max: 25 })) {
+    return NextResponse.json({ error: "rate_limited" }, { status: 429 });
+  }
 
   if (!stripeConfigured() || !getStripe()) {
     return NextResponse.json(

@@ -104,7 +104,8 @@
     "support": "Customer support",
     "about": "About us",
     "orderTracking": "Order tracking",
-    "discord": "Discord community"
+    "discord": "Discord community",
+    "youtube": "YouTube channel"
   },
   "home": {
     "eyebrow": "Refurbishment",
@@ -112,6 +113,7 @@
     "subtitle": "We install an SSD, more RAM, and Linux. Fast boot, safer use, smaller footprint.",
     "ctaService": "Book the service",
     "ctaDiy": "DIY — guides",
+    "youtubeCta": "Watch on YouTube",
     "speedBefore": "Before: HDD boot",
     "speedAfter": "After: SSD + Linux",
     "stepsTitle": "How it works",
@@ -142,6 +144,8 @@
     "how5": "Pay securely with Stripe — confirmation by email.",
     "pricingTitle": "Packages",
     "pricingNote": "Prices include VAT. Exact total is shown at checkout.",
+    "b2bBanner": "Need several machines or a business quote?",
+    "b2bCta": "Request a quote",
     "wizardLegalHint": "By continuing you accept the order terms and processing of personal data to fulfill the order.",
     "wizard": {
       "title": "Order",
@@ -195,6 +199,24 @@
         "missing_make_or_model": "Enter manufacturer and model."
       }
     },
+    "b2b": {
+      "title": "Business and volume orders",
+      "metaDescription": "Request a quote for multiple machines or a tailored business arrangement.",
+      "intro": "Tell us what you need — we will reply by email. The consumer checkout flow is below; this form is for companies and larger batches.",
+      "backToService": "← Back to service page",
+      "sentOk": "Your quote request was sent. We will get back to you as soon as we can.",
+      "errorValidation": "Please check the fields and try again.",
+      "errorConfig": "Quote requests are not enabled in this environment yet. Email us at tuki@verso.fi.",
+      "errorSend": "Sending failed. Try again shortly or email tuki@verso.fi.",
+      "fieldCompany": "Company name",
+      "fieldContact": "Contact person",
+      "fieldEmail": "Email",
+      "fieldPhone": "Phone (optional)",
+      "fieldUnits": "Estimated volume or scope",
+      "fieldUnitsPlaceholder": "e.g. 15 laptops / one office",
+      "fieldMessage": "Message and timing",
+      "submit": "Send quote request"
+    },
     "thanks": {
       "title": "Thank you for your order!",
       "serviceBody": "Payment received. We will email a confirmation.",
@@ -245,6 +267,8 @@
   "yhteiso": {
     "title": "Community",
     "intro": "Join Discord — questions, tips, and peer help.",
+    "youtubeIntro": "Short how-tos and demos on our YouTube channel.",
+    "youtubeCta": "Open YouTube channel",
     "guidelinesTitle": "Guidelines",
     "guidelinesBody": "Be kind, no spam. Focus on computers and Linux.",
     "discordCta": "Open Discord"
@@ -267,6 +291,12 @@
     "statTodayOrders": "Orders today",
     "statTodayRevenue": "Revenue today",
     "statModelsUnchecked": "Models unchecked",
+    "statWeekOrders": "Orders (7 days)",
+    "statWeekOrdersHint": "Service orders per day",
+    "statWeekRevenue": "Revenue (7 days)",
+    "statModelApproval": "Model approval rate",
+    "statModelApprovalHint": "Approved / (approved + rejected)",
+    "statModelApprovalEmpty": "No decided models yet",
     "statEur": "€",
     "ordersStub": "Manage orders and send completion emails.",
     "ordersIntro": "Latest orders.",

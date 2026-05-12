@@ -30,6 +30,8 @@ export async function generateMetadata({
 
 export default async function HomePage() {
   const t = await getTranslations("home");
+  const youtubeUrl = process.env.NEXT_PUBLIC_YOUTUBE_CHANNEL_URL?.trim();
+  const showYoutube = Boolean(youtubeUrl && youtubeUrl !== "#");
 
   return (
     <div className="mx-auto max-w-6xl space-y-20 px-4 py-12 sm:py-16">
@@ -50,6 +52,18 @@ export default async function HomePage() {
               {t("ctaDiy")}
             </Link>
           </div>
+          {showYoutube ? (
+            <p className="mt-6 text-center">
+              <a
+                href={youtubeUrl}
+                className="text-lg font-semibold text-verso-green underline-offset-4 hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-verso-green"
+                rel="noopener noreferrer"
+                target="_blank"
+              >
+                {t("youtubeCta")}
+              </a>
+            </p>
+          ) : null}
         </div>
       </section>
 

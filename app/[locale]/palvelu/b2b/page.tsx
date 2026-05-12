@@ -1,0 +1,175 @@
+import type { Metadata } from "next";
+import { getTranslations } from "next-intl/server";
+import { Link } from "@/i18n/navigation";
+import { localePathAlternates } from "@/lib/seo";
+import { submitB2bQuote } from "./actions";
+
+export async function generateMetadata({
+  params: { locale },
+}: {
+  params: { locale: string };
+}): Promise<Metadata> {
+  const t = await getTranslations({ locale, namespace: "palvelu" });
+  return {
+    title: t("b2b.title"),
+    description: t("b2b.metaDescription"),
+    ...localePathAlternates(locale, "/palvelu/b2b"),
+    openGraph: {
+      title: t("b2b.title"),
+      description: t("b2b.metaDescription"),
+      type: "website",
+      locale: locale === "fi" ? "fi_FI" : "en_US",
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: t("b2b.title"),
+      description: t("b2b.metaDescription"),
+    },
+  };
+}
+
+export default async function PalveluB2bPage({
+  params,
+  searchParams,
+}: {
+  params: { locale: string };
+  searchParams: { sent?: string; err?: string };
+}) {
+  const t = await getTranslations("palvelu");
+  const { locale } = params;
+  const sent = searchParams.sent === "1";
+  const err = searchParams.err;
+
+  return (
+    <div className="mx-auto max-w-2xl space-y-10 px-4 py-12">
+      <header>
+        <p className="text-sm font-semibold text-verso-green">
+          <Link href="/palvelu" className="hover:underline">
+            {t("b2b.backToService")}
+          </Link>
+        </p>
+        <h1 className="mt-4 text-4xl font-bold text-gray-900">{t("b2b.title")}</h1>
+        <p className="mt-4 text-xl text-gray-900">{t("b2b.intro")}</p>
+      </header>
+
+      {sent ? (
+        <p
+          className="rounded-xl border border-verso-green/40 bg-verso-green/10 px-4 py-3 text-lg text-gray-900"
+          role="status"
+        >
+          {t("b2b.sentOk")}
+        </p>
+      ) : null}
+
+      {err === "validation" ? (
+        <p className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-lg text-red-900">
+          {t("b2b.errorValidation")}
+        </p>
+      ) : null}
+      {err === "config" ? (
+        <p className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-lg text-gray-900">
+          {t("b2b.errorConfig")}
+        </p>
+      ) : null}
+      {err === "send" ? (
+        <p className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-lg text-red-900">
+          {t("b2b.errorSend")}
+        </p>
+      ) : null}
+
+      <form action={submitB2bQuote} className="verso-card space-y-6 p-6 sm:p-8">
+        <input type="hidden" name="locale" value={locale} />
+
+        <div>
+          <label htmlFor="companyName" className="block text-sm font-semibold text-gray-800">
+            {t("b2b.fieldCompany")}
+          </label>
+          <input
+            id="companyName"
+            name="companyName"
+            type="text"
+            required
+            maxLength={200}
+            autoComplete="organization"
+            className="mt-2 w-full rounded-lg border border-gray-300 px-3 py-2 text-lg text-gray-900 focus:border-verso-green focus:outline-none focus:ring-2 focus:ring-verso-green/30"
+          />
+        </div>
+
+        <div>
+          <label htmlFor="contactName" className="block text-sm font-semibold text-gray-800">
+            {t("b2b.fieldContact")}
+          </label>
+          <input
+            id="contactName"
+            name="contactName"
+            type="text"
+            required
+            maxLength={200}
+            autoComplete="name"
+            className="mt-2 w-full rounded-lg border border-gray-300 px-3 py-2 text-lg text-gray-900 focus:border-verso-green focus:outline-none focus:ring-2 focus:ring-verso-green/30"
+          />
+        </div>
+
+        <div>
+          <label htmlFor="email" className="block text-sm font-semibold text-gray-800">
+            {t("b2b.fieldEmail")}
+          </label>
+          <input
+            id="email"
+            name="email"
+            type="email"
+            required
+            maxLength={320}
+            autoComplete="email"
+            className="mt-2 w-full rounded-lg border border-gray-300 px-3 py-2 text-lg text-gray-900 focus:border-verso-green focus:outline-none focus:ring-2 focus:ring-verso-green/30"
+          />
+        </div>
+
+        <div>
+          <label htmlFor="phone" className="block text-sm font-semibold text-gray-800">
+            {t("b2b.fieldPhone")}
+          </label>
+          <input
+            id="phone"
+            name="phone"
+            type="tel"
+            maxLength={50}
+            autoComplete="tel"
+            className="mt-2 w-full rounded-lg border border-gray-300 px-3 py-2 text-lg text-gray-900 focus:border-verso-green focus:outline-none focus:ring-2 focus:ring-verso-green/30"
+          />
+        </div>
+
+        <div>
+          <label htmlFor="estimatedUnits" className="block text-sm font-semibold text-gray-800">
+            {t("b2b.fieldUnits")}
+          </label>
+          <input
+            id="estimatedUnits"
+            name="estimatedUnits"
+            type="text"
+            maxLength={100}
+            placeholder={t("b2b.fieldUnitsPlaceholder")}
+            className="mt-2 w-full rounded-lg border border-gray-300 px-3 py-2 text-lg text-gray-900 focus:border-verso-green focus:outline-none focus:ring-2 focus:ring-verso-green/30"
+          />
+        </div>
+
+        <div>
+          <label htmlFor="message" className="block text-sm font-semibold text-gray-800">
+            {t("b2b.fieldMessage")}
+          </label>
+          <textarea
+            id="message"
+            name="message"
+            rows={5}
+            maxLength={4000}
+            className="mt-2 w-full rounded-lg border border-gray-300 px-3 py-2 text-lg text-gray-900 focus:border-verso-green focus:outline-none focus:ring-2 focus:ring-verso-green/30"
+          />
+        </div>
+
+        <button type="submit" className="verso-btn-primary w-full sm:w-auto">
+          {t("b2b.submit")}
+        </button>
+      </form>
+    </div>
+  );
+}

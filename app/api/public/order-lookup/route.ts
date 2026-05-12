@@ -1,40 +1,20 @@
 import { NextResponse } from "next/server";
-import { headers } from "next/headers";
 import { z } from "zod";
 import { prisma } from "@/lib/prisma";
 import {
   toPublicServiceOrder,
   toPublicUsbOrder,
 } from "@/lib/public-order";
+import { checkRateLimit, getClientIp } from "@/lib/rate-limit";
 
 const bodySchema = z.object({
   orderId: z.string().min(8).max(40),
   email: z.string().trim().email().max(320),
 });
 
-const WINDOW_MS = 60_000;
-const MAX_PER_WINDOW = 30;
-const hitBuckets = new Map<string, number[]>();
-
-function rateLimitOk(key: string): boolean {
-  const now = Date.now();
-  const bucket = (hitBuckets.get(key) ?? []).filter((t) => t > now - WINDOW_MS);
-  if (bucket.length >= MAX_PER_WINDOW) return false;
-  bucket.push(now);
-  hitBuckets.set(key, bucket);
-  return true;
-}
-
-function clientIp(): string {
-  const h = headers();
-  const xf = h.get("x-forwarded-for");
-  if (xf) return xf.split(",")[0]?.trim() ?? "unknown";
-  return h.get("x-real-ip") ?? "unknown";
-}
-
 export async function POST(req: Request) {
-  const ip = clientIp();
-  if (!rateLimitOk(`order-lookup:${ip}`)) {
+  const ip = getClientIp();
+  if (!checkRateLimit(`order-lookup:${ip}`, { windowMs: 60_000, max: 30 })) {
     return NextResponse.json(
       { ok: false, code: "not_found" } as const,
       { status: 429 },

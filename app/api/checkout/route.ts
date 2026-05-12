@@ -6,6 +6,7 @@ import { prisma } from "@/lib/prisma";
 import { getStripe, stripeConfigured } from "@/lib/stripe";
 import { buildServiceLineItems } from "@/lib/stripe-line-items";
 import { serviceOrderTotalCents } from "@/lib/pricing";
+import { checkRateLimit, getClientIp } from "@/lib/rate-limit";
 
 const checkoutSchema = z.object({
   tier: z.enum(["SSD_BASIC", "SSD_RAM", "FULL_SERVICE"]),
@@ -39,6 +40,10 @@ export async function POST(req: Request) {
   }
 
   const data = parsed.data;
+
+  if (!checkRateLimit(`checkout:${getClientIp()}`, { windowMs: 60_000, max: 25 })) {
+    return NextResponse.json({ error: "rate_limited" }, { status: 429 });
+  }
 
   if (!stripeConfigured() || !getStripe()) {
     return NextResponse.json(

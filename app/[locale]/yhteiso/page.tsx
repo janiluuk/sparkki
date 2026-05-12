@@ -29,6 +29,8 @@ export async function generateMetadata({
 export default async function YhteisoPage() {
   const t = await getTranslations("yhteiso");
   const invite = process.env.NEXT_PUBLIC_DISCORD_INVITE;
+  const youtubeUrl = process.env.NEXT_PUBLIC_YOUTUBE_CHANNEL_URL?.trim();
+  const showYoutube = Boolean(youtubeUrl && youtubeUrl !== "#");
 
   return (
     <div className="mx-auto max-w-3xl space-y-8 px-4 py-12">
@@ -43,6 +45,19 @@ export default async function YhteisoPage() {
         >
           {t("discordCta")}
         </a>
+      ) : null}
+      {showYoutube ? (
+        <div className="space-y-3">
+          <p className="text-lg text-gray-900">{t("youtubeIntro")}</p>
+          <a
+            href={youtubeUrl}
+            className="inline-flex min-h-tap items-center justify-center rounded-xl border-2 border-gray-300 bg-white px-8 py-3 text-lg font-semibold text-gray-900 hover:border-verso-green focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-verso-green"
+            rel="noopener noreferrer"
+            target="_blank"
+          >
+            {t("youtubeCta")}
+          </a>
+        </div>
       ) : null}
       <section aria-labelledby="g-title">
         <h2 id="g-title" className="text-2xl font-bold text-gray-900">
