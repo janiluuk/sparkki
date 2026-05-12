@@ -1,9 +1,22 @@
+import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
 import { thankYouFromSession } from "@/lib/checkout-thanks";
+import { localePathAlternates } from "@/lib/seo";
 
 type Props = {
+  params: { locale: string };
   searchParams: { session_id?: string };
 };
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const t = await getTranslations({ locale: params.locale, namespace: "palvelu.thanks" });
+  return {
+    title: t("title"),
+    description: t("serviceBody"),
+    robots: { index: false, follow: true },
+    ...localePathAlternates(params.locale, "/palvelu/kiitos"),
+  };
+}
 
 export default async function PalveluKiitosPage({ searchParams }: Props) {
   const t = await getTranslations("palvelu.thanks");

@@ -1,6 +1,7 @@
 {
   "nav": {
     "brand": "Verso",
+    "skipToContent": "Skip to content",
     "mainNav": "Main navigation",
     "home": "Home",
     "service": "Service",

@@ -1,9 +1,22 @@
+import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
 import { thankYouFromSession } from "@/lib/checkout-thanks";
+import { localePathAlternates } from "@/lib/seo";
 
 type Props = {
+  params: { locale: string };
   searchParams: { session_id?: string };
 };
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const t = await getTranslations({ locale: params.locale, namespace: "itse.thanks" });
+  return {
+    title: t("title"),
+    description: t("usbBody"),
+    robots: { index: false, follow: true },
+    ...localePathAlternates(params.locale, "/itse/kiitos"),
+  };
+}
 
 export default async function ItseKiitosPage({ searchParams }: Props) {
   const t = await getTranslations("itse.thanks");

@@ -1,7 +1,33 @@
+import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
+import { localePathAlternates } from "@/lib/seo";
 import { prisma } from "@/lib/prisma";
 import { UsbOrderForm } from "@/components/usb/UsbOrderForm";
+
+export async function generateMetadata({
+  params: { locale },
+}: {
+  params: { locale: string };
+}): Promise<Metadata> {
+  const t = await getTranslations({ locale, namespace: "itse" });
+  return {
+    title: t("title"),
+    description: t("intro"),
+    ...localePathAlternates(locale, "/itse"),
+    openGraph: {
+      title: t("title"),
+      description: t("intro"),
+      type: "website",
+      locale: locale === "fi" ? "fi_FI" : "en_US",
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: t("title"),
+      description: t("intro"),
+    },
+  };
+}
 
 export default async function ItsePage({
   params,

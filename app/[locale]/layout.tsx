@@ -1,5 +1,6 @@
+import type { Metadata } from "next";
 import { NextIntlClientProvider } from "next-intl";
-import { getMessages, setRequestLocale } from "next-intl/server";
+import { getMessages, getTranslations, setRequestLocale } from "next-intl/server";
 import { notFound } from "next/navigation";
 import { routing } from "@/i18n/routing";
 import { BackgroundCanvas } from "@/components/BackgroundCanvas";
@@ -8,6 +9,20 @@ import { Footer } from "@/components/Footer";
 
 export function generateStaticParams() {
   return routing.locales.map((locale) => ({ locale }));
+}
+
+export async function generateMetadata({
+  params: { locale },
+}: {
+  params: { locale: string };
+}): Promise<Metadata> {
+  const t = await getTranslations({ locale, namespace: "nav" });
+  return {
+    title: {
+      template: `%s | ${t("brand")}`,
+      default: t("brand"),
+    },
+  };
 }
 
 export default async function LocaleLayout({
@@ -22,6 +37,7 @@ export default async function LocaleLayout({
   }
   setRequestLocale(locale);
   const messages = await getMessages();
+  const t = await getTranslations({ locale, namespace: "nav" });
 
   return (
     <NextIntlClientProvider messages={messages}>
@@ -29,12 +45,12 @@ export default async function LocaleLayout({
       <div className="relative z-10 flex min-h-screen flex-col">
         <a
           href="#content"
-          className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-50 focus:rounded-lg focus:bg-verso-green focus:px-4 focus:py-3 focus:text-white"
+          className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-50 focus:rounded-lg focus:bg-verso-green focus:px-4 focus:py-3 focus:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
         >
-          Skip to content
+          {t("skipToContent")}
         </a>
         <NavBar locale={locale} />
-        <main id="content" className="flex-1">
+        <main id="content" lang={locale} className="flex-1">
           {children}
         </main>
         <Footer />

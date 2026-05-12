@@ -1,6 +1,7 @@
 {
   "nav": {
     "brand": "Verso",
+    "skipToContent": "Siirry sisältöön",
     "mainNav": "Päävalikko",
     "home": "Etusivu",
     "service": "Palvelu",

@@ -1,16 +1,40 @@
+import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { getTranslations } from "next-intl/server";
 import { MDXRemote } from "next-mdx-remote/rsc";
 import { Link } from "@/i18n/navigation";
 import { prisma } from "@/lib/prisma";
 import { readGuideMdxSource } from "@/lib/guide-content";
+import { localePathAlternates } from "@/lib/seo";
 
 type Props = { params: { locale: string; slug: string } };
 
-export async function generateMetadata({ params }: Props) {
-  const guide = await prisma.guide.findUnique({ where: { slug: params.slug } });
-  if (!guide || !guide.published) return { title: "Verso" };
-  return { title: `${guide.titleFi} — Verso` };
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { slug, locale } = params;
+  const guide = await prisma.guide.findUnique({ where: { slug } });
+  if (!guide || !guide.published) {
+    return { title: "Verso" };
+  }
+  const title =
+    locale === "en" && guide.titleEn?.trim() ? guide.titleEn : guide.titleFi;
+  const description =
+    locale === "en" && guide.descEn?.trim() ? guide.descEn : guide.descFi;
+  return {
+    title,
+    description,
+    ...localePathAlternates(locale, `/itse/${slug}`),
+    openGraph: {
+      title,
+      description,
+      type: "article",
+      locale: locale === "fi" ? "fi_FI" : "en_US",
+    },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description,
+    },
+  };
 }
 
 export default async function GuidePage({ params }: Props) {
@@ -34,6 +58,7 @@ export default async function GuidePage({ params }: Props) {
           <div className="mt-8 aspect-video w-full overflow-hidden rounded-xl bg-black">
             <iframe
               title="Video"
+              loading="lazy"
               src={guide.videoUrl.replace("watch?v=", "embed/")}
               className="h-full w-full"
               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
