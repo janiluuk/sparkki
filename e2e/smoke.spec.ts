@@ -16,3 +16,10 @@ test("health API", async ({ request }) => {
   const json = await res.json();
   expect(json.ok).toBe(true);
 });
+
+test("service page shows order wizard", async ({ page }) => {
+  await page.goto("/fi/palvelu");
+  await expect(
+    page.getByRole("heading", { name: /Tilaus|Order/i }),
+  ).toBeVisible();
+});

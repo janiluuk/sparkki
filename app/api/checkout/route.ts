@@ -1,16 +1,120 @@
 import { NextResponse } from "next/server";
+import { z } from "zod";
+import type { ServiceTier } from "@prisma/client";
+import { DeliveryMethod, SupportTier } from "@prisma/client";
+import { prisma } from "@/lib/prisma";
 import { getStripe, stripeConfigured } from "@/lib/stripe";
+import { buildServiceLineItems } from "@/lib/stripe-line-items";
+import { serviceOrderTotalCents } from "@/lib/pricing";
 
-/** Service order checkout — full Stripe + Prisma order create in phase 2. */
-export async function POST() {
+const checkoutSchema = z.object({
+  tier: z.enum(["SSD_BASIC", "SSD_RAM", "FULL_SERVICE"]),
+  supportTier: z.nativeEnum(SupportTier),
+  deliveryMethod: z.nativeEnum(DeliveryMethod),
+  computerMake: z.string().max(200).optional().nullable(),
+  computerModel: z.string().max(200).optional().nullable(),
+  customerName: z.string().min(1).max(200),
+  customerEmail: z.string().email().max(320),
+  customerPhone: z.string().max(50).optional().nullable(),
+  address: z.string().max(500).optional().nullable(),
+  preferredDate: z.string().max(40).optional().nullable(),
+  notes: z.string().max(2000).optional().nullable(),
+  locale: z.enum(["fi", "en"]),
+});
+
+export async function POST(req: Request) {
+  let body: unknown;
+  try {
+    body = await req.json();
+  } catch {
+    return NextResponse.json({ error: "invalid_json" }, { status: 400 });
+  }
+
+  const parsed = checkoutSchema.safeParse(body);
+  if (!parsed.success) {
+    return NextResponse.json(
+      { error: "validation_error", details: parsed.error.flatten() },
+      { status: 400 },
+    );
+  }
+
+  const data = parsed.data;
+
   if (!stripeConfigured() || !getStripe()) {
     return NextResponse.json(
       { error: "stripe_not_configured" },
       { status: 503 },
     );
   }
-  return NextResponse.json(
-    { error: "not_implemented_use_phase_2" },
-    { status: 501 },
+
+  const stripe = getStripe()!;
+
+  const priceEur = serviceOrderTotalCents(data.tier, data.supportTier);
+  const preferredDate =
+    data.preferredDate && data.preferredDate.length > 0
+      ? new Date(data.preferredDate)
+      : null;
+  if (preferredDate && Number.isNaN(preferredDate.getTime())) {
+    return NextResponse.json({ error: "invalid_date" }, { status: 400 });
+  }
+
+  const baseUrl =
+    process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, "") ??
+    "http://localhost:3000";
+
+  const order = await prisma.order.create({
+    data: {
+      status: "PENDING",
+      tier: data.tier as ServiceTier,
+      supportTier: data.supportTier,
+      deliveryMethod: data.deliveryMethod,
+      computerMake: data.computerMake?.trim() || null,
+      computerModel: data.computerModel?.trim() || null,
+      customerName: data.customerName.trim(),
+      customerEmail: data.customerEmail.trim().toLowerCase(),
+      customerPhone: data.customerPhone?.trim() || null,
+      address: data.address?.trim() || null,
+      preferredDate,
+      notes: data.notes?.trim() || null,
+      priceEur,
+    },
+  });
+
+  const lineItems = buildServiceLineItems(
+    data.tier as Exclude<ServiceTier, "B2B">,
+    data.supportTier,
   );
+
+  try {
+    const session = await stripe.checkout.sessions.create({
+      mode: "payment",
+      customer_email: order.customerEmail,
+      line_items: lineItems,
+      success_url: `${baseUrl}/${data.locale}/palvelu/kiitos?session_id={CHECKOUT_SESSION_ID}`,
+      cancel_url: `${baseUrl}/${data.locale}/palvelu`,
+      metadata: {
+        kind: "service",
+        orderId: order.id,
+      },
+    });
+
+    await prisma.order.update({
+      where: { id: order.id },
+      data: { stripeSessionId: session.id },
+    });
+
+    if (!session.url) {
+      await prisma.order.delete({ where: { id: order.id } });
+      return NextResponse.json(
+        { error: "stripe_no_checkout_url" },
+        { status: 502 },
+      );
+    }
+
+    return NextResponse.json({ url: session.url, orderId: order.id });
+  } catch (e) {
+    await prisma.order.delete({ where: { id: order.id } }).catch(() => {});
+    console.error("checkout session error", e);
+    return NextResponse.json({ error: "stripe_error" }, { status: 502 });
+  }
 }

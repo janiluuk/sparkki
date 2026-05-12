@@ -1,9 +1,15 @@
 import { getTranslations } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
 import { prisma } from "@/lib/prisma";
+import { UsbOrderForm } from "@/components/usb/UsbOrderForm";
 
-export default async function ItsePage() {
+export default async function ItsePage({
+  params,
+}: {
+  params: { locale: string };
+}) {
   const t = await getTranslations("itse");
+  const { locale } = params;
   const guides = await prisma.guide.findMany({
     where: { published: true },
     orderBy: [{ order: "asc" }, { titleFi: "asc" }],
@@ -49,13 +55,7 @@ export default async function ItsePage() {
           {t("usbTitle")}
         </h2>
         <p className="mt-2 text-lg text-gray-900">{t("usbBlurb")}</p>
-        <button
-          type="button"
-          disabled
-          className="mt-6 min-h-tap rounded-xl bg-verso-amber px-6 py-3 text-lg font-semibold text-gray-900 opacity-60"
-        >
-          {t("usbCta")}
-        </button>
+        <UsbOrderForm locale={locale} />
       </section>
     </div>
   );

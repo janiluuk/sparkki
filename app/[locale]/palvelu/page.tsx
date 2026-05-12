@@ -1,14 +1,45 @@
 import { getTranslations } from "next-intl/server";
+import { OrderWizard } from "@/components/wizard/OrderWizard";
 
-export default async function PalveluPage() {
+export default async function PalveluPage({
+  params,
+}: {
+  params: { locale: string };
+}) {
   const t = await getTranslations("palvelu");
+  const { locale } = params;
+
   return (
-    <div className="mx-auto max-w-4xl space-y-8 px-4 py-12">
-      <h1 className="text-4xl font-bold text-gray-900">{t("title")}</h1>
-      <p className="text-xl text-gray-900">{t("intro")}</p>
-      <h2 className="text-2xl font-semibold text-gray-900">{t("howTitle")}</h2>
-      <p className="text-lg text-gray-900">{t("phase2Note")}</p>
-      <h2 className="text-2xl font-semibold text-gray-900">{t("pricingTitle")}</h2>
+    <div className="mx-auto max-w-4xl space-y-12 px-4 py-12">
+      <header>
+        <h1 className="text-4xl font-bold text-gray-900">{t("title")}</h1>
+        <p className="mt-4 text-xl text-gray-900">{t("intro")}</p>
+      </header>
+
+      <section aria-labelledby="how-title">
+        <h2 id="how-title" className="text-2xl font-bold text-gray-900">
+          {t("howTitle")}
+        </h2>
+        <ol className="mt-6 space-y-4 text-lg text-gray-900">
+          {(["how1", "how2", "how3", "how4", "how5"] as const).map((key, i) => (
+            <li key={key} className="flex gap-4">
+              <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-verso-green text-xl font-bold text-white">
+                {i + 1}
+              </span>
+              <span className="pt-2">{t(key)}</span>
+            </li>
+          ))}
+        </ol>
+      </section>
+
+      <section aria-labelledby="pricing-title">
+        <h2 id="pricing-title" className="text-2xl font-bold text-gray-900">
+          {t("pricingTitle")}
+        </h2>
+        <p className="mt-4 text-lg text-gray-900">{t("pricingNote")}</p>
+      </section>
+
+      <OrderWizard locale={locale} />
     </div>
   );
 }

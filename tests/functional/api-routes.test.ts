@@ -11,8 +11,21 @@ describe("API route handlers", () => {
     expect(body.service).toBe("verso");
   });
 
-  it("POST /api/checkout returns 503 without Stripe", async () => {
-    const res = await checkoutPost();
+  it("POST /api/checkout returns 503 without Stripe when body is valid", async () => {
+    const res = await checkoutPost(
+      new Request("http://localhost/api/checkout", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          tier: "SSD_BASIC",
+          supportTier: "FULL",
+          deliveryMethod: "HOME_PICKUP",
+          customerName: "Test",
+          customerEmail: "test@example.com",
+          locale: "fi",
+        }),
+      }),
+    );
     expect(res.status).toBe(503);
   });
 });
