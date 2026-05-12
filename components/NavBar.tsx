@@ -4,17 +4,6 @@ import { useTranslations } from "next-intl";
 import { Link, usePathname } from "@/i18n/navigation";
 import { dispatchBackgroundNavInteraction } from "@/lib/background-nav";
 
-const links = [
-  { href: "/", key: "home" as const },
-  { href: "/palvelu", key: "service" as const },
-  { href: "/itse", key: "diy" as const },
-  { href: "/sovellukset", key: "apps" as const },
-  { href: "/tuki", key: "support" as const },
-  { href: "/info", key: "info" as const },
-  { href: "/about", key: "about" as const },
-  { href: "/yhteiso", key: "community" as const },
-];
-
 function BrandMark({ name }: { name: string }) {
   const lower = name.toLowerCase();
   if (lower === "verso") {
@@ -32,10 +21,50 @@ function BrandMark({ name }: { name: string }) {
   );
 }
 
+function navLinkClass(active: boolean) {
+  return `min-h-tap rounded-lg px-3 py-2 text-sm font-normal transition-colors duration-150 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-g ${
+    active
+      ? "text-g"
+      : "text-fog hover:bg-g/[0.06] hover:text-ink"
+  }`;
+}
+
+function subMenuLinkClass() {
+  return "block rounded-md px-3 py-2 text-[13px] text-fog transition-colors duration-150 hover:bg-g/[0.08] hover:text-g focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-g";
+}
+
 export function NavBar({ locale }: { locale: string }) {
   const t = useTranslations("nav");
   const pathname = usePathname();
   const onNavClick = () => dispatchBackgroundNavInteraction();
+
+  const palveluActive =
+    pathname === "/palvelu" || pathname.startsWith("/palvelu/");
+  const itseActive = pathname === "/itse" || pathname.startsWith("/itse/");
+  const tukiActive = pathname === "/tuki" || pathname.startsWith("/tuki/");
+  const infoHubActive =
+    pathname === "/info" ||
+    pathname.startsWith("/info/") ||
+    pathname === "/sovellukset" ||
+    pathname.startsWith("/sovellukset/");
+  const aboutHubActive =
+    pathname === "/about" ||
+    pathname.startsWith("/about/") ||
+    pathname === "/yhteiso" ||
+    pathname.startsWith("/yhteiso/");
+
+  const infoLinks = [
+    { href: "/info", key: "infoLinux" as const },
+    { href: "/info", key: "infoStability" as const },
+    { href: "/info", key: "infoFaq" as const },
+    { href: "/sovellukset", key: "infoAppsWin" as const },
+    { href: "/sovellukset", key: "infoAppsMac" as const },
+  ];
+
+  const aboutLinks = [
+    { href: "/about", key: "aboutCompany" as const },
+    { href: "/yhteiso", key: "aboutCommunity" as const },
+  ];
 
   return (
     <header className="sticky top-0 z-30 border-b border-edge bg-[rgba(8,12,10,0.92)] backdrop-blur-xl">
@@ -47,57 +76,130 @@ export function NavBar({ locale }: { locale: string }) {
         >
           <BrandMark name={t("brand")} />
         </Link>
-        <nav
-          aria-label={t("mainNav")}
-          className="flex flex-wrap gap-1 sm:gap-2"
-        >
-          {links.map(({ href, key }) => {
-            const active =
-              pathname === href ||
-              (href !== "/" && pathname.startsWith(`${href}/`));
-            return (
-              <Link
-                key={key}
-                href={href}
-                onClick={onNavClick}
-                className={`min-h-tap rounded-lg px-3 py-2 text-sm font-normal transition-colors duration-150 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-g ${
-                  active
-                    ? "text-g"
-                    : "text-fog hover:bg-g/[0.06] hover:text-ink"
-                }`}
+
+        <div className="flex flex-1 flex-wrap items-center justify-end gap-2 sm:gap-3">
+          <nav
+            aria-label={t("mainNav")}
+            className="flex flex-wrap items-center gap-1 sm:gap-2"
+          >
+            <Link
+              href="/palvelu"
+              onClick={onNavClick}
+              className={navLinkClass(palveluActive)}
+            >
+              {t("service")}
+            </Link>
+
+            <details className="verso-nav-disclosure group relative">
+              <summary
+                className={`${navLinkClass(infoHubActive)} cursor-pointer`}
               >
-                {t(key)}
-              </Link>
-            );
-          })}
-        </nav>
-        <div className="flex gap-1 rounded-lg border border-em bg-sunken/80 p-1">
+                <span className="inline-flex items-center gap-1">
+                  {t("infoHub")}
+                  <span className="text-[10px] opacity-70" aria-hidden>
+                    ▾
+                  </span>
+                </span>
+              </summary>
+              <ul
+                className="absolute left-0 top-full z-50 mt-1 min-w-[220px] rounded-[10px] border border-em bg-card py-2 shadow-none"
+                role="menu"
+              >
+                {infoLinks.map(({ href, key }) => (
+                  <li key={key} role="none">
+                    <Link
+                      role="menuitem"
+                      href={href}
+                      onClick={onNavClick}
+                      className={subMenuLinkClass()}
+                    >
+                      {t(key)}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </details>
+
+            <Link
+              href="/itse"
+              onClick={onNavClick}
+              className={navLinkClass(itseActive)}
+            >
+              {t("diy")}
+            </Link>
+
+            <details className="verso-nav-disclosure group relative">
+              <summary
+                className={`${navLinkClass(aboutHubActive)} cursor-pointer`}
+              >
+                <span className="inline-flex items-center gap-1">
+                  {t("aboutHub")}
+                  <span className="text-[10px] opacity-70" aria-hidden>
+                    ▾
+                  </span>
+                </span>
+              </summary>
+              <ul className="absolute left-0 top-full z-50 mt-1 min-w-[220px] rounded-[10px] border border-em bg-card py-2">
+                {aboutLinks.map(({ href, key }) => (
+                  <li key={key} role="none">
+                    <Link
+                      role="menuitem"
+                      href={href}
+                      onClick={onNavClick}
+                      className={subMenuLinkClass()}
+                    >
+                      {t(key)}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </details>
+
+            <Link
+              href="/tuki"
+              onClick={onNavClick}
+              className={navLinkClass(tukiActive)}
+            >
+              {t("support")}
+            </Link>
+          </nav>
+
           <Link
-            href={pathname}
-            locale="fi"
+            href="/palvelu"
             onClick={onNavClick}
-            className={`min-h-tap rounded-md px-3 py-2 text-sm font-semibold tracking-wide transition-colors duration-150 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-g ${
-              locale === "fi"
-                ? "bg-g text-canvas"
-                : "text-fog hover:text-ink"
-            }`}
-            hrefLang="fi"
+            className="inline-flex min-h-tap shrink-0 items-center justify-center rounded-lg bg-g px-5 py-2.5 text-sm font-bold tracking-tight text-canvas transition-opacity duration-150 hover:opacity-[0.85] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-g"
           >
-            FI
+            {t("ctaOrder")}
           </Link>
-          <Link
-            href={pathname}
-            locale="en"
-            onClick={onNavClick}
-            className={`min-h-tap rounded-md px-3 py-2 text-sm font-semibold tracking-wide transition-colors duration-150 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-g ${
-              locale === "en"
-                ? "bg-g text-canvas"
-                : "text-fog hover:text-ink"
-            }`}
-            hrefLang="en"
-          >
-            EN
-          </Link>
+
+          <div className="flex gap-1 rounded-lg border border-em bg-sunken/80 p-1">
+            <Link
+              href={pathname}
+              locale="fi"
+              onClick={onNavClick}
+              className={`min-h-tap rounded-md px-3 py-2 text-sm font-semibold tracking-wide transition-colors duration-150 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-g ${
+                locale === "fi"
+                  ? "bg-g text-canvas"
+                  : "text-fog hover:text-ink"
+              }`}
+              hrefLang="fi"
+            >
+              FI
+            </Link>
+            <Link
+              href={pathname}
+              locale="en"
+              onClick={onNavClick}
+              className={`min-h-tap rounded-md px-3 py-2 text-sm font-semibold tracking-wide transition-colors duration-150 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-g ${
+                locale === "en"
+                  ? "bg-g text-canvas"
+                  : "text-fog hover:text-ink"
+              }`}
+              hrefLang="en"
+            >
+              EN
+            </Link>
+          </div>
         </div>
       </div>
     </header>

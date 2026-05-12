@@ -1,6 +1,7 @@
 # Verso — Design System & Style Instructions
 > For coding agents. This file is the canonical design reference in this repo (`DESIGN_SYSTEM.md`).
 > These rules override any generic defaults. Read before writing a single line of UI code.
+> **2026 update:** expanded IA, navigation, footer, delivery strip, and status tokens are documented in **Spec addendum (Verso — 2026)** at the end of this file.
 
 ---
 
@@ -841,6 +842,10 @@ export default {
         text:   '#E8F2EE',
         muted:  '#7A9A8E',
         dim:    '#3D5248',
+        statusPending:  '#F5A623',
+        statusProgress: '#6495ED',
+        statusDone:     '#1DF5A0',
+        statusCancel:   '#FF6B6B',
       },
       borderColor: {
         DEFAULT: 'rgba(29,245,160,0.12)',
@@ -892,3 +897,76 @@ These are non-negotiable and apply to every component.
 - Use `100vh` on mobile (use `100dvh` or `min-h-screen` with Tailwind)
 - Use `!important` anywhere
 - Hardcode colours inline — always reference CSS variables or Tailwind tokens
+
+---
+
+## Spec addendum (Verso — 2026)
+
+This addendum incorporates the expanded product IA and component specs. **Brand in this repository is Verso** (`verso.fi`). Where the source template referred to another codename, routes below point at what exists in code today.
+
+### Route map — target vs current
+
+| Area | Target IA | Current Verso path |
+|------|-----------|-------------------|
+| Home | `/` | `/` |
+| Service + wizard | `/palvelu` | `/palvelu` |
+| Info hub (sidebar) | `/tietoa`, `/tietoa/linux`, … | `/info` (single hub until split) |
+| App alternatives | `/tietoa/sovellukset/windows`, `/mac` | `/sovellukset` (add OS tabs + `sourceOs` in data when ready) |
+| DIY | `/itse` | `/itse` |
+| About | `/meista` | `/about` |
+| Community | `/meista/yhteiso` | `/yhteiso` |
+| Support | `/tuki` | `/tuki` |
+| Care subscription | `/care` | *planned* |
+| Compatibility DB | `/koneet` | *planned* |
+| Social tier | `/vire-for-good` | *planned — rename to `/verso-for-good` when shipping* |
+
+### Primary navigation (implemented)
+
+1. **Palvelu** → `/palvelu`  
+2. **Tietoa ▾** — dropdown: Linux / vakaus / huolia → `/info`; Sovellukset Windows & Mac → `/sovellukset`  
+3. **Tee itse** → `/itse`  
+4. **Meistä ▾** — Yritys → `/about`; Yhteisö & Discord → `/yhteiso`  
+5. **Tuki** → `/tuki`  
+6. **Tilaa →** (CTA, right) → `/palvelu`  
+
+Dropdown shell: `background: var(--bg3)`, `border: 1px solid var(--border2)`, `border-radius: 10px`, `padding: 8px`, `min-width: 200px`. Row links: `padding: 7px 12px`, `border-radius: 6px`, hover `color: var(--g)` and `background: rgba(29,245,160,0.08)`. Implemented with native `<details>` / `<summary>` for keyboard + mobile without extra JS.
+
+### Delivery strip (homepage, below nav)
+
+Five equal columns, `border-top` + `border-bottom` on strip, `background: var(--bg2)`. Each cell: icon (green), title (`--text`, 13px semibold), subtitle (`--muted`, 13px light). Copy order: nouto kotoa → postitus → omatoiminen tuonti → 2–5 arkipäivää → 90 pv tuki. Implemented as `DeliveryStrip` + `DeliveryStripGate` (home only).
+
+### Footer (four columns)
+
+Grid: `1.5fr` brand column + three equal columns on large screens. **Palvelu:** miten toimii (`/#steps-title`), hinnat (`/#pricing-title`), B2B (`/palvelu/b2b`), tilaa (`/palvelu`). **Tietoa:** Linux Mintistä (`/info`), sovellukset (`/sovellukset`), tee itse (`/itse`), yhteisö (`/yhteiso`). **Yhteys:** email, tuki (`/tuki`), tietosuoja (`/tietosuoja`).
+
+### Order wizard — HDD removal step (planned)
+
+Card between delivery and support: amber-tinted border `rgba(245,166,35,0.25)`, background `rgba(245,166,35,0.07)`. Three radio options: Vire removes HDD (+€20, default), customer removes (+€0), keep HDD (+€0, not recommended). **Not implemented until pricing + Prisma + Stripe reflect the fee.**
+
+### Delivery wizard cards (planned)
+
+Three-column selectable cards with green border on selection; copy as in spec. Align with `DeliveryMethod` in Prisma when shipping postage surcharges.
+
+### Info hub `/tietoa` layout (planned)
+
+Two-column: fixed `220px` sidebar (`--bg2`), body `padding: 32px 36px`. Mirror admin sidebar pattern.
+
+### Common concerns `/tietoa/huolia` (planned)
+
+Two-column concern cards: question row with amber icon, answer body `13px` `--muted`, `strong` in `--g`.
+
+### Vire Care `/care` (planned)
+
+Three-tier cards; timeline Day 75 / 88 / 90 / 91+. Use status colours for timeline cells.
+
+### Compatibility `/koneet` (planned)
+
+Search bar + model cards + status badges (`badge-g` / `badge-a` / `badge-r`).
+
+### Starter kit + Verso for Good (planned)
+
+Specs as in source template; use `--g` for featured prices, no extra gradients except Discord block and documented “for good” banner gradient.
+
+### Status badge tokens
+
+Use `statusPending`, `statusProgress`, `statusDone`, `statusCancel` from Tailwind (mapped to `--status-*`) for badge **text**; fills at 12–15% opacity per colour rules in **Colours** section above.

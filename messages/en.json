@@ -3,14 +3,42 @@
     "brand": "Verso",
     "skipToContent": "Skip to content",
     "mainNav": "Main navigation",
-    "home": "Home",
     "service": "Service",
     "diy": "DIY",
-    "apps": "Apps",
     "support": "Support",
-    "info": "Info",
-    "about": "About",
-    "community": "Community"
+    "infoHub": "Learn",
+    "aboutHub": "About us",
+    "ctaOrder": "Order →",
+    "infoLinux": "Linux Mint",
+    "infoStability": "Stability & comfort",
+    "infoFaq": "Common concerns",
+    "infoAppsWin": "Apps — Windows",
+    "infoAppsMac": "Apps — Mac",
+    "aboutCompany": "Company",
+    "aboutCommunity": "Community & Discord"
+  },
+  "deliveryStrip": {
+    "ariaLabel": "Delivery and support",
+    "pickup": {
+      "title": "Home pickup",
+      "sub": "Helsinki area"
+    },
+    "ship": {
+      "title": "Shipping",
+      "sub": "Nationwide"
+    },
+    "self": {
+      "title": "Drop-off",
+      "sub": "Bring & collect yourself"
+    },
+    "turnaround": {
+      "title": "2–5 business days",
+      "sub": "Turnaround"
+    },
+    "support": {
+      "title": "90-day support",
+      "sub": "Included in the price"
+    }
   },
   "info": {
     "title": "About",
@@ -109,6 +137,19 @@
   "footer": {
     "brand": "Verso",
     "tagline": "Turn older computers into fast, durable machines — SSD, RAM, and Linux.",
+    "colService": "Service",
+    "colLearn": "Learn",
+    "colContact": "Contact",
+    "howItWorks": "How it works",
+    "pricing": "Pricing",
+    "b2b": "Business sales",
+    "orderCta": "Order",
+    "linuxMint": "Linux Mint",
+    "apps": "Apps",
+    "diy": "DIY",
+    "community": "Community & Discord",
+    "emailLabel": "Email",
+    "emailValue": "tuki@verso.fi",
     "support": "Customer support",
     "about": "About us",
     "privacy": "Privacy",

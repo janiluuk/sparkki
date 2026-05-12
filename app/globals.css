@@ -123,6 +123,14 @@ body {
   .discord-channel::before {
     content: "# ";
   }
+
+  details.verso-nav-disclosure > summary {
+    list-style: none;
+  }
+
+  details.verso-nav-disclosure > summary::-webkit-details-marker {
+    display: none;
+  }
 }
 
 @layer utilities {

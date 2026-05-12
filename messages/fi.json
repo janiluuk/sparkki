@@ -3,14 +3,42 @@
     "brand": "Verso",
     "skipToContent": "Siirry sisältöön",
     "mainNav": "Päävalikko",
-    "home": "Etusivu",
     "service": "Palvelu",
-    "diy": "Itse",
-    "apps": "Sovellukset",
+    "diy": "Tee itse",
     "support": "Tuki",
-    "info": "Tieto",
-    "about": "Meistä",
-    "community": "Yhteisö"
+    "infoHub": "Tietoa",
+    "aboutHub": "Meistä",
+    "ctaOrder": "Tilaa →",
+    "infoLinux": "Linux Mintistä",
+    "infoStability": "Vakaus & mukavuus",
+    "infoFaq": "Yleisiä huolia",
+    "infoAppsWin": "Sovellukset — Windows",
+    "infoAppsMac": "Sovellukset — Mac",
+    "aboutCompany": "Yritys",
+    "aboutCommunity": "Yhteisö & Discord"
+  },
+  "deliveryStrip": {
+    "ariaLabel": "Toimitus ja tuki",
+    "pickup": {
+      "title": "Nouto kotoa",
+      "sub": "Helsinki-alueella"
+    },
+    "ship": {
+      "title": "Postitus",
+      "sub": "Koko Suomeen"
+    },
+    "self": {
+      "title": "Omatoiminen tuonti",
+      "sub": "Tuo & hae itse"
+    },
+    "turnaround": {
+      "title": "2–5 arkipäivää",
+      "sub": "Palautusaika"
+    },
+    "support": {
+      "title": "90 pv tuki",
+      "sub": "Sisältyy hintaan"
+    }
   },
   "info": {
     "title": "Tietoa",
@@ -109,6 +137,19 @@
   "footer": {
     "brand": "Verso",
     "tagline": "Vanhoista tietokoneista nopeita ja kestäviä — SSD, RAM ja Linux.",
+    "colService": "Palvelu",
+    "colLearn": "Tietoa",
+    "colContact": "Yhteys",
+    "howItWorks": "Miten toimii",
+    "pricing": "Hinnat",
+    "b2b": "Yritysmyynti",
+    "orderCta": "Tilaa",
+    "linuxMint": "Linux Mintistä",
+    "apps": "Sovellukset",
+    "diy": "Tee itse",
+    "community": "Yhteisö & Discord",
+    "emailLabel": "Sähköposti",
+    "emailValue": "tuki@verso.fi",
     "support": "Asiakaspalvelu",
     "about": "Tietoa meistä",
     "privacy": "Tietosuoja",

@@ -8,6 +8,9 @@ test("home loads with hero and navigation", async ({ page }) => {
   await expect(
     page.getByRole("navigation", { name: /Päävalikko/i }),
   ).toBeVisible();
+  await expect(
+    page.getByRole("region", { name: /Toimitus ja tuki|Delivery and support/i }),
+  ).toBeVisible();
 });
 
 test("health API", async ({ request }) => {

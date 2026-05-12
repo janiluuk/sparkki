@@ -4,6 +4,7 @@ import { getMessages, getTranslations, setRequestLocale } from "next-intl/server
 import { notFound } from "next/navigation";
 import { routing } from "@/i18n/routing";
 import { BackgroundCanvas } from "@/components/BackgroundCanvas";
+import { DeliveryStripGate } from "@/components/layout/DeliveryStripGate";
 import { NavBar } from "@/components/NavBar";
 import { Footer } from "@/components/Footer";
 
@@ -50,6 +51,7 @@ export default async function LocaleLayout({
           {t("skipToContent")}
         </a>
         <NavBar locale={locale} />
+        <DeliveryStripGate />
         <main id="content" lang={locale} className="flex-1">
           {children}
         </main>

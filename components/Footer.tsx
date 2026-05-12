@@ -1,15 +1,19 @@
 import { getTranslations } from "next-intl/server";
-import { FooterNavLinks } from "@/components/FooterNavLinks";
+import { PulseLink } from "@/components/FooterNavLinks";
+
+const linkMuted =
+  "min-h-tap rounded-lg py-2 text-lg font-normal text-fog transition-colors duration-150 hover:text-ink focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-g";
 
 export async function Footer() {
   const t = await getTranslations("footer");
   const youtubeUrl = process.env.NEXT_PUBLIC_YOUTUBE_CHANNEL_URL?.trim();
   const showYoutube = Boolean(youtubeUrl && youtubeUrl !== "#");
+
   return (
     <footer className="mt-auto border-t border-edge bg-raised text-ink">
       <div className="mx-auto max-w-[1100px] px-6 py-12 sm:px-12 sm:py-14">
-        <div className="flex flex-col gap-10 sm:flex-row sm:justify-between sm:gap-12">
-          <div className="max-w-md">
+        <div className="grid grid-cols-1 gap-10 sm:grid-cols-2 lg:grid-cols-[minmax(0,1.5fr)_repeat(3,minmax(0,1fr))] lg:gap-12">
+          <div className="max-w-md lg:max-w-none">
             <p className="mb-2 font-mono text-[10px] font-normal uppercase tracking-[0.22em] text-dust">
               {t("brand")}
             </p>
@@ -17,19 +21,99 @@ export async function Footer() {
               {t("tagline")}
             </p>
           </div>
-          <div className="flex flex-col gap-2 sm:items-end">
-            <FooterNavLinks
-              items={[
-                { href: "/tuki", label: t("support") },
-                { href: "/about", label: t("about") },
-                { href: "/tietosuoja", label: t("privacy") },
-                { href: "/tilaus", label: t("orderTracking") },
-              ]}
-            />
+
+          <div>
+            <p className="mb-3 font-mono text-[10px] font-normal uppercase tracking-[0.1em] text-dust">
+              {t("colService")}
+            </p>
+            <ul className="flex flex-col gap-1">
+              <li>
+                <PulseLink href="/#steps-title" className={`${linkMuted} px-1`}>
+                  {t("howItWorks")}
+                </PulseLink>
+              </li>
+              <li>
+                <PulseLink href="/#pricing-title" className={`${linkMuted} px-1`}>
+                  {t("pricing")}
+                </PulseLink>
+              </li>
+              <li>
+                <PulseLink href="/palvelu/b2b" className={`${linkMuted} px-1`}>
+                  {t("b2b")}
+                </PulseLink>
+              </li>
+              <li>
+                <PulseLink href="/palvelu" className={`${linkMuted} px-1`}>
+                  {t("orderCta")}
+                </PulseLink>
+              </li>
+            </ul>
+          </div>
+
+          <div>
+            <p className="mb-3 font-mono text-[10px] font-normal uppercase tracking-[0.1em] text-dust">
+              {t("colLearn")}
+            </p>
+            <ul className="flex flex-col gap-1">
+              <li>
+                <PulseLink href="/info" className={`${linkMuted} px-1`}>
+                  {t("linuxMint")}
+                </PulseLink>
+              </li>
+              <li>
+                <PulseLink href="/sovellukset" className={`${linkMuted} px-1`}>
+                  {t("apps")}
+                </PulseLink>
+              </li>
+              <li>
+                <PulseLink href="/itse" className={`${linkMuted} px-1`}>
+                  {t("diy")}
+                </PulseLink>
+              </li>
+              <li>
+                <PulseLink href="/yhteiso" className={`${linkMuted} px-1`}>
+                  {t("community")}
+                </PulseLink>
+              </li>
+            </ul>
+          </div>
+
+          <div>
+            <p className="mb-3 font-mono text-[10px] font-normal uppercase tracking-[0.1em] text-dust">
+              {t("colContact")}
+            </p>
+            <ul className="flex flex-col gap-1">
+              <li>
+                <a
+                  href={`mailto:${t("emailValue")}`}
+                  className={`${linkMuted} px-1 underline-offset-4 hover:underline`}
+                >
+                  <span className="block font-mono text-xs uppercase tracking-label text-dust">
+                    {t("emailLabel")}
+                  </span>
+                  {t("emailValue")}
+                </a>
+              </li>
+              <li>
+                <PulseLink href="/tuki" className={`${linkMuted} px-1`}>
+                  {t("support")}
+                </PulseLink>
+              </li>
+              <li>
+                <PulseLink href="/tietosuoja" className={`${linkMuted} px-1`}>
+                  {t("privacy")}
+                </PulseLink>
+              </li>
+              <li>
+                <PulseLink href="/tilaus" className={`${linkMuted} px-1`}>
+                  {t("orderTracking")}
+                </PulseLink>
+              </li>
+            </ul>
             {showYoutube ? (
               <a
                 href={youtubeUrl}
-                className="min-h-tap rounded-lg px-1 py-2 text-lg font-normal text-fog underline-offset-4 transition-colors duration-150 hover:text-ink hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-g"
+                className={`${linkMuted} mt-2 inline-flex px-1 underline-offset-4 hover:underline`}
                 rel="noopener noreferrer"
                 target="_blank"
               >
@@ -38,7 +122,7 @@ export async function Footer() {
             ) : null}
             <a
               href={process.env.NEXT_PUBLIC_DISCORD_INVITE ?? "#"}
-              className="min-h-tap rounded-lg px-1 py-2 text-lg font-normal text-fog underline-offset-4 transition-colors duration-150 hover:text-ink hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-g"
+              className={`${linkMuted} mt-2 inline-flex px-1 underline-offset-4 hover:underline`}
               rel="noopener noreferrer"
               target="_blank"
             >

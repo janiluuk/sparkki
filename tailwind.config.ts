@@ -24,6 +24,10 @@ const config: Config = {
         g3: "var(--g3)",
         amber: "var(--amber)",
         danger: "var(--danger)",
+        statusPending: "var(--status-pending)",
+        statusProgress: "var(--status-progress)",
+        statusDone: "var(--status-done)",
+        statusCancel: "var(--status-cancel)",
         verso: {
           green: "var(--g)",
           amber: "var(--amber)",
