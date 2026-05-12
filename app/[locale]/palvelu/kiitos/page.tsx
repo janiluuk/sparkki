@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
+import { Link } from "@/i18n/navigation";
 import { thankYouFromSession } from "@/lib/checkout-thanks";
 import { localePathAlternates } from "@/lib/seo";
 
@@ -30,6 +31,14 @@ export default async function PalveluKiitosPage({ searchParams }: Props) {
           <p className="text-xl text-gray-900">{t("serviceBody")}</p>
           <p className="rounded-xl bg-white p-4 text-lg text-gray-900 shadow ring-1 ring-gray-200">
             {t("orderRef")}: <span className="font-mono">{info.orderId}</span>
+          </p>
+          <p>
+            <Link
+              href={`/tilaus/${info.orderId}`}
+              className="inline-flex min-h-tap items-center justify-center rounded-xl bg-verso-green px-6 py-3 text-lg font-semibold text-white hover:bg-[#178f68] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-verso-green"
+            >
+              {t("trackOrder")}
+            </Link>
           </p>
         </>
       ) : (

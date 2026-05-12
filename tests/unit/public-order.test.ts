@@ -1,0 +1,53 @@
+import { describe, expect, it } from "vitest";
+import type { Order, UsbOrder } from "@prisma/client";
+import { toPublicServiceOrder, toPublicUsbOrder } from "@/lib/public-order";
+
+const baseOrder = {
+  id: "clorder1234567890",
+  createdAt: new Date("2026-01-01T10:00:00.000Z"),
+  updatedAt: new Date("2026-01-02T12:00:00.000Z"),
+  status: "CONFIRMED" as const,
+  tier: "SSD_BASIC" as const,
+  supportTier: "EMAIL" as const,
+  deliveryMethod: "SELF" as const,
+  computerMake: "Lenovo",
+  computerModel: "T450",
+  customerName: "Test User",
+  customerEmail: "test@example.com",
+  customerPhone: null,
+  address: null,
+  preferredDate: null,
+  notes: null,
+  stripeSessionId: null,
+  priceEur: 19900,
+  adminNotes: "secret",
+  completedAt: null,
+} satisfies Order;
+
+const baseUsb = {
+  id: "clusb12345678901234",
+  createdAt: new Date("2026-03-01T08:00:00.000Z"),
+  status: "pending",
+  customerName: "Usb User",
+  customerEmail: "usb@example.com",
+  address: "Line 1\nFI-00100 Helsinki",
+  stripeSessionId: null,
+} satisfies UsbOrder;
+
+describe("public order DTOs", () => {
+  it("strips admin fields from service order", () => {
+    const dto = toPublicServiceOrder(baseOrder);
+    expect(dto).not.toHaveProperty("customerEmail");
+    expect(dto).not.toHaveProperty("adminNotes");
+    expect(dto).not.toHaveProperty("stripeSessionId");
+    expect(dto.kind).toBe("service");
+    expect(dto.priceEur).toBe(19900);
+    expect(dto.createdAt).toMatch(/^\d{4}-/);
+  });
+
+  it("maps USB order", () => {
+    const dto = toPublicUsbOrder(baseUsb);
+    expect(dto.kind).toBe("usb");
+    expect(dto.address).toContain("Helsinki");
+  });
+});

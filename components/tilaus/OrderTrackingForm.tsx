@@ -1,0 +1,216 @@
+"use client";
+
+import { useMemo, useState } from "react";
+import { useLocale, useTranslations } from "next-intl";
+import type { PublicServiceOrder, PublicUsbOrder } from "@/lib/public-order";
+
+type Props =
+  | { variant: "hub" }
+  | { variant: "prefill"; orderId: string };
+
+export function OrderTrackingForm(props: Props) {
+  const t = useTranslations("tilaus");
+  const locale = useLocale();
+  const [orderId, setOrderId] = useState(
+    props.variant === "prefill" ? props.orderId : "",
+  );
+  const [email, setEmail] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [order, setOrder] = useState<PublicServiceOrder | PublicUsbOrder | null>(null);
+
+  const idReadOnly = props.variant === "prefill";
+
+  const canSubmit = useMemo(
+    () => orderId.trim().length >= 8 && email.includes("@"),
+    [orderId, email],
+  );
+
+  async function onSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    setError(null);
+    setOrder(null);
+    setLoading(true);
+    try {
+      const res = await fetch("/api/public/order-lookup", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          orderId: orderId.trim(),
+          email: email.trim(),
+        }),
+      });
+      if (res.status === 429) {
+        setError(t("errorRateLimit"));
+        return;
+      }
+      const data = (await res.json()) as
+        | { ok: true; order: PublicServiceOrder | PublicUsbOrder }
+        | { ok: false; code: string };
+
+      if (!res.ok || !data.ok) {
+        setError(t("errorNotFound"));
+        return;
+      }
+      setOrder(data.order);
+    } catch {
+      setError(t("errorGeneric"));
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  return (
+    <div className="space-y-8">
+      <form onSubmit={onSubmit} className="verso-card space-y-6 p-6 sm:p-8">
+        <div>
+          <label htmlFor="track-order-id" className="mb-2 block font-semibold text-gray-900">
+            {t("fieldOrderId")}
+          </label>
+          <input
+            id="track-order-id"
+            name="orderId"
+            required
+            readOnly={idReadOnly}
+            value={orderId}
+            onChange={(e) => setOrderId(e.target.value)}
+            autoComplete="off"
+            spellCheck={false}
+            className="min-h-tap w-full rounded-lg border border-gray-300 bg-white px-4 font-mono text-lg read-only:bg-gray-100"
+          />
+        </div>
+        <div>
+          <label htmlFor="track-email" className="mb-2 block font-semibold text-gray-900">
+            {t("fieldEmail")}
+          </label>
+          <input
+            id="track-email"
+            name="email"
+            type="email"
+            required
+            autoComplete="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            className="min-h-tap w-full rounded-lg border border-gray-300 px-4 text-lg"
+          />
+        </div>
+        <button
+          type="submit"
+          disabled={!canSubmit || loading}
+          className="min-h-tap rounded-xl bg-verso-green px-8 py-3 font-semibold text-white hover:bg-[#178f68] disabled:cursor-not-allowed disabled:opacity-50"
+        >
+          {loading ? t("submitLoading") : t("submit")}
+        </button>
+        <p className="text-sm text-gray-600">{t("privacyHint")}</p>
+      </form>
+
+      {error ? (
+        <p
+          role="alert"
+          className="rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-lg text-gray-900"
+        >
+          {error}
+        </p>
+      ) : null}
+
+      {order ? <OrderSummary order={order} locale={locale} /> : null}
+    </div>
+  );
+}
+
+function OrderSummary({
+  order,
+  locale,
+}: {
+  order: PublicServiceOrder | PublicUsbOrder;
+  locale: string;
+}) {
+  const t = useTranslations("tilaus");
+  if (order.kind === "usb") {
+    return (
+      <section
+        aria-labelledby="order-summary-usb"
+        className="verso-card space-y-4 p-6 sm:p-8"
+      >
+        <h2 id="order-summary-usb" className="text-2xl font-bold text-gray-900">
+          {t("summaryTitleUsb")}
+        </h2>
+        <dl className="grid gap-4 text-lg text-gray-900 sm:grid-cols-[minmax(10rem,auto)_1fr]">
+          <dt className="font-semibold text-gray-700">{t("fieldRef")}</dt>
+          <dd className="font-mono">{order.id}</dd>
+          <dt className="font-semibold text-gray-700">{t("fieldDate")}</dt>
+          <dd>{new Date(order.createdAt).toLocaleString(locale)}</dd>
+          <dt className="font-semibold text-gray-700">{t("fieldStatus")}</dt>
+          <dd>{order.status}</dd>
+          <dt className="font-semibold text-gray-700">{t("fieldCustomer")}</dt>
+          <dd>{order.customerName}</dd>
+          <dt className="font-semibold text-gray-700">{t("fieldShipTo")}</dt>
+          <dd className="whitespace-pre-line">{order.address}</dd>
+        </dl>
+      </section>
+    );
+  }
+
+  const o = order;
+  const price = (o.priceEur / 100).toFixed(2);
+  return (
+    <section
+      aria-labelledby="order-summary-service"
+      className="verso-card space-y-4 p-6 sm:p-8"
+    >
+      <h2 id="order-summary-service" className="text-2xl font-bold text-gray-900">
+        {t("summaryTitleService")}
+      </h2>
+      <dl className="grid gap-4 text-lg text-gray-900 sm:grid-cols-[minmax(10rem,auto)_1fr]">
+        <dt className="font-semibold text-gray-700">{t("fieldRef")}</dt>
+        <dd className="font-mono">{o.id}</dd>
+        <dt className="font-semibold text-gray-700">{t("fieldDate")}</dt>
+        <dd>{new Date(o.createdAt).toLocaleString(locale)}</dd>
+        <dt className="font-semibold text-gray-700">{t("fieldUpdated")}</dt>
+        <dd>{new Date(o.updatedAt).toLocaleString(locale)}</dd>
+        <dt className="font-semibold text-gray-700">{t("fieldStatus")}</dt>
+        <dd>{t(`status_${o.status}` as "status_PENDING")}</dd>
+        <dt className="font-semibold text-gray-700">{t("fieldTier")}</dt>
+        <dd>{t(`tier_${o.tier}` as "tier_SSD_BASIC")}</dd>
+        <dt className="font-semibold text-gray-700">{t("fieldSupport")}</dt>
+        <dd>{t(`support_${o.supportTier}` as "support_FULL")}</dd>
+        <dt className="font-semibold text-gray-700">{t("fieldDelivery")}</dt>
+        <dd>{t(`delivery_${o.deliveryMethod}` as "delivery_HOME_PICKUP")}</dd>
+        <dt className="font-semibold text-gray-700">{t("fieldComputer")}</dt>
+        <dd>
+          {[o.computerMake, o.computerModel].filter(Boolean).join(" ") || t("emptyValue")}
+        </dd>
+        <dt className="font-semibold text-gray-700">{t("fieldCustomer")}</dt>
+        <dd>{o.customerName}</dd>
+        {o.customerPhone ? (
+          <>
+            <dt className="font-semibold text-gray-700">{t("fieldPhone")}</dt>
+            <dd>{o.customerPhone}</dd>
+          </>
+        ) : null}
+        {o.address ? (
+          <>
+            <dt className="font-semibold text-gray-700">{t("fieldAddress")}</dt>
+            <dd className="whitespace-pre-line">{o.address}</dd>
+          </>
+        ) : null}
+        {o.preferredDate ? (
+          <>
+            <dt className="font-semibold text-gray-700">{t("fieldPreferredDate")}</dt>
+            <dd>{new Date(o.preferredDate).toLocaleDateString(locale)}</dd>
+          </>
+        ) : null}
+        {o.notes ? (
+          <>
+            <dt className="font-semibold text-gray-700">{t("fieldNotes")}</dt>
+            <dd className="whitespace-pre-line">{o.notes}</dd>
+          </>
+        ) : null}
+        <dt className="font-semibold text-gray-700">{t("fieldPrice")}</dt>
+        <dd>
+          {price} €
+        </dd>
+      </dl>
+    </section>
+  );
+}

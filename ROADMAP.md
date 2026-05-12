@@ -424,6 +424,7 @@ verso.fi/
 ├── /tuki                Support page
 ├── /info                Info + browser try-Linux (noVNC) subsection
 ├── /about               Company, team, address & contact
+├── /tilaus              Order tracking (ID + email)
 ├── /yhteiso             Community / Discord
 └── /admin               Admin panel (protected)
     ├── /admin/orders
@@ -707,7 +708,7 @@ ADMIN_EMAIL="admin@verso.fi"
 
 ### Phase 5 — Post-launch `Month 2+`
 
-- [ ] Order tracking page `app/tilaus/[id]/page.tsx` — public, lookup by order ID + email
+- [x] Order tracking page `app/[locale]/tilaus/[id]/page.tsx` (+ hub `/tilaus`) — public lookup by order ID + email; service and USB orders.
 - [ ] Bulk B2B quote form on `/palvelu` — different flow from single-unit order
 - [ ] Expand guide library: all 7 guides written and published
 - [ ] Verso YouTube channel linked everywhere
