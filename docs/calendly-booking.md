@@ -16,7 +16,21 @@ The support page (`/[locale]/tuki`) loads Calendly’s **inline scheduling widge
 
 After changing **`NEXT_PUBLIC_*`** values, **rebuild** the Next.js app. In **Docker**, those variables are normally inlined during **`npm run build`** in the image builder stage — setting them only on the running container is **not enough** for statically generated content unless you also pass them as **build arguments** when building the image (see your `Dockerfile` / `docker-compose.yml`).
 
-Recommended for Compose: add a **`build.args`** entry for **`NEXT_PUBLIC_CALENDLY_EMBED_URL`** and matching **`ARG` / `ENV`** lines in the **`Dockerfile`** before **`RUN npm run build`**, then `docker compose build --no-cache web`.
+The repo **`Dockerfile`** already declares **`ARG NEXT_PUBLIC_CALENDLY_EMBED_URL`** for the builder. Ensure **`docker-compose.yml`** passes it into the image build and (optionally) into the running container, for example:
+
+```yaml
+web:
+  build:
+    context: .
+    dockerfile: Dockerfile
+    args:
+      NEXT_PUBLIC_CALENDLY_EMBED_URL: ${NEXT_PUBLIC_CALENDLY_EMBED_URL:-}
+  environment:
+    # …existing keys…
+    NEXT_PUBLIC_CALENDLY_EMBED_URL: ${NEXT_PUBLIC_CALENDLY_EMBED_URL:-}
+```
+
+Then set the variable in **`.env`** and run **`docker compose build --no-cache web && docker compose up -d`**.
 
 ## Where the URL comes from (Calendly UI)
 
@@ -36,7 +50,7 @@ Allowed hosts: **`calendly.com`** only, scheme **`https`**.
 
 ## CSP (optional hardening)
 
-If you enable **Content-Security-Policy-Report-Only** in `next.config.mjs`, ensure **`script-src`** includes **`https://assets.calendly.com`** (widget loader). **`frame-src`** / **`connect-src`** should already allow Calendly domains.
+If you enable **Content-Security-Policy-Report-Only** in `next.config.mjs`, ensure **`script-src`** includes **`https://assets.calendly.com`** (widget loader). Add it next to the existing Stripe entries in the `script-src` directive. **`frame-src`** / **`connect-src`** should already allow Calendly domains.
 
 ## Implementation reference
 
