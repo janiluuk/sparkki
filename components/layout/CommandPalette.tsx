@@ -1,6 +1,13 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import {
+  memo,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { useTranslations } from "next-intl";
 import { usePathname, useRouter } from "@/i18n/navigation";
 import { MAIN_NAV_ITEMS } from "@/lib/site/main-nav";
@@ -9,11 +16,16 @@ import {
   recordRecentRoute,
 } from "@/lib/site/palette-recent-routes";
 
-type PaletteEntry = { href: string; label: string; group: "hubs" | "service" | "more" };
+type PaletteEntry = {
+  href: string;
+  label: string;
+  group: "hubs" | "service" | "more";
+};
 
 /**
  * Phase 6 — ⌘K / Ctrl+K quick jump to main public routes (no extra dependencies).
  * Phase 5 — catalog is grouped when not searching; hubs mirror `MAIN_NAV_ITEMS`.
+ * Phase 18 — memoized row components + stable `go` callback for fewer list rerenders.
  */
 function labelForHref(
   href: string,
@@ -23,6 +35,60 @@ function labelForHref(
   if (hit) return hit.label;
   return href;
 }
+
+const PALETTE_ROW_CLASS =
+  "flex w-full rounded-lg px-3 py-2.5 text-left text-base text-ink transition-colors hover:bg-sunken focus-visible:outline focus-visible:outline-2 focus-visible:outline-g";
+
+const PaletteCatalogRow = memo(function PaletteCatalogRow({
+  href,
+  label,
+  onPick,
+}: {
+  href: string;
+  label: string;
+  onPick: (h: string) => void;
+}) {
+  return (
+    <li>
+      <button
+        type="button"
+        onClick={() => onPick(href)}
+        className={PALETTE_ROW_CLASS}
+      >
+        {label}
+      </button>
+    </li>
+  );
+});
+
+const PaletteRecentRow = memo(function PaletteRecentRow({
+  href,
+  label,
+  known,
+  onPick,
+}: {
+  href: string;
+  label: string;
+  known: boolean;
+  onPick: (h: string) => void;
+}) {
+  return (
+    <li>
+      <button
+        type="button"
+        onClick={() => onPick(href)}
+        className="flex w-full flex-col rounded-lg px-3 py-2.5 text-left transition-colors hover:bg-sunken focus-visible:outline focus-visible:outline-2 focus-visible:outline-g"
+      >
+        <span className="text-base text-ink">{label}</span>
+        {!known ? (
+          <span className="mt-0.5 truncate font-mono text-xs text-fog">
+            {href}
+          </span>
+        ) : null}
+      </button>
+    </li>
+  );
+});
 
 export function CommandPalette() {
   const tNav = useTranslations("nav");
@@ -243,20 +309,13 @@ export function CommandPalette() {
                         const label = labelForHref(href, paletteCatalog);
                         const known = paletteCatalog.some((i) => i.href === href);
                         return (
-                          <li key={`recent:${href}`}>
-                            <button
-                              type="button"
-                              onClick={() => go(href)}
-                              className="flex w-full flex-col rounded-lg px-3 py-2.5 text-left transition-colors hover:bg-sunken focus-visible:outline focus-visible:outline-2 focus-visible:outline-g"
-                            >
-                              <span className="text-base text-ink">{label}</span>
-                              {!known ? (
-                                <span className="mt-0.5 truncate font-mono text-xs text-fog">
-                                  {href}
-                                </span>
-                              ) : null}
-                            </button>
-                          </li>
+                          <PaletteRecentRow
+                            key={`recent:${href}`}
+                            href={href}
+                            label={label}
+                            known={known}
+                            onPick={go}
+                          />
                         );
                       })}
                     </ul>
@@ -267,15 +326,12 @@ export function CommandPalette() {
                   catalogItems.length > 0 ? (
                     <ul className="space-y-0.5">
                       {catalogItems.map((it) => (
-                        <li key={it.href}>
-                          <button
-                            type="button"
-                            onClick={() => go(it.href)}
-                            className="flex w-full rounded-lg px-3 py-2.5 text-left text-base text-ink transition-colors hover:bg-sunken focus-visible:outline focus-visible:outline-2 focus-visible:outline-g"
-                          >
-                            {it.label}
-                          </button>
-                        </li>
+                        <PaletteCatalogRow
+                          key={it.href}
+                          href={it.href}
+                          label={it.label}
+                          onPick={go}
+                        />
                       ))}
                     </ul>
                   ) : null
@@ -291,15 +347,12 @@ export function CommandPalette() {
                         </p>
                         <ul className="space-y-0.5">
                           {groupedForBrowse.hubs.map((it) => (
-                            <li key={it.href}>
-                              <button
-                                type="button"
-                                onClick={() => go(it.href)}
-                                className="flex w-full rounded-lg px-3 py-2.5 text-left text-base text-ink transition-colors hover:bg-sunken focus-visible:outline focus-visible:outline-2 focus-visible:outline-g"
-                              >
-                                {it.label}
-                              </button>
-                            </li>
+                            <PaletteCatalogRow
+                              key={it.href}
+                              href={it.href}
+                              label={it.label}
+                              onPick={go}
+                            />
                           ))}
                         </ul>
                       </div>
@@ -314,15 +367,12 @@ export function CommandPalette() {
                         </p>
                         <ul className="space-y-0.5">
                           {groupedForBrowse.service.map((it) => (
-                            <li key={it.href}>
-                              <button
-                                type="button"
-                                onClick={() => go(it.href)}
-                                className="flex w-full rounded-lg px-3 py-2.5 text-left text-base text-ink transition-colors hover:bg-sunken focus-visible:outline focus-visible:outline-2 focus-visible:outline-g"
-                              >
-                                {it.label}
-                              </button>
-                            </li>
+                            <PaletteCatalogRow
+                              key={it.href}
+                              href={it.href}
+                              label={it.label}
+                              onPick={go}
+                            />
                           ))}
                         </ul>
                       </div>
@@ -337,15 +387,12 @@ export function CommandPalette() {
                         </p>
                         <ul className="space-y-0.5">
                           {groupedForBrowse.more.map((it) => (
-                            <li key={it.href}>
-                              <button
-                                type="button"
-                                onClick={() => go(it.href)}
-                                className="flex w-full rounded-lg px-3 py-2.5 text-left text-base text-ink transition-colors hover:bg-sunken focus-visible:outline focus-visible:outline-2 focus-visible:outline-g"
-                              >
-                                {it.label}
-                              </button>
-                            </li>
+                            <PaletteCatalogRow
+                              key={it.href}
+                              href={it.href}
+                              label={it.label}
+                              onPick={go}
+                            />
                           ))}
                         </ul>
                       </div>

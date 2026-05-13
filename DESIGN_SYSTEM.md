@@ -781,11 +781,12 @@ Colour the stat value when it has semantic meaning:
 
 **Behaviour spec:**
 
-- 80–120 `IcosahedronGeometry(0.3, 0)` meshes
-- Random sizes: scale 0.3–1.5 uniform
+- **Mixed icon-inspired wireframes** (procedural, no raster logos): stylized **penguin** (Linux vibe), **four-pane window** grid, **gear** (torus), **gem** (octahedron), **disc** (cylinder), **cube**, **torus knot**, plus **icosahedrons** for fill
+- Count: ~52–86 on desktop, ~22 on narrow viewports (fewer triangles than the old all-icosa field)
+- Random sizes: scale ~0.35–1.5 uniform
 - `MeshBasicMaterial` with `wireframe: true`
-- 85% of meshes: `color: 0x1DF5A0`, `opacity: 0.06–0.18`
-- 15% of meshes: `color: 0xF5A623`, `opacity: 0.05–0.10`
+- ~86% of objects: accent `0xffd54a`, `opacity: 0.06–0.18`
+- ~14% of objects: `0xffb800`, `opacity: 0.05–0.10`
 - Slow drift: velocity `±0.003` units/frame on x and y only, z = 0
 - Slow rotation: `rotation.x += 0.002`, `rotation.y += 0.001` per frame
 - Wrap at canvas edges: reverse velocity when `|position.x| > 22` or `|position.y| > 17`
@@ -1029,7 +1030,7 @@ Items (in order):
 
 ## Info hub — sidebar layout (`/tietoa`)
 
-The `/tietoa` section uses a two-column layout: fixed sidebar on left, content area on right. Same pattern as the admin panel sidebar but public-facing.
+The `/tietoa` section uses a **responsive** layout (**Phase 16**): **`lg` and up** — two-column grid with a **sticky** left rail (`InfoHubLayout`); **below `lg`** — a single **horizontally scrolling** tab row. Implementation: `components/layout/InfoHubLayout.tsx` (import `@/components/navigation/InfoHubLayout` resolves via `tsconfig.json`). Legacy file under `components/navigation/InfoHubLayout.tsx` is superseded — remove when convenient.
 
 ```css
 .info-layout {
@@ -1731,11 +1732,12 @@ Make the product feel alive and premium.
 - [x] Add page transitions (`LocaleMainMotion` + `.sparkki-page-enter` on locale routes)
 - [x] Add stagger animations (Phase 13 — **`.sparkki-stagger-children`** on home step / pricing / benefits)
 - [x] **Phase 14 — Inputs:** inline validation + readable error copy + mobile input sizing (see Phase 3 → Inputs)
+- [x] **Phase 17 — Contextual transitions:** hub-internal navigations use `sparkki-context-enter` (`LocaleMainMotion` + `spark-context-enter` keyframes)
 - [x] Add skeleton loaders (utility `.sparkki-skeleton` in `globals.css`; wire where needed)
 - [x] Add smooth hover interpolation (token durations/easing on buttons, cards, nav tabs)
 - [x] Add animated navigation indicators (nav tab transitions)
 - [x] Add spring physics for panels (`.sparkki-wizard-full` uses `--ease-spring`)
-- [ ] Add contextual transitions (broader polish — optional follow-up)
+- [x] Add contextual transitions (**Phase 17** — `LocaleMainMotion`: same top path segment uses shorter `sparkki-context-enter`; cross-hub uses `sparkki-page-enter`; see `globals.css`)
 
 ### Recommended Motion
 
@@ -1772,7 +1774,7 @@ Reduce cognitive overload.
 
 - [x] Add command palette (CMD+K) — `CommandPalette` (`⌘K` / `Ctrl+K`, filterable jump list, focus trap)
 - [x] Add keyboard shortcuts — palette toggle + Esc; hint in palette footer and `shortcutHint` on `xl+` header
-- [ ] Add smart sidebar
+- [x] Add smart sidebar (**Phase 16** — `/tietoa` `InfoHubLayout`: `lg+` sticky left nav with active rail; `lg` hidden horizontal scroll tabs; lives in `components/layout/InfoHubLayout.tsx`, import path alias in `tsconfig.json`)
 - [x] Add recent actions (Phase 12 — recent destinations in **⌘K** palette)
 - [x] Add route memory (Phase 12 — **`palette-recent-routes`** + **`CommandPalette`**)
 - [x] Add breadcrumb navigation (see **Phase 11**)
@@ -1799,8 +1801,8 @@ Reduce cognitive overload.
 ### Tasks
 
 - [x] Remove layout shifts (order wizard **skeleton** with stable `min-height` + `orderWizardLoading` label while chunk loads)
-- [ ] Optimize rerenders (follow-up: profile hot client surfaces if needed)
-- [ ] Add optimistic UI (deferred — pick a concrete mutation flow when product asks for it)
+- [x] Optimize rerenders (**Phase 18** — `React.memo` + stable `useCallback` on `NavBar`, `CommandPalette` list rows, and **`ServiceHubTabs`** tab links; profile deeper surfaces if still hot)
+- [x] Add optimistic UI (**Phase 19** — admin guides list: **`GuidePublishToggle`** applies the switch immediately and rolls back on server error; `aria-busy` while the transition is in flight)
 - [x] Add route prefetching (`RoutePrefetchWarmup` idle-time `router.prefetch` for top destinations)
 - [x] Improve animation performance (footer **`content-visibility: auto`** for cheaper scroll painting)
 - [x] Reduce bundle size (Three.js **code-split** via `BackgroundCanvasDynamic` `next/dynamic` + `ssr: false`)
