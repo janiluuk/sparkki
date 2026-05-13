@@ -16,6 +16,16 @@ test.describe("key public journeys", () => {
     ).toBeVisible();
   });
 
+  test("Learn hub demo gallery slideshow", async ({ page }) => {
+    await page.goto("/fi/tietoa/galleria", { waitUntil: "domcontentloaded" });
+    await expect(
+      page.getByRole("heading", { level: 1, name: /Demogalleria/i }),
+    ).toBeVisible();
+    await expect(page.getByRole("region", { name: /Demogalleria/i })).toBeVisible();
+    await page.getByRole("button", { name: "Seuraava" }).click();
+    await expect(page.getByRole("button", { name: "Edellinen" })).toBeVisible();
+  });
+
   test("Learn hub: stability & comfort article loads", async ({ page }) => {
     await page.goto("/fi/tietoa/vakaus", { waitUntil: "domcontentloaded" });
     await expect(
