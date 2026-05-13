@@ -42,7 +42,7 @@ export default function AdminLoginPage() {
           </label>
           <input
             id="email"
-            type="email"
+            type="text"
             autoComplete="username"
             required
             value={email}

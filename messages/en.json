@@ -743,7 +743,7 @@
   },
   "admin": {
     "loginTitle": "Admin — sign in",
-    "email": "Email",
+    "email": "Email or username",
     "password": "Password",
     "signIn": "Sign in",
     "signInFailed": "Sign in failed. Check email and password.",

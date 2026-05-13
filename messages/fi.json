@@ -742,7 +742,7 @@
   },
   "admin": {
     "loginTitle": "Hallinta — kirjaudu",
-    "email": "Sähköposti",
+    "email": "Sähköposti tai käyttäjätunnus",
     "password": "Salasana",
     "signIn": "Kirjaudu",
     "signInFailed": "Kirjautuminen epäonnistui. Tarkista sähköposti ja salasana.",

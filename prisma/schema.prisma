@@ -145,6 +145,8 @@ model AdminUser {
   id           String    @id @default(cuid())
   createdAt    DateTime  @default(now())
   email        String    @unique
+  /// Optional login alias (e.g. "admin") — unique when set; sign-in accepts email or username.
+  username     String?   @unique
   name         String?
   passwordHash String
   role         AdminRole @default(EDITOR)

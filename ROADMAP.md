@@ -291,11 +291,13 @@ model Guide {
 // ─── Admin users ──────────────────────────────────────
 
 model AdminUser {
-  id        String   @id @default(cuid())
-  createdAt DateTime @default(now())
-  email     String   @unique
-  name      String?
-  role      AdminRole @default(EDITOR)
+  id           String    @id @default(cuid())
+  createdAt    DateTime  @default(now())
+  email        String    @unique
+  username     String?   @unique // optional login beside email (e.g. `admin`)
+  name         String?
+  passwordHash String
+  role         AdminRole @default(EDITOR)
 }
 
 enum AdminRole {
@@ -538,6 +540,8 @@ NEXT_PUBLIC_DISCORD_INVITE="https://discord.gg/..."
 
 # Admin seed email
 ADMIN_EMAIL="admin@vire.fi"
+ADMIN_USERNAME="admin"
+ADMIN_PASSWORD="changeme"
 ```
 
 ---
@@ -566,7 +570,7 @@ ADMIN_EMAIL="admin@vire.fi"
         - "5432:5432"
   ```
 - [x] `npx prisma migrate dev --name init`
-- [x] `npx prisma db seed` — seeds one AdminUser (from `ADMIN_EMAIL` env)
+- [x] `npx prisma db seed` — seeds one `AdminUser` (`ADMIN_EMAIL`, optional `ADMIN_USERNAME`, `ADMIN_PASSWORD`; default username `admin` / password `changeme`)
 - [x] Implement `lib/db/prisma.ts` singleton pattern (prevent hot-reload connection leak)
 - [x] Implement `BackgroundCanvas.tsx` with Three.js — see spec above
 - [x] Add `BackgroundCanvas` to `app/layout.tsx`
