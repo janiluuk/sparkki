@@ -178,7 +178,7 @@ border-top: 1px solid var(--border);
 - Border radius: `8px` (badges, inputs, small elements), `12px` (admin table, stat cards), `16px` (page cards, main sections).
 - Tailwind: `rounded-lg` = 8px, `rounded-xl` = 12px, `rounded-2xl` = 16px — match these to context.
 - No box shadows anywhere. Depth is achieved through layered background colours (`--bg` → `--bg2` → `--bg3` → `--bg4`), not shadows.
-- No gradients on backgrounds except the **Discord block** (fixed indigo gradient — see Components) and the **Vire for Good** banner (subtle green gradient — see § Vire for Good tier).
+- No gradients on backgrounds except the **Discord block** (fixed indigo gradient — see Components) and the **Sparkki for Good** banner (subtle green gradient — see § Sparkki for Good tier).
 
 ---
 
@@ -235,8 +235,8 @@ Always use `gap-4` (16px) between cards, `gap-3` (12px) between tight grids.
 
 ```html
 <nav class="site-nav">
-  <!-- Logo: Syne 800 24px, --g colour for "Vire" brand mark -->
-  <div class="logo">Vi<span style="color: var(--text)">re</span></div>
+  <!-- Logo: Syne 800 24px, --g colour for "Sparkki" brand mark -->
+  <div class="logo">Spark<span style="color: var(--text)">ki</span></div>
 
   <!-- Links: DM Sans 14px --muted, hover → --text -->
   <ul class="links">...</ul>
@@ -903,7 +903,7 @@ These are non-negotiable and apply to every component.
 
 - Use `Inter`, `Roboto`, `Arial`, or any system font stack
 - Use `box-shadow` for depth (use layered backgrounds instead)
-- Use gradients except on the Discord block or the documented Vire for Good banner
+- Use gradients except on the Discord block or the documented Sparkki for Good banner
 - Use any colour outside the defined palette
 - Use `--muted` for body text that requires reading (contrast too low)
 - Use `--g` for large text blocks (too bright, causes eye strain)
@@ -920,7 +920,7 @@ These are non-negotiable and apply to every component.
 ### Route map
 
 ```
-vire.fi/
+Public site (locale-prefixed in app: `/[locale]/…`; origin from NEXT_PUBLIC_SITE_URL)
 ├── /                          Homepage
 ├── /palvelu                   Service detail + order wizard
 ├── /tietoa                    Info hub (sidebar layout)
@@ -933,10 +933,10 @@ vire.fi/
 ├── /meista                    About us
 │   └── /meista/yhteiso        Community & Discord (subsection)
 ├── /tuki                      Support
-├── /care                      Vire Care subscription
+├── /care                      Sparkki Care subscription
 ├── /koneet                    Compatibility database
 │   └── /koneet/[slug]         Individual model page
-├── /vire-for-good             Social pricing tier
+├── /vire-for-good             Sparkki for Good (social pricing; path unchanged)
 └── /admin                     Admin panel (protected)
 ```
 
@@ -1156,7 +1156,7 @@ The HDD removal question is a dedicated card in the wizard, between the delivery
 
 Three options (radio-style `<WizOpt>` components):
 
-1. **Vire poistaa HDD:n puolestani** (+€20) — recommended, selected by default
+1. **Sparkki poistaa HDD:n puolestani** (+€20) — recommended, selected by default
 2. **Poistan HDD:n itse** (+€0) — includes link to guide
 3. **Pidän HDD:n koneessa** (+€0) — not recommended note
 
@@ -1203,11 +1203,11 @@ The `/meista/yhteiso` page is a subsection of About Us, accessible via the Meist
 - Community guidelines (brief, friendly)
 - Link back to `/itse` guides
 
-The Discord block uses the fixed indigo gradient — same as previously defined. Do not apply Vire green tokens to this block.
+The Discord block uses the fixed indigo gradient — same as previously defined. Do not apply brand green tokens to this block.
 
 ---
 
-## Vire Care subscription page (`/care`)
+## Sparkki Care subscription page (`/care`)
 
 Three-tier card layout matching the pricing cards pattern. Tiers: Perus / Care+ (featured) / Care Pro.
 
@@ -1315,7 +1315,7 @@ Lives on `/itse` below the USB stick order. Flex row: visual (emoji placeholder)
 
 ---
 
-## Vire for Good tier
+## Sparkki for Good tier
 
 Banner component on `/vire-for-good` and linked from pricing cards with a subtle "Hae alennettu hinta" link.
 
@@ -1373,21 +1373,21 @@ Footer columns (4-column grid):
 1. **Logo + tagline** (wider: `1.5fr`)
 2. **Palvelu** — Miten toimii, Hinnat, B2B, Tilaa
 3. **Tietoa** — Linux Mintistä, Sovellukset, Tee itse, Yhteisö (links to `/meista/yhteiso`)
-4. **Yhteys** — hei@vire.fi (or operational inbox), Tuki, Tietosuoja
+4. **Yhteys** — public support email from env / Meistä, Tuki, Tietosuoja
 
 Community link in the footer goes to `/meista/yhteiso`, not a standalone `/yhteiso` route.
 
-**Optional** links (Care, compatibility DB, Vire for Good, YouTube, Discord, order tracking) may appear in page body or secondary surfaces — they are not required in this minimal footer grid.
+**Optional** links (Care, compatibility DB, Sparkki for Good, YouTube, Discord, order tracking) may appear in page body or secondary surfaces — they are not required in this minimal footer grid.
 
 ---
 
 ## Simplified user flows — form rules
 
-These rules override any previous form spec. Every form in Vire must pass the minimum-fields test before shipping.
+These rules override any previous form spec. Every form in Sparkki must pass the minimum-fields test before shipping.
 
 ### Principle
 
-**Collect only what is needed to take the next action.** If a field's answer will be provided naturally in a follow-up conversation, do not ask for it upfront. If the answer can be inferred or looked up by Vire, do not ask.
+**Collect only what is needed to take the next action.** If a field's answer will be provided naturally in a follow-up conversation, do not ask for it upfront. If the answer can be inferred or looked up by Sparkki, do not ask.
 
 ---
 
@@ -1443,7 +1443,7 @@ Removed: phone; separate postcode/city; confirm email field; redundant country f
 
 ---
 
-### Vire for Good application (`/vire-for-good`)
+### Sparkki for Good application (`/vire-for-good`)
 
 **2 fields. Trust first, document later.**
 
@@ -1456,13 +1456,13 @@ Removed: document upload gating; name; address on the form. Callout: discount co
 
 ### Global field rules
 
-- **Phone or email unified** on public quote, wizard contact, support message flow, and Vire for Good — one field; server detects type.
+- **Phone or email unified** on public quote, wizard contact, support message flow, and Sparkki for Good — one field; server detects type.
 - **Name not collected during service checkout** — comes in the first reply. Exception: postal orders (USB / kit) where the label needs a name.
 - **Address only when physically needed** — not in the main service wizard at checkout; follow-up when delivery requires it. USB/kit orders ask address once because fulfilment needs it immediately.
 - **No confirm-email field.**
 - **No separate subject line** — the textarea is the subject.
 - **No order number on support** — looked up from contact where possible.
-- **No document upload gating** on Vire for Good pre-submit.
+- **No document upload gating** on Sparkki for Good pre-submit.
 - **Support tier not in the service wizard** — default EMAIL (90-day); Care+ via lifecycle email.
 - **Prefer free text over rigid structure** for “what computer” and similar — staff reads and follows up.
 
@@ -1509,7 +1509,7 @@ Shipped in codebase:
 
 Follow-ups (later phases or ops):
 
-- [ ] Sweep **ROADMAP.md**, **FEATURES.md**, and this **DESIGN_SYSTEM.md** for legacy “Vire” product naming.
+- [x] Sweep **ROADMAP.md**, **FEATURES.md**, and this **DESIGN_SYSTEM.md** for legacy “Vire” product naming (**Phase 20** — public product name **Sparkki**; technical routes such as `/vire-for-good`, CSS `.vire-*` aliases, `apps/vire-checker`, DB name `vire`, and env `VIRE_*` unchanged until explicit migrations).
 - [ ] Optional URL rename `/vire-for-good` → `/sparkki-for-good` + redirects.
 - [ ] Replace `app/favicon.ico` with raster favicons derived from spark mark if needed for older clients.
 - [ ] **Later** — optional Framer Motion for richer choreography; finish renaming `vire-*` usage in TSX to `sparkki-*` where safe. (Phases 3–4 ship CSS + minimal client wiring, no new animation library.)
@@ -1660,16 +1660,16 @@ This file is optimized for:
 
 ### Tasks
 
-- [ ] Rename all references from Vire → Sparkki
-- [ ] Update package metadata
-- [ ] Update browser titles
-- [ ] Update favicon
-- [ ] Replace logos
-- [ ] Add new color palette
-- [ ] Add brand typography
-- [ ] Update README and docs
-- [ ] Update environment branding variables
-- [ ] Update app manifest
+- [x] Rename product-facing references **Vire → Sparkki** in core docs (**Phase 20** — `ROADMAP.md`, `FEATURES.md`, `DESIGN_SYSTEM.md`; technical identifiers unchanged — see Phase 2 follow-ups).
+- [x] Update package metadata — `package.json` / lockfile name **sparkki**
+- [x] Update browser titles — via **`messages/*`** + metadata helpers (**Sparkki**)
+- [ ] Replace `app/favicon.ico` with raster favicons derived from spark mark if older clients require it
+- [x] Replace logos — `app/icon.svg` spark mark + layout wiring
+- [x] Add new color palette — tokens in **`app/globals.css`** / Tailwind semantic colours
+- [x] Add brand typography — Inter + Syne (+ DM Mono) per Phase 2 log
+- [x] Update README and docs — ongoing; **Phase 20** naming pass on roadmap + features + design system
+- [ ] Update environment branding variables — ops-specific (`DEPLOY_PATH`, mail domains); keep **`VIRE_*`** env names until a coordinated rename
+- [x] Update app manifest — `app/manifest.ts`
 
 ---
 

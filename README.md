@@ -86,11 +86,11 @@ See [`.env.example`](./.env.example) for `DATABASE_URL`, auth, Stripe, email, pu
 - **`npm run security:audit:prod`** — production dependencies only.
 - CI prints **prod** and **full** audit summaries (informational). See **`docs/operations.md`** § *Dependency and security audits*.
 
-### Vire Checker (Tauri desktop)
+### Sparkki Checker (Tauri desktop)
 
-Local compatibility tool using the same pure logic as the site (`lib/specs/compatibility.ts`). Lives in `apps/vire-checker/`.
+Local compatibility tool using the same pure logic as the site (`lib/specs/compatibility.ts`). Lives in `apps/vire-checker/` (legacy path name).
 
-**LAN / SearXNG / local LLM:** spec hints run on the **Vire Next.js server** (`lib/specs/laptop-specs.ts`), not inside the desktop app. See **`apps/vire-checker/README.md`** for which env vars to set on the server, Docker reachability to e.g. `192.168.2.101:8080`, and optional future Tauri + API wiring.
+**LAN / SearXNG / local LLM:** spec hints run on the **Sparkki Next.js server** (`lib/specs/laptop-specs.ts`), not inside the desktop app. See **`apps/vire-checker/README.md`** for which env vars to set on the server, Docker reachability to e.g. `192.168.2.101:8080`, and optional future Tauri + API wiring.
 
 Install [Tauri prerequisites](https://v2.tauri.app/start/prerequisites/) for your OS (on Linux: WebKitGTK, build essentials, etc.), then:
 
