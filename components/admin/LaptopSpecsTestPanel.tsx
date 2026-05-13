@@ -86,6 +86,7 @@ export function LaptopSpecsTestPanel(props: {
             <span className="font-semibold text-ink">{formLabels.make}</span>
             <input
               required
+              data-testid="admin-laptop-specs-make"
               value={make}
               onChange={(e) => setMake(e.target.value)}
               className="mt-2 w-full rounded-lg border border-em bg-canvas px-3 py-2 text-lg"
@@ -96,6 +97,7 @@ export function LaptopSpecsTestPanel(props: {
             <span className="font-semibold text-ink">{formLabels.model}</span>
             <input
               required
+              data-testid="admin-laptop-specs-model"
               value={model}
               onChange={(e) => setModel(e.target.value)}
               className="mt-2 w-full rounded-lg border border-em bg-canvas px-3 py-2 text-lg"
@@ -105,6 +107,7 @@ export function LaptopSpecsTestPanel(props: {
         </div>
         <button
           type="submit"
+          data-testid="admin-laptop-specs-submit"
           className="min-h-tap rounded-lg bg-sparkki-green px-5 py-2.5 font-semibold text-white hover:opacity-95 disabled:opacity-60"
           disabled={loading}
         >

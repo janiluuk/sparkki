@@ -18,6 +18,7 @@ export function LaptopSpecsCard(props: {
   if (loading) {
     return (
       <section
+        data-testid="laptop-specs-card"
         className={`rounded-xl border border-edge bg-card/80 p-4 text-lg text-fog ${className}`}
         aria-busy="true"
         aria-live="polite"
@@ -31,6 +32,7 @@ export function LaptopSpecsCard(props: {
   if (!insight || (!insight.summary && !insight.specUrl)) {
     return (
       <section
+        data-testid="laptop-specs-card"
         className={`rounded-xl border border-edge bg-card/80 p-4 text-lg ${className}`}
         aria-live="polite"
       >
@@ -42,6 +44,7 @@ export function LaptopSpecsCard(props: {
 
   return (
     <section
+      data-testid="laptop-specs-card"
       className={`rounded-xl border border-g/25 bg-sparkki-green/5 p-4 sm:p-5 ${className}`}
       aria-labelledby="laptop-specs-heading"
     >
@@ -49,13 +52,17 @@ export function LaptopSpecsCard(props: {
         {labels.title}
       </h3>
       {insight.summary ? (
-        <p className="mt-3 whitespace-pre-wrap text-lg leading-relaxed text-ink">
+        <p
+          data-testid="laptop-specs-summary"
+          className="mt-3 whitespace-pre-wrap text-lg leading-relaxed text-ink"
+        >
           {insight.summary}
         </p>
       ) : null}
       {insight.specUrl ? (
         <p className="mt-4">
           <a
+            data-testid="laptop-specs-external-link"
             href={insight.specUrl}
             target="_blank"
             rel="noopener noreferrer"

@@ -18,4 +18,34 @@ describe("laptop-specs AI JSON parsing", () => {
     const o = extractJsonObject('{"summary":"A","specPageUrl":"ftp://bad"}');
     expect(parseAiInsight(o)).toEqual({ summary: "A", specUrl: null });
   });
+
+  it("accepts specUrl and link aliases", () => {
+    const o = extractJsonObject(
+      '{"summary":"OK","specUrl":"https://dell.com/support/1"}',
+    );
+    expect(parseAiInsight(o)).toEqual({
+      summary: "OK",
+      specUrl: "https://dell.com/support/1",
+    });
+    expect(
+      parseAiInsight(
+        extractJsonObject(
+          '{"yhteenveto":"Fi","link":"https://notebookcheck.net/x"}',
+        ),
+      ),
+    ).toEqual({
+      summary: "Fi",
+      specUrl: "https://notebookcheck.net/x",
+    });
+  });
+
+  it("strips BOM before JSON parse", () => {
+    const o = extractJsonObject(
+      '\uFEFF{"summary":"BOM","specPageUrl":"https://example.com/a"}',
+    );
+    expect(parseAiInsight(o)).toEqual({
+      summary: "BOM",
+      specUrl: "https://example.com/a",
+    });
+  });
 });
