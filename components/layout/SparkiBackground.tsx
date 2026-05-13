@@ -412,7 +412,7 @@ export function SparkiBackground() {
   return (
     <canvas
       ref={ref}
-      className="pointer-events-none fixed inset-0 z-[-1]"
+      className="pointer-events-none fixed inset-0 -z-20 h-full min-h-dvh w-full"
       aria-hidden
     />
   );

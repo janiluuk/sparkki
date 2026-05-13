@@ -4,6 +4,7 @@ import { getMessages, getTranslations, setRequestLocale } from "next-intl/server
 import { notFound } from "next/navigation";
 import { routing } from "@/i18n/routing";
 import { BackgroundCanvasDynamic } from "@/components/layout/BackgroundCanvasDynamic";
+import { SparkiBackgroundDynamic } from "@/components/layout/SparkiBackgroundDynamic";
 import { DeliveryStripGate } from "@/components/layout/DeliveryStripGate";
 import { LocaleMainMotion } from "@/components/layout/LocaleMainMotion";
 import { CommandPalette } from "@/components/layout/CommandPalette";
@@ -47,6 +48,7 @@ export default async function LocaleLayout({
 
   return (
     <NextIntlClientProvider messages={messages}>
+      <SparkiBackgroundDynamic />
       <BackgroundCanvasDynamic />
       <EmotionalUxLayer />
       <div className="relative z-10 flex min-h-screen flex-col">
