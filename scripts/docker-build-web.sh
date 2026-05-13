@@ -4,6 +4,8 @@
 #
 #   ./scripts/docker-build-web.sh
 #   ./scripts/docker-build-web.sh --no-cache
+#   npm run docker:build:web
+#   npm run docker:build:web -- --no-cache
 #
 # See docs/repository-layout.md § Known sharp edges.
 set -euo pipefail
