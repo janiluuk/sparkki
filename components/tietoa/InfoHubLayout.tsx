@@ -2,6 +2,7 @@
 
 import { useTranslations } from "next-intl";
 import { Link, usePathname } from "@/i18n/navigation";
+import { dispatchBackgroundNavInteraction } from "@/lib/site/background-nav";
 
 const NAV = [
   { href: "/tietoa", key: "navHub" },
@@ -18,36 +19,41 @@ function navItemActive(pathname: string | null, href: string) {
   return pathname === href || pathname?.startsWith(`${href}/`) === true;
 }
 
+function tabClass(active: boolean) {
+  return `min-h-tap shrink-0 rounded-t-lg border-b-2 px-4 py-3 text-sm font-normal transition-colors duration-150 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-g ${
+    active
+      ? "border-g text-g"
+      : "border-transparent text-fog hover:border-edge hover:text-ink"
+  }`;
+}
+
 export function InfoHubLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const t = useTranslations("tietoa");
+  const onNavClick = () => dispatchBackgroundNavInteraction();
 
   return (
-    <div className="grid min-h-[560px] md:grid-cols-[220px_1fr]">
-      <aside
-        className="border-b border-edge bg-raised md:border-b-0 md:border-r md:border-edge py-6 md:py-0"
+    <div className="flex min-h-[560px] flex-col">
+      <nav
         aria-label={t("sidebarAria")}
+        className="flex flex-wrap gap-1 border-b border-edge bg-raised px-4 pt-1 sm:px-6"
       >
-        <nav className="flex flex-row gap-1 overflow-x-auto px-4 md:flex-col md:px-0 md:py-6">
-          {NAV.map(({ href, key }) => {
-            const active = navItemActive(pathname, href);
-            return (
-              <Link
-                key={href}
-                href={href}
-                className={`shrink-0 border-l-2 border-transparent px-5 py-2.5 text-sm transition-colors duration-150 md:px-5 ${
-                  active
-                    ? "border-g bg-g/[0.05] font-medium text-g"
-                    : "text-fog hover:bg-g/[0.03] hover:text-ink"
-                } focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-g`}
-              >
-                {t(key)}
-              </Link>
-            );
-          })}
-        </nav>
-      </aside>
-      <div className="bg-canvas px-6 py-8 md:px-9 md:py-8">{children}</div>
+        {NAV.map(({ href, key }) => {
+          const active = navItemActive(pathname, href);
+          return (
+            <Link
+              key={href}
+              href={href}
+              onClick={onNavClick}
+              className={tabClass(active)}
+              aria-current={active ? "page" : undefined}
+            >
+              {t(key)}
+            </Link>
+          );
+        })}
+      </nav>
+      <div className="flex-1 bg-canvas px-6 py-8 md:px-9 md:py-8">{children}</div>
     </div>
   );
 }

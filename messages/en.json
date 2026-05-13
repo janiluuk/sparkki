@@ -11,6 +11,7 @@
     "infoHubOverview": "Overview",
     "infoBenefits": "Benefits",
     "aboutHub": "About us",
+    "aboutSubNav": "About — tabs",
     "ctaOrder": "Order →",
     "infoLinux": "Linux Mint",
     "infoStability": "Stability & comfort",
@@ -59,7 +60,7 @@
     "notConfigured": "Browser demo is not wired yet. Set NEXT_PUBLIC_TRY_LINUX_PROXY_BASE (e.g. http://127.0.0.1:8080) and deploy infra/try-linux."
   },
   "tietoa": {
-    "sidebarAria": "Learn section",
+    "sidebarAria": "Learn — tabs",
     "navHub": "Overview",
     "navBenefits": "Benefits",
     "navLinux": "Upgrade process",

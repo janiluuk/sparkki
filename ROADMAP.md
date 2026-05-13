@@ -791,6 +791,8 @@ noVNC entry URLs are documented in `infra/try-linux/README.md` (typically `.../t
 
 *Short working queue. Reconcile with checkboxes below; edit this list when items ship.*
 
+- [x] **Site catalog & sitemap** — **`docs/site-pages.md`** (screenshots + page purposes), **`docs/sitemap-routes.md`**, expanded **`app/sitemap.ts`** static paths, **`docs/phases-implementation-notes.md`**, **`docs/screenshots/`** + **`npm run docs:screenshots`**.
+
 1. **Content-Security-Policy** — **`ENABLE_CSP_REPORT_ONLY=true`** emits report-only CSP from **`next.config.mjs`**; tighten policy using violation reports (**`docs/operations.md`**). Enforcing CSP with nonces still open.
 2. **E2E + a11y** — **shipped:** smoke, locale, wizard (mocked checkout), admin login + orders, public routes + **`/meista`**, support + order lookup + experience pages, **axe-core** (**`e2e/a11y-axe.spec.ts`**), **Lighthouse CI** (informational) — see **`e2e/*.spec.ts`**, **`lighthouserc.json`**. Playwright **`webServer`** runs **`prisma migrate deploy`** before **`node server.js`** so the e2e DB matches the Prisma client.
 3. **Synthetic monitoring** — **shipped in repo:** optional scheduled workflow **`synthetic-monitoring.yml`** when **`SYNTHETIC_MONITORING_BASE_URL`** is set — see **`docs/operations.md`**. External Uptime Kuma / Grafana still recommended.
