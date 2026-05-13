@@ -1029,7 +1029,7 @@ Items (in order):
 
 ## Info hub — sidebar layout (`/tietoa`)
 
-The `/tietoa` section uses a two-column layout: fixed sidebar on left, content area on right. Same pattern as the admin panel sidebar but public-facing.
+The `/tietoa` section uses a **responsive** layout (**Phase 16**): **`lg` and up** — two-column grid with a **sticky** left rail (`InfoHubLayout`); **below `lg`** — a single **horizontally scrolling** tab row. Implementation: `components/layout/InfoHubLayout.tsx` (import `@/components/navigation/InfoHubLayout` resolves via `tsconfig.json`). Legacy file under `components/navigation/InfoHubLayout.tsx` is superseded — remove when convenient.
 
 ```css
 .info-layout {
@@ -1772,7 +1772,7 @@ Reduce cognitive overload.
 
 - [x] Add command palette (CMD+K) — `CommandPalette` (`⌘K` / `Ctrl+K`, filterable jump list, focus trap)
 - [x] Add keyboard shortcuts — palette toggle + Esc; hint in palette footer and `shortcutHint` on `xl+` header
-- [ ] Add smart sidebar
+- [x] Add smart sidebar (**Phase 16** — `/tietoa` `InfoHubLayout`: `lg+` sticky left nav with active rail; `lg` hidden horizontal scroll tabs; lives in `components/layout/InfoHubLayout.tsx`, import path alias in `tsconfig.json`)
 - [x] Add recent actions (Phase 12 — recent destinations in **⌘K** palette)
 - [x] Add route memory (Phase 12 — **`palette-recent-routes`** + **`CommandPalette`**)
 - [x] Add breadcrumb navigation (see **Phase 11**)

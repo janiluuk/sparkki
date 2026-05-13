@@ -94,7 +94,7 @@
     "notConfigured": "Browser demo is not wired yet. Set NEXT_PUBLIC_TRY_LINUX_PROXY_BASE (e.g. http://127.0.0.1:8080) and deploy infra/try-linux."
   },
   "tietoa": {
-    "sidebarAria": "Learn — tabs",
+    "sidebarAria": "Learn — sections",
     "navHub": "Overview",
     "navBenefits": "Benefits",
     "navGallery": "Demo gallery",

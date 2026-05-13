@@ -94,7 +94,7 @@
     "notConfigured": "Selaindemoa ei ole kytketty. Ylläpito: aseta NEXT_PUBLIC_TRY_LINUX_PROXY_BASE (esim. http://127.0.0.1:8080) ja infra/try-linux -proxy."
   },
   "tietoa": {
-    "sidebarAria": "Tietoa — välilehdet",
+    "sidebarAria": "Tietoa — osiot",
     "navHub": "Yleiskatsaus",
     "navBenefits": "Hyödyt",
     "navGallery": "Demogalleria",

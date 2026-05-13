@@ -18,6 +18,9 @@
       }
     ],
     "paths": {
+      "@/components/navigation/InfoHubLayout": [
+        "./components/layout/InfoHubLayout.tsx"
+      ],
       "@/*": ["./*"]
     }
   },
