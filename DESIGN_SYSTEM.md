@@ -1801,7 +1801,7 @@ Reduce cognitive overload.
 ### Tasks
 
 - [x] Remove layout shifts (order wizard **skeleton** with stable `min-height` + `orderWizardLoading` label while chunk loads)
-- [ ] Optimize rerenders (follow-up: profile hot client surfaces if needed)
+- [x] Optimize rerenders (**Phase 18** — `React.memo` + stable `useCallback` on `NavBar` + `CommandPalette` list rows; profile deeper surfaces if still hot)
 - [ ] Add optimistic UI (deferred — pick a concrete mutation flow when product asks for it)
 - [x] Add route prefetching (`RoutePrefetchWarmup` idle-time `router.prefetch` for top destinations)
 - [x] Improve animation performance (footer **`content-visibility: auto`** for cheaper scroll painting)

@@ -1,6 +1,13 @@
 "use client";
 
-import { useEffect, useRef, useState, type ReactNode } from "react";
+import {
+  memo,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+  type ReactNode,
+} from "react";
 import { useTranslations } from "next-intl";
 import { Link, usePathname } from "@/i18n/navigation";
 import { dispatchBackgroundNavInteraction } from "@/lib/site/background-nav";
@@ -36,7 +43,7 @@ function topTabClass(active: boolean) {
   }`;
 }
 
-function MobileNavLink({
+const MobileNavLink = memo(function MobileNavLink({
   href,
   active,
   children,
@@ -62,15 +69,62 @@ function MobileNavLink({
       {children}
     </Link>
   );
-}
+});
+
+const MainNavTab = memo(function MainNavTab({
+  href,
+  active,
+  label,
+  onNav,
+}: {
+  href: string;
+  active: boolean;
+  label: string;
+  onNav: () => void;
+}) {
+  return (
+    <Link
+      href={href}
+      onClick={onNav}
+      className={topTabClass(active)}
+      aria-current={active ? "page" : undefined}
+    >
+      {label}
+    </Link>
+  );
+});
 
 export function NavBar({ locale }: { locale: string }) {
   const t = useTranslations("nav");
   const tPal = useTranslations("commandPalette");
   const pathname = usePathname();
-  const onNavClick = () => dispatchBackgroundNavInteraction();
   const [mobileOpen, setMobileOpen] = useState(false);
   const mobileSheetRef = useRef<HTMLDivElement>(null);
+
+  const onNavClick = useCallback(() => {
+    dispatchBackgroundNavInteraction();
+  }, []);
+  const closeMobileSheet = useCallback(() => {
+    setMobileOpen(false);
+  }, []);
+  const openMobileSheet = useCallback(() => {
+    setMobileOpen(true);
+  }, []);
+
+  const onOrderCta = useCallback(() => {
+    feedbackPrimaryCTA();
+    dispatchBackgroundNavInteraction();
+  }, []);
+
+  const closeMobileAndNav = useCallback(() => {
+    setMobileOpen(false);
+    dispatchBackgroundNavInteraction();
+  }, []);
+
+  const onMobileOrderCta = useCallback(() => {
+    onOrderCta();
+    closeMobileSheet();
+  }, [onOrderCta, closeMobileSheet]);
 
   useEffect(() => {
     if (!mobileOpen) return;
@@ -148,15 +202,13 @@ export function NavBar({ locale }: { locale: string }) {
             {MAIN_NAV_ITEMS.map((item) => {
               const active = isMainNavClusterActive(item.cluster, pathname);
               return (
-                <Link
+                <MainNavTab
                   key={item.href}
                   href={item.href}
-                  onClick={onNavClick}
-                  className={topTabClass(active)}
-                  aria-current={active ? "page" : undefined}
-                >
-                  {t(item.labelKey)}
-                </Link>
+                  active={active}
+                  label={t(item.labelKey)}
+                  onNav={onNavClick}
+                />
               );
             })}
           </nav>
@@ -167,7 +219,7 @@ export function NavBar({ locale }: { locale: string }) {
             aria-expanded={mobileOpen}
             aria-haspopup="dialog"
             aria-controls="site-mobile-nav"
-            onClick={() => setMobileOpen(true)}
+            onClick={openMobileSheet}
           >
             <span className="sr-only">{tPal("openMobileMenu")}</span>
             <span className="flex flex-col gap-1.5" aria-hidden>
@@ -184,10 +236,7 @@ export function NavBar({ locale }: { locale: string }) {
           >
             <Link
               href="/palvelu#palvelu-tilaa"
-              onClick={() => {
-                feedbackPrimaryCTA();
-                onNavClick();
-              }}
+              onClick={onOrderCta}
               className="sparkki-pressable inline-flex min-h-tap shrink-0 items-center justify-center rounded-lg bg-g px-5 py-2.5 text-sm font-bold tracking-tight text-canvas transition-opacity duration-150 hover:opacity-[0.85] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-g"
             >
               {t("ctaOrder")}
@@ -243,7 +292,7 @@ export function NavBar({ locale }: { locale: string }) {
             type="button"
             className="sparkki-modal-backdrop fixed inset-0 z-[45] md:hidden"
             aria-hidden
-            onClick={() => setMobileOpen(false)}
+            onClick={closeMobileSheet}
           />
           <div
             ref={mobileSheetRef}
@@ -265,7 +314,7 @@ export function NavBar({ locale }: { locale: string }) {
                 <button
                   type="button"
                   className="min-h-tap min-w-12 rounded-lg border border-em px-3 text-lg text-ink hover:bg-sunken focus-visible:outline focus-visible:outline-2 focus-visible:outline-g"
-                  onClick={() => setMobileOpen(false)}
+                  onClick={closeMobileSheet}
                 >
                   <span className="sr-only">{tPal("closeMobileMenu")}</span>
                   <span aria-hidden>×</span>
@@ -289,7 +338,7 @@ export function NavBar({ locale }: { locale: string }) {
                       key={item.href}
                       href={item.href}
                       active={isMainNavClusterActive(item.cluster, pathname)}
-                      onPick={() => setMobileOpen(false)}
+                      onPick={closeMobileSheet}
                     >
                       {t(item.labelKey)}
                     </MobileNavLink>
@@ -309,11 +358,7 @@ export function NavBar({ locale }: { locale: string }) {
                 </p>
                 <Link
                   href="/palvelu#palvelu-tilaa"
-                  onClick={() => {
-                    feedbackPrimaryCTA();
-                    setMobileOpen(false);
-                    onNavClick();
-                  }}
+                  onClick={onMobileOrderCta}
                   className="sparkki-pressable inline-flex min-h-tap w-full items-center justify-center rounded-lg bg-g px-4 py-3 text-sm font-bold text-canvas focus-visible:outline focus-visible:outline-2 focus-visible:outline-g"
                 >
                   {t("ctaOrder")}
@@ -332,10 +377,7 @@ export function NavBar({ locale }: { locale: string }) {
                 <Link
                   href={pathname}
                   locale="fi"
-                  onClick={() => {
-                    setMobileOpen(false);
-                    onNavClick();
-                  }}
+                  onClick={closeMobileAndNav}
                   aria-label={
                     locale === "fi" ? t("localeActiveFi") : t("localeSwitchToFi")
                   }
@@ -350,10 +392,7 @@ export function NavBar({ locale }: { locale: string }) {
                 <Link
                   href={pathname}
                   locale="en"
-                  onClick={() => {
-                    setMobileOpen(false);
-                    onNavClick();
-                  }}
+                  onClick={closeMobileAndNav}
                   aria-label={
                     locale === "en" ? t("localeActiveEn") : t("localeSwitchToEn")
                   }
