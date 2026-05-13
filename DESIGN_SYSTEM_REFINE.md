@@ -279,14 +279,14 @@ Reduce cognitive overload.
 
 ## Tasks
 
-- [ ] Reduce visible controls per screen
-- [ ] Move advanced settings into expandable sections
+- [x] Reduce visible controls per screen (order wizard step 2: bundles + VM behind collapsible add-ons)
+- [x] Move advanced settings into expandable sections (migration FAQ accordions; VM legal already in `<details>`)
 - [ ] Improve grouping of actions
 - [ ] Reduce duplicate navigation
-- [ ] Improve onboarding clarity
-- [ ] Improve visual hierarchy
-- [ ] Add empty states
-- [ ] Add contextual help
+- [x] Improve onboarding clarity (step hint mentions optional add-ons; admin empty states explain next steps)
+- [x] Improve visual hierarchy (FAQ cards, dashed empty panels)
+- [x] Add empty states (`EmptyState` on admin orders / USB / Care; filter-aware copy + reset on orders)
+- [x] Add contextual help (empty-state descriptions; “show all orders” when filters match nothing)
 
 ---
 

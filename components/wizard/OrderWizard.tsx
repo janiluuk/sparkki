@@ -135,6 +135,9 @@ export function OrderWizard({ locale }: { locale: string }) {
   const [checkoutError, setCheckoutError] = useState<string | null>(null);
   const [checkoutLoading, setCheckoutLoading] = useState(false);
 
+  const hadAddonsSelectionRef = useRef(false);
+  const [addonsSectionOpen, setAddonsSectionOpen] = useState(false);
+
   const pricePreview = useMemo(() => {
     if (!tier || !delivery) return null;
     return serviceCheckoutTotalCents({
@@ -194,6 +197,12 @@ export function OrderWizard({ locale }: { locale: string }) {
       window.cancelAnimationFrame(id);
     };
   }, [fullMode]);
+
+  useEffect(() => {
+    const on = appBundles.length > 0 || portableVmOn;
+    if (on && !hadAddonsSelectionRef.current) setAddonsSectionOpen(true);
+    hadAddonsSelectionRef.current = on;
+  }, [appBundles.length, portableVmOn]);
 
   async function startCheckout() {
     if (!tier || !delivery) return;
@@ -464,148 +473,172 @@ export function OrderWizard({ locale }: { locale: string }) {
                   ))}
                 </div>
               </div>
-              <div>
-                <h3 className="text-2xl font-semibold text-ink">
-                  {w("bundlesTitle")}
-                </h3>
-                <p className="mt-2 text-base font-light leading-relaxed text-fog">
-                  {w("bundlesHint")}
-                </p>
-                <div className="mt-4 space-y-2.5" role="group" aria-label={w("bundlesTitle")}>
-                  {APP_BUNDLE_ORDER.map((id) => {
-                    const selected = appBundles.includes(id);
-                    return (
-                      <button
-                        key={id}
-                        type="button"
-                        onClick={() => {
-                          setAppBundles((prev) =>
-                            selected
-                              ? prev.filter((x) => x !== id)
-                              : [...prev, id],
-                          );
-                        }}
-                        className={`flex w-full items-start gap-3 rounded-[10px] border p-4 text-left transition-all duration-150 focus-visible:outline focus-visible:outline-2 focus-visible:outline-g ${
-                          selected
-                            ? "border-g bg-g/[0.05]"
-                            : "border-edge bg-sunken hover:border-em"
-                        }`}
-                      >
-                        <span
-                          className={`mt-1 inline-flex size-4 shrink-0 rounded border-2 ${
-                            selected ? "border-g bg-g" : "border-em bg-canvas"
-                          }`}
-                          aria-hidden
-                        />
-                        <span className="min-w-0 flex-1">
-                          <span className="block text-sm font-semibold text-ink">
-                            {w(WIZ_BUNDLE_MSG[id])}
-                          </span>
-                          <span className="mt-0.5 block font-mono text-xs text-g">
-                            +{(APP_BUNDLE_CENTS[id] / 100).toFixed(0)} €
-                          </span>
-                        </span>
-                      </button>
-                    );
-                  })}
-                </div>
-              </div>
-              <div>
-                <h3 className="text-2xl font-semibold text-ink">{w("vmTitle")}</h3>
-                <p className="mt-2 text-base font-light leading-relaxed text-fog">
-                  {w("vmHint")}
-                </p>
-                <p className="mt-1 font-mono text-sm text-g">
-                  +{(PORTABLE_VM_ADDON_CENTS / 100).toFixed(0)} €
-                </p>
-                <button
-                  type="button"
-                  onClick={() => {
-                    if (portableVmOn) {
-                      setPortableVmOn(false);
-                      setPortableVmHandoff(null);
-                    } else {
-                      setPortableVmOn(true);
-                      setPortableVmHandoff(PortableVmHandoff.CUSTOMER_STORAGE);
-                    }
-                  }}
-                  className={`mt-4 min-h-tap w-full max-w-md rounded-[10px] border px-4 py-3 text-left text-sm font-semibold transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-g ${
-                    portableVmOn
-                      ? "border-g bg-g/[0.08] text-ink"
-                      : "border-edge bg-sunken text-ink hover:border-em"
-                  }`}
-                >
-                  {portableVmOn ? w("vmDisableAddon") : w("vmEnableAddon")}
-                </button>
-                {portableVmOn ? (
-                  <div className="mt-6 space-y-3">
-                    <p className="text-sm font-semibold text-ink">
-                      {w("vmHandoffHeading")}
+              <details
+                className="rounded-2xl border border-edge bg-sunken/15 open:bg-sunken/25"
+                open={addonsSectionOpen}
+                onToggle={(e) =>
+                  setAddonsSectionOpen((e.target as HTMLDetailsElement).open)
+                }
+              >
+                <summary className="cursor-pointer select-none list-none rounded-2xl px-4 py-4 marker:hidden [&::-webkit-details-marker]:hidden focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-g">
+                  <span className="block text-xl font-semibold text-ink">
+                    {w("step2AddonsSummary")}
+                  </span>
+                  <span className="mt-1 block text-sm font-normal leading-snug text-fog">
+                    {w("step2AddonsHint")}
+                  </span>
+                </summary>
+                <div className="space-y-10 border-t border-edge/70 px-4 pb-6 pt-6">
+                  <div>
+                    <h3 className="text-2xl font-semibold text-ink">
+                      {w("bundlesTitle")}
+                    </h3>
+                    <p className="mt-2 text-base font-light leading-relaxed text-fog">
+                      {w("bundlesHint")}
                     </p>
-                    {(
-                      [
-                        [
-                          PortableVmHandoff.CUSTOMER_STORAGE,
-                          "vmHandoffCustomerTitle",
-                          "vmHandoffCustomerDesc",
-                        ],
-                        [
-                          PortableVmHandoff.SHIPPED_MEDIA,
-                          "vmHandoffShippedTitle",
-                          "vmHandoffShippedDesc",
-                        ],
-                      ] as const
-                    ).map(([value, titleKey, descKey]) => (
-                      <button
-                        key={value}
-                        type="button"
-                        onClick={() => setPortableVmHandoff(value)}
-                        className={`flex w-full items-start gap-3 rounded-[10px] border p-4 text-left transition-all focus-visible:outline focus-visible:outline-2 focus-visible:outline-g ${
-                          portableVmHandoff === value
-                            ? "border-g bg-g/[0.05]"
-                            : "border-edge bg-sunken hover:border-em"
-                        }`}
-                      >
-                        <span
-                          className={`mt-0.5 inline-flex size-4 shrink-0 rounded-full border-2 ${
-                            portableVmHandoff === value ? "border-g bg-g" : "border-em"
-                          }`}
-                          aria-hidden
-                        />
-                        <span>
-                          <span className="block text-sm font-semibold text-ink">
-                            {w(titleKey)}
-                          </span>
-                          <span className="mt-1 block text-[13px] font-light text-fog">
-                            {w(descKey)}
-                          </span>
-                        </span>
-                      </button>
-                    ))}
-                    <details className="mt-4 rounded-xl border border-edge bg-sunken/40 p-4 text-fog">
-                      <summary className="cursor-pointer select-none text-sm font-semibold text-ink">
-                        {w("vmLegalToggle")}
-                      </summary>
-                      <div className="mt-3 space-y-3 text-[13px] font-light leading-relaxed">
-                        <p>{w("vmLegalP1")}</p>
-                        <p>{w("vmLegalP2")}</p>
-                        <p>{w("vmLegalP3")}</p>
-                        <p>{w("vmLegalP4")}</p>
-                        <p>
-                          {w("vmLegalPrivacyBefore")}{" "}
-                          <Link
-                            href="/tietosuoja"
-                            className="font-medium text-g underline-offset-2 hover:underline"
+                    <div
+                      className="mt-4 space-y-2.5"
+                      role="group"
+                      aria-label={w("bundlesTitle")}
+                    >
+                      {APP_BUNDLE_ORDER.map((id) => {
+                        const selected = appBundles.includes(id);
+                        return (
+                          <button
+                            key={id}
+                            type="button"
+                            onClick={() => {
+                              setAppBundles((prev) =>
+                                selected
+                                  ? prev.filter((x) => x !== id)
+                                  : [...prev, id],
+                              );
+                            }}
+                            className={`flex w-full items-start gap-3 rounded-[10px] border p-4 text-left transition-all duration-150 focus-visible:outline focus-visible:outline-2 focus-visible:outline-g ${
+                              selected
+                                ? "border-g bg-g/[0.05]"
+                                : "border-edge bg-sunken hover:border-em"
+                            }`}
                           >
-                            {w("vmLegalPrivacyLink")}
-                          </Link>
-                          {w("vmLegalPrivacyAfter")}
-                        </p>
-                      </div>
-                    </details>
+                            <span
+                              className={`mt-1 inline-flex size-4 shrink-0 rounded border-2 ${
+                                selected ? "border-g bg-g" : "border-em bg-canvas"
+                              }`}
+                              aria-hidden
+                            />
+                            <span className="min-w-0 flex-1">
+                              <span className="block text-sm font-semibold text-ink">
+                                {w(WIZ_BUNDLE_MSG[id])}
+                              </span>
+                              <span className="mt-0.5 block font-mono text-xs text-g">
+                                +{(APP_BUNDLE_CENTS[id] / 100).toFixed(0)} €
+                              </span>
+                            </span>
+                          </button>
+                        );
+                      })}
+                    </div>
                   </div>
-                ) : null}
-              </div>
+                  <div>
+                    <h3 className="text-2xl font-semibold text-ink">{w("vmTitle")}</h3>
+                    <p className="mt-2 text-base font-light leading-relaxed text-fog">
+                      {w("vmHint")}
+                    </p>
+                    <p className="mt-1 font-mono text-sm text-g">
+                      +{(PORTABLE_VM_ADDON_CENTS / 100).toFixed(0)} €
+                    </p>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        if (portableVmOn) {
+                          setPortableVmOn(false);
+                          setPortableVmHandoff(null);
+                        } else {
+                          setPortableVmOn(true);
+                          setPortableVmHandoff(PortableVmHandoff.CUSTOMER_STORAGE);
+                        }
+                      }}
+                      className={`mt-4 min-h-tap w-full max-w-md rounded-[10px] border px-4 py-3 text-left text-sm font-semibold transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-g ${
+                        portableVmOn
+                          ? "border-g bg-g/[0.08] text-ink"
+                          : "border-edge bg-sunken text-ink hover:border-em"
+                      }`}
+                    >
+                      {portableVmOn ? w("vmDisableAddon") : w("vmEnableAddon")}
+                    </button>
+                    {portableVmOn ? (
+                      <div className="mt-6 space-y-3">
+                        <p className="text-sm font-semibold text-ink">
+                          {w("vmHandoffHeading")}
+                        </p>
+                        {(
+                          [
+                            [
+                              PortableVmHandoff.CUSTOMER_STORAGE,
+                              "vmHandoffCustomerTitle",
+                              "vmHandoffCustomerDesc",
+                            ],
+                            [
+                              PortableVmHandoff.SHIPPED_MEDIA,
+                              "vmHandoffShippedTitle",
+                              "vmHandoffShippedDesc",
+                            ],
+                          ] as const
+                        ).map(([value, titleKey, descKey]) => (
+                          <button
+                            key={value}
+                            type="button"
+                            onClick={() => setPortableVmHandoff(value)}
+                            className={`flex w-full items-start gap-3 rounded-[10px] border p-4 text-left transition-all focus-visible:outline focus-visible:outline-2 focus-visible:outline-g ${
+                              portableVmHandoff === value
+                                ? "border-g bg-g/[0.05]"
+                                : "border-edge bg-sunken hover:border-em"
+                            }`}
+                          >
+                            <span
+                              className={`mt-0.5 inline-flex size-4 shrink-0 rounded-full border-2 ${
+                                portableVmHandoff === value
+                                  ? "border-g bg-g"
+                                  : "border-em"
+                              }`}
+                              aria-hidden
+                            />
+                            <span>
+                              <span className="block text-sm font-semibold text-ink">
+                                {w(titleKey)}
+                              </span>
+                              <span className="mt-1 block text-[13px] font-light text-fog">
+                                {w(descKey)}
+                              </span>
+                            </span>
+                          </button>
+                        ))}
+                        <details className="mt-4 rounded-xl border border-edge bg-sunken/40 p-4 text-fog">
+                          <summary className="cursor-pointer select-none text-sm font-semibold text-ink">
+                            {w("vmLegalToggle")}
+                          </summary>
+                          <div className="mt-3 space-y-3 text-[13px] font-light leading-relaxed">
+                            <p>{w("vmLegalP1")}</p>
+                            <p>{w("vmLegalP2")}</p>
+                            <p>{w("vmLegalP3")}</p>
+                            <p>{w("vmLegalP4")}</p>
+                            <p>
+                              {w("vmLegalPrivacyBefore")}{" "}
+                              <Link
+                                href="/tietosuoja"
+                                className="font-medium text-g underline-offset-2 hover:underline"
+                              >
+                                {w("vmLegalPrivacyLink")}
+                              </Link>
+                              {w("vmLegalPrivacyAfter")}
+                            </p>
+                          </div>
+                        </details>
+                      </div>
+                    ) : null}
+                  </div>
+                </div>
+              </details>
             </div>
           ) : null}
 
