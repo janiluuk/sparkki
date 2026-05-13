@@ -54,7 +54,7 @@ function searchOnlyInsight(
 
 /** @internal exported for unit tests */
 export function extractJsonObject(text: string): Record<string, unknown> | null {
-  const trimmed = text.trim();
+  const trimmed = text.trim().replace(/^\uFEFF/, "");
   const fence = trimmed.match(/```(?:json)?\s*([\s\S]*?)```/i);
   const candidate = fence ? fence[1].trim() : trimmed;
   try {
@@ -73,13 +73,40 @@ export function extractJsonObject(text: string): Record<string, unknown> | null 
   }
 }
 
+function pickFirstString(
+  o: Record<string, unknown>,
+  keys: string[],
+): string | null {
+  for (const k of keys) {
+    const v = o[k];
+    if (typeof v === "string") {
+      const t = v.trim();
+      if (t.length > 0) return t;
+    }
+  }
+  return null;
+}
+
 /** @internal exported for unit tests */
 export function parseAiInsight(o: Record<string, unknown> | null): LaptopSpecsInsight {
   if (!o) return { summary: null, specUrl: null };
-  const summary = typeof o.summary === "string" ? o.summary.trim() || null : null;
-  const specUrl = typeof o.specPageUrl === "string" ? o.specPageUrl.trim() || null : null;
+  const summary = pickFirstString(o, [
+    "summary",
+    "yhteenveto",
+    "text",
+    "description",
+  ]);
+  let specUrl = pickFirstString(o, [
+    "specPageUrl",
+    "specUrl",
+    "spec_page_url",
+    "url",
+    "link",
+    "sourceUrl",
+    "source_url",
+  ]);
   if (specUrl && !/^https?:\/\//i.test(specUrl)) {
-    return { summary, specUrl: null };
+    specUrl = null;
   }
   return { summary, specUrl };
 }
@@ -177,9 +204,17 @@ async function callOllamaChat(
       signal: ac.signal,
     });
     if (!res.ok) return null;
-    const data = (await res.json()) as { message?: { content?: string } };
-    const text = data.message?.content;
-    return typeof text === "string" ? text : null;
+    const data = (await res.json()) as {
+      message?: { content?: string };
+      choices?: { message?: { content?: string } }[];
+    };
+    const text =
+      typeof data.message?.content === "string"
+        ? data.message.content
+        : typeof data.choices?.[0]?.message?.content === "string"
+          ? data.choices[0]!.message!.content
+          : null;
+    return text ?? null;
   } catch {
     return null;
   } finally {
