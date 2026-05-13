@@ -22,10 +22,14 @@ export default defineConfig({
   },
   projects: [{ name: "chromium", use: { ...devices["Desktop Chrome"] } }],
   webServer: {
-    command: "node server.js",
-    cwd: standaloneDir,
+    // Align DB schema with Prisma client (avoids admin/runtime 500s when migrations lag).
+    command: `sh -c 'npx prisma migrate deploy && cd "${standaloneDir}" && exec node server.js'`,
+    cwd: __dirname,
     url: "http://127.0.0.1:1337/fi",
-    reuseExistingServer: !!process.env.PLAYWRIGHT_REUSE_SERVER,
+    // In CI, Lighthouse (or a flaky teardown) may leave :1337 bound; reuse avoids a hard
+    // failure. Locally default false so `next dev` on 1337 is not mistaken for standalone.
+    reuseExistingServer:
+      process.env.CI === "true" || !!process.env.PLAYWRIGHT_REUSE_SERVER,
     timeout: 120_000,
     env: {
       ...process.env,

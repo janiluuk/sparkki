@@ -3,9 +3,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { authOptions } from "@/lib/auth/auth-options";
 import { prisma } from "@/lib/db/prisma";
-import fiMessages from "@/messages/fi.json";
-
-const a = fiMessages.admin;
+import { getAdminMessages } from "@/lib/admin/get-admin-messages";
 
 function startOfLocalDay(d: Date): Date {
   const x = new Date(d.getTime());
@@ -25,6 +23,8 @@ export default async function AdminDashboardPage() {
   if (!session?.user?.id) {
     redirect("/admin/login");
   }
+
+  const a = getAdminMessages().admin;
 
   const startOfToday = new Date();
   startOfToday.setHours(0, 0, 0, 0);
@@ -216,6 +216,12 @@ export default async function AdminDashboardPage() {
           {a.usbOrders}
         </Link>
         <Link
+          href="/admin/care"
+          className="min-h-tap rounded-xl border border-em bg-card px-5 py-3 font-semibold transition-colors duration-150 hover:border-g"
+        >
+          {a.careSubscriptions}
+        </Link>
+        <Link
           href="/admin/models"
           className="min-h-tap rounded-xl border border-em bg-card px-5 py-3 font-semibold transition-colors duration-150 hover:border-g"
         >
@@ -226,6 +232,12 @@ export default async function AdminDashboardPage() {
           className="min-h-tap rounded-xl border border-em bg-card px-5 py-3 font-semibold transition-colors duration-150 hover:border-g"
         >
           {a.guides}
+        </Link>
+        <Link
+          href="/admin/ai-testing"
+          className="min-h-tap rounded-xl border border-em bg-card px-5 py-3 font-semibold transition-colors duration-150 hover:border-g"
+        >
+          {a.aiTesting}
         </Link>
       </nav>
     </div>

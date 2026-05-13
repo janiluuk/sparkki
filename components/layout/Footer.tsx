@@ -6,16 +6,13 @@ const linkMuted =
 
 export async function Footer() {
   const t = await getTranslations("footer");
-  const tNav = await getTranslations("nav");
-  const youtubeUrl = process.env.NEXT_PUBLIC_YOUTUBE_CHANNEL_URL?.trim();
-  const showYoutube = Boolean(youtubeUrl && youtubeUrl !== "#");
 
   return (
     <footer className="mt-auto border-t border-edge bg-raised text-ink">
       <div className="mx-auto max-w-[1100px] px-6 py-12 sm:px-12 sm:py-14">
         <div className="grid grid-cols-1 gap-10 sm:grid-cols-2 lg:grid-cols-[minmax(0,1.5fr)_repeat(3,minmax(0,1fr))] lg:gap-12">
           <div className="max-w-md lg:max-w-none">
-            <p className="mb-2 font-mono text-[10px] font-normal uppercase tracking-[0.22em] text-dust">
+            <p className="mb-2 font-mono text-[10px] font-normal uppercase tracking-[0.22em] text-fog">
               {t("brand")}
             </p>
             <p className="font-display text-xl font-bold leading-snug tracking-tight text-ink">
@@ -24,7 +21,7 @@ export async function Footer() {
           </div>
 
           <div>
-            <p className="mb-3 font-mono text-[10px] font-normal uppercase tracking-[0.1em] text-dust">
+            <p className="mb-3 font-mono text-[10px] font-normal uppercase tracking-[0.1em] text-fog">
               {t("colService")}
             </p>
             <ul className="flex flex-col gap-1">
@@ -44,45 +41,28 @@ export async function Footer() {
                 </PulseLink>
               </li>
               <li>
-                <PulseLink href="/care" className={`${linkMuted} px-1`}>
-                  {t("care")}
-                </PulseLink>
-              </li>
-              <li>
-                <PulseLink href="/koneet" className={`${linkMuted} px-1`}>
-                  {t("compatDb")}
-                </PulseLink>
-              </li>
-              <li>
-                <PulseLink href="/vire-for-good" className={`${linkMuted} px-1`}>
-                  {t("forGood")}
+                <PulseLink href="/palvelu#palvelu-tilaa" className={`${linkMuted} px-1`}>
+                  {t("orderCta")}
                 </PulseLink>
               </li>
             </ul>
           </div>
 
           <div>
-            <p className="mb-3 font-mono text-[10px] font-normal uppercase tracking-[0.1em] text-dust">
+            <p className="mb-3 font-mono text-[10px] font-normal uppercase tracking-[0.1em] text-fog">
               {t("colLearn")}
             </p>
             <ul className="flex flex-col gap-1">
-              <li>
-                <PulseLink href="/tietoa" className={`${linkMuted} px-1`}>
-                  {tNav("infoHubOverview")}
-                </PulseLink>
-              </li>
-              <li>
-                <PulseLink href="/tietoa/hyodyt" className={`${linkMuted} px-1`}>
-                  {tNav("infoBenefits")}
-                </PulseLink>
-              </li>
               <li>
                 <PulseLink href="/tietoa/linux" className={`${linkMuted} px-1`}>
                   {t("linuxMint")}
                 </PulseLink>
               </li>
               <li>
-                <PulseLink href="/tietoa/sovellukset/windows" className={`${linkMuted} px-1`}>
+                <PulseLink
+                  href="/tietoa/sovellukset/windows"
+                  className={`${linkMuted} px-1`}
+                >
                   {t("apps")}
                 </PulseLink>
               </li>
@@ -100,7 +80,7 @@ export async function Footer() {
           </div>
 
           <div>
-            <p className="mb-3 font-mono text-[10px] font-normal uppercase tracking-[0.1em] text-dust">
+            <p className="mb-3 font-mono text-[10px] font-normal uppercase tracking-[0.1em] text-fog">
               {t("colContact")}
             </p>
             <ul className="flex flex-col gap-1">
@@ -109,7 +89,7 @@ export async function Footer() {
                   href={`mailto:${t("emailValue")}`}
                   className={`${linkMuted} px-1 underline-offset-4 hover:underline`}
                 >
-                  <span className="block font-mono text-xs uppercase tracking-label text-dust">
+                  <span className="block font-mono text-xs uppercase tracking-label text-fog">
                     {t("emailLabel")}
                   </span>
                   {t("emailValue")}
@@ -125,33 +105,10 @@ export async function Footer() {
                   {t("privacy")}
                 </PulseLink>
               </li>
-              <li>
-                <PulseLink href="/tilaus" className={`${linkMuted} px-1`}>
-                  {t("orderTracking")}
-                </PulseLink>
-              </li>
             </ul>
-            {showYoutube ? (
-              <a
-                href={youtubeUrl}
-                className={`${linkMuted} mt-2 inline-flex px-1 underline-offset-4 hover:underline`}
-                rel="noopener noreferrer"
-                target="_blank"
-              >
-                {t("youtube")}
-              </a>
-            ) : null}
-            <a
-              href={process.env.NEXT_PUBLIC_DISCORD_INVITE ?? "#"}
-              className={`${linkMuted} mt-2 inline-flex px-1 underline-offset-4 hover:underline`}
-              rel="noopener noreferrer"
-              target="_blank"
-            >
-              {t("discord")}
-            </a>
           </div>
         </div>
-        <div className="mt-10 border-t border-edge pt-6 text-center font-mono text-sm text-dust">
+        <div className="mt-10 border-t border-edge pt-6 text-center font-mono text-sm text-fog">
           © {new Date().getFullYear()} Vire
         </div>
       </div>

@@ -49,8 +49,6 @@ export function NavBar({ locale }: { locale: string }) {
     pathname.startsWith("/info/") ||
     pathname === "/sovellukset" ||
     pathname.startsWith("/sovellukset/");
-  const koneetActive =
-    pathname === "/koneet" || pathname.startsWith("/koneet/");
   const aboutHubActive =
     pathname === "/about" ||
     pathname.startsWith("/about/") ||
@@ -60,8 +58,6 @@ export function NavBar({ locale }: { locale: string }) {
     pathname.startsWith("/yhteiso/");
 
   const infoLinks = [
-    { href: "/tietoa", key: "infoHubOverview" as const },
-    { href: "/tietoa/hyodyt", key: "infoBenefits" as const },
     { href: "/tietoa/linux", key: "infoLinux" as const },
     { href: "/tietoa/vakaus", key: "infoStability" as const },
     { href: "/tietoa/huolia", key: "infoFaq" as const },
@@ -99,18 +95,11 @@ export function NavBar({ locale }: { locale: string }) {
             </Link>
 
             <div className="flex items-stretch">
-              <Link
-                href="/tietoa"
-                onClick={onNavClick}
-                className={`${navLinkClass(infoHubActive)} rounded-r-none pr-2`}
-              >
-                {t("infoHub")}
-              </Link>
               <details className="vire-nav-disclosure group relative">
                 <summary
-                  className={`${navLinkClass(false)} list-none cursor-pointer rounded-l-none border-l border-edge/60 pl-1 pr-2 [&::-webkit-details-marker]:hidden`}
-                  aria-label={t("infoHubSubmenu")}
+                  className={`${navLinkClass(infoHubActive)} flex cursor-pointer list-none items-center gap-1 [&::-webkit-details-marker]:hidden`}
                 >
+                  <span>{t("infoHub")}</span>
                   <span className="text-[10px] opacity-70" aria-hidden>
                     ▾
                   </span>
@@ -141,14 +130,6 @@ export function NavBar({ locale }: { locale: string }) {
               className={navLinkClass(itseActive)}
             >
               {t("diy")}
-            </Link>
-
-            <Link
-              href="/koneet"
-              onClick={onNavClick}
-              className={navLinkClass(koneetActive)}
-            >
-              {t("koneet")}
             </Link>
 
             <details className="vire-nav-disclosure group relative">

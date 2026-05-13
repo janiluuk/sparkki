@@ -68,4 +68,68 @@ describe("POST /api/checkout validation", () => {
     const j = (await res.json()) as { error?: string };
     expect(j.error).toBe("validation_error");
   });
+
+  it("returns 400 when appBundleIds contains an unknown slug", async () => {
+    const res = await checkoutPost(
+      new Request("http://localhost/api/checkout", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          tier: "SSD_BASIC",
+          deliveryMethod: "SELF",
+          hddRemoval: "VIRE_REMOVES",
+          computerDescription: "Lenovo",
+          customerContact: "a@b.co",
+          locale: "fi",
+          appBundleIds: ["not_a_real_bundle"],
+        }),
+      }),
+    );
+    expect(res.status).toBe(400);
+    const j = (await res.json()) as { error?: string };
+    expect(j.error).toBe("validation_error");
+  });
+
+  it("returns 400 when portableVmAddon is true but handoff is missing", async () => {
+    const res = await checkoutPost(
+      new Request("http://localhost/api/checkout", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          tier: "SSD_BASIC",
+          deliveryMethod: "SELF",
+          hddRemoval: "VIRE_REMOVES",
+          computerDescription: "Lenovo",
+          customerContact: "a@b.co",
+          locale: "fi",
+          portableVmAddon: true,
+        }),
+      }),
+    );
+    expect(res.status).toBe(400);
+    const j = (await res.json()) as { error?: string };
+    expect(j.error).toBe("validation_error");
+  });
+
+  it("returns 400 when portableVmHandoff is set but addon is false", async () => {
+    const res = await checkoutPost(
+      new Request("http://localhost/api/checkout", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          tier: "SSD_BASIC",
+          deliveryMethod: "SELF",
+          hddRemoval: "VIRE_REMOVES",
+          computerDescription: "Lenovo",
+          customerContact: "a@b.co",
+          locale: "fi",
+          portableVmAddon: false,
+          portableVmHandoff: "CUSTOMER_STORAGE",
+        }),
+      }),
+    );
+    expect(res.status).toBe(400);
+    const j = (await res.json()) as { error?: string };
+    expect(j.error).toBe("validation_error");
+  });
 });

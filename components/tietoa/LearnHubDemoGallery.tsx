@@ -44,10 +44,10 @@ export async function LearnHubDemoGallery() {
 
   const items = (
     [
-      ["productivity", "productivityTitle", "productivityCaption", "workbench.desktop"] as const,
-      ["gaming", "gamingTitle", "gamingCaption", "steam.desktop"] as const,
-      ["creative", "creativeTitle", "creativeCaption", "studio.desktop"] as const,
-      ["daily", "dailyTitle", "dailyCaption", "browser.desktop"] as const,
+      ["productivity", "productivityTitle", "productivityCaption", "workbenchDesktop"] as const,
+      ["gaming", "gamingTitle", "gamingCaption", "steamDesktop"] as const,
+      ["creative", "creativeTitle", "creativeCaption", "studioDesktop"] as const,
+      ["daily", "dailyTitle", "dailyCaption", "browserDesktop"] as const,
     ] as const
   ).map(([variant, titleKey, captionKey, chromeKey]) => ({
     variant,

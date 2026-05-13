@@ -27,6 +27,9 @@ const baseOrder = {
   dataMigration: false,
   dataMigrationSize: null,
   dataMigrationNotes: null,
+  appBundleIds: [],
+  portableVmAddon: false,
+  portableVmHandoff: null,
 } satisfies Order;
 
 const baseUsb = {
@@ -51,6 +54,25 @@ describe("public order DTOs", () => {
     expect(dto.kind).toBe("service");
     expect(dto.priceEur).toBe(19900);
     expect(dto.createdAt).toMatch(/^\d{4}-/);
+    expect(dto.appBundleIds).toEqual([]);
+  });
+
+  it("includes app bundle ids on the public DTO", () => {
+    const dto = toPublicServiceOrder({
+      ...baseOrder,
+      appBundleIds: ["local_ai", "media_creator"],
+    });
+    expect(dto.appBundleIds).toEqual(["local_ai", "media_creator"]);
+  });
+
+  it("includes portable VM fields on the public DTO", () => {
+    const dto = toPublicServiceOrder({
+      ...baseOrder,
+      portableVmAddon: true,
+      portableVmHandoff: "CUSTOMER_STORAGE",
+    });
+    expect(dto.portableVmAddon).toBe(true);
+    expect(dto.portableVmHandoff).toBe("CUSTOMER_STORAGE");
   });
 
   it("maps USB order", () => {

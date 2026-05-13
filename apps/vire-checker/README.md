@@ -60,12 +60,10 @@ See repo root **`.env.example`** for the full list.
 
    Replace host/port with your `APP_PORT` / reverse proxy URL.
 
-### Future: spec panel inside Vire Checker
+### Optional LAN spec fetch (Vire API)
 
-If you add a “Fetch specs” button that calls your Vire API:
+**Shipped (optional):** when **`VITE_VIRE_API_BASE`** is set in `apps/vire-checker/.env` (e.g. `http://127.0.0.1:1337`), the **Hae speksit verkosta** button calls **`POST {base}/api/public/laptop-specs`** and prints JSON (including HTTP status) in the output panel. Same origin / CORS rules apply as in a normal browser; **Tauri** may require your API host to be reachable from the webview (see `src-tauri/tauri.conf.json` CSP).
 
-1. Expose Vire over **HTTPS or HTTP on the LAN** (same trust domain as you accept for API keys).
-2. **Tauri 2 HTTP allowlist:** extend `src-tauri/capabilities/default.json` with the HTTP plugin scope for your API origin (see [Tauri HTTP client](https://v2.tauri.app/plugin/http-client/) / permissions docs). `core:default` alone does not allow arbitrary `fetch` to custom origins unless the webview CSP and Tauri allowlist permit it.
-3. Prefer a **`VITE_VIRE_API_BASE`** (e.g. `http://localhost:1337`) in `apps/vire-checker/.env` for dev; never bake secrets into the client — the public **`POST /api/public/laptop-specs`** is already rate-limited but not a secret channel.
+For stricter Tauri deployments, add an **HTTP allowlist** / plugin scope for your API origin per [Tauri security](https://v2.tauri.app/security/).
 
-Until then, treat the checker as the **offline compatibility / JSON** tool and the **site** as the place for **networked spec hints**.
+Until **`VITE_VIRE_API_BASE`** is set, the checker remains the **offline compatibility / JSON** tool for local `checkCompatibility`; the **site** still provides full **networked spec hints** with SearXNG/LLM on the server.

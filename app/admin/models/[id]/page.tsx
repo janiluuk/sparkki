@@ -3,9 +3,7 @@ import { notFound } from "next/navigation";
 import { updateComputerModel } from "@/app/admin/models/actions";
 import { prisma } from "@/lib/db/prisma";
 import { requireAdmin } from "@/lib/auth/require-admin";
-import fiMessages from "@/messages/fi.json";
-
-const a = fiMessages.admin;
+import { getAdminMessages } from "@/lib/admin/get-admin-messages";
 
 function formatYears(yearFrom: number | null, yearTo: number | null) {
   if (yearFrom != null && yearTo != null) return `${yearFrom}–${yearTo}`;
@@ -22,6 +20,7 @@ export default async function AdminModelDetailPage({
   searchParams?: { error?: string; saved?: string };
 }) {
   await requireAdmin();
+  const a = getAdminMessages().admin;
   const row = await prisma.computerModel.findUnique({ where: { id: params.id } });
   if (!row) notFound();
 

@@ -1,11 +1,9 @@
 "use client";
 
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { useEffect, useState, useTransition } from "react";
 import { setGuidePublishedToggle } from "@/app/admin/guides/actions";
-import fiMessages from "@/messages/fi.json";
-
-const a = fiMessages.admin;
 
 export function GuidePublishToggle({
   slug,
@@ -14,6 +12,7 @@ export function GuidePublishToggle({
   slug: string;
   published: boolean;
 }) {
+  const t = useTranslations("admin");
   const router = useRouter();
   const [pending, startTransition] = useTransition();
   const [on, setOn] = useState(published);
@@ -37,7 +36,7 @@ export function GuidePublishToggle({
 
   return (
     <div className="inline-flex items-center gap-3 font-medium text-ink">
-      <span className="sr-only">{a.guidesPublishedLabel}</span>
+      <span className="sr-only">{t("guidesPublishedLabel")}</span>
       <button
         type="button"
         role="switch"
@@ -54,7 +53,7 @@ export function GuidePublishToggle({
           }`}
         />
       </button>
-      <span aria-hidden>{on ? a.guidePublishedYes : a.guidePublishedNo}</span>
+      <span aria-hidden>{on ? t("guidePublishedYes") : t("guidePublishedNo")}</span>
     </div>
   );
 }

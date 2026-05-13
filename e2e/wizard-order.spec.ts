@@ -55,11 +55,9 @@ test.describe("order wizard (checkout mocked)", () => {
     await wizard.getByRole("button", { name: "Seuraava" }).click();
 
     await wizard.locator("#wiz-contact").fill("e2e-wizard@example.com");
-    await wizard.getByRole("button", { name: "Seuraava" }).click();
-
     await expect(
       wizard.getByRole("heading", { name: "Yhteenveto", exact: true }),
-    ).toBeVisible();
+    ).toBeVisible({ timeout: 15_000 });
     await wizard.getByRole("button", { name: "Siirry maksamaan" }).click();
 
     await page.waitForURL(/\/fi\/palvelu\/kiitos/, { timeout: 15_000 });

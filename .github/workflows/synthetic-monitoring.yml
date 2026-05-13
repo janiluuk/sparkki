@@ -1,0 +1,30 @@
+# Optional production probes. Set repo variable `SYNTHETIC_MONITORING_BASE_URL`
+# (e.g. https://vire.example.com — no trailing slash) to enable on schedule.
+name: Synthetic monitoring
+
+on:
+  schedule:
+    - cron: "17 * * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ping health + public page
+        env:
+          BASE_URL: ${{ vars.SYNTHETIC_MONITORING_BASE_URL }}
+        run: |
+          set -euo pipefail
+          if [ -z "${BASE_URL:-}" ]; then
+            echo "SYNTHETIC_MONITORING_BASE_URL is unset — skipping (set a repository variable to enable hourly checks)."
+            exit 0
+          fi
+          base="${BASE_URL%/}"
+          echo "Probing ${base} …"
+          curl -sfS "${base}/api/health" | jq -e '.ok == true' >/dev/null
+          curl -sfS -o /dev/null "${base}/fi"
+          echo "OK"

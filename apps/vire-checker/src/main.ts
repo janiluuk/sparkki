@@ -6,6 +6,11 @@ import {
 const form = document.querySelector<HTMLFormElement>("#check-form");
 const out = document.querySelector<HTMLPreElement>("#out");
 const copyBtn = document.querySelector<HTMLButtonElement>("#copy");
+const fetchSpecsBtn = document.querySelector<HTMLButtonElement>("#fetch-specs");
+
+const VIRE_API_BASE = (import.meta.env.VITE_VIRE_API_BASE as string | undefined)
+  ?.trim()
+  .replace(/\/$/, "");
 
 function diskValue(v: string): "hdd" | "ssd" | "unknown" | null | undefined {
   if (v === "") return undefined;
@@ -106,5 +111,52 @@ copyBtn?.addEventListener("click", async () => {
     }, 1500);
   }
 });
+
+if (VIRE_API_BASE && fetchSpecsBtn) {
+  fetchSpecsBtn.hidden = false;
+  fetchSpecsBtn.addEventListener("click", async () => {
+    const make = document.querySelector<HTMLInputElement>("#make")!.value.trim();
+    const model = document.querySelector<HTMLInputElement>("#model")!.value.trim();
+    if (!make || !model) {
+      if (out) {
+        out.textContent = JSON.stringify(
+          {
+            error: "make_model_required",
+            hint: "Täytä valmistaja ja malli ennen verkkohakua.",
+          },
+          null,
+          2,
+        );
+      }
+      return;
+    }
+    fetchSpecsBtn.disabled = true;
+    try {
+      const res = await fetch(`${VIRE_API_BASE}/api/public/laptop-specs`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ make, model }),
+      });
+      const json: unknown = await res.json().catch(() => ({}));
+      if (out) {
+        out.textContent = JSON.stringify(
+          { httpStatus: res.status, body: json },
+          null,
+          2,
+        );
+      }
+    } catch (e) {
+      if (out) {
+        out.textContent = JSON.stringify(
+          { error: "fetch_failed", detail: String(e) },
+          null,
+          2,
+        );
+      }
+    } finally {
+      fetchSpecsBtn.disabled = false;
+    }
+  });
+}
 
 run();

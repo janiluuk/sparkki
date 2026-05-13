@@ -17,8 +17,17 @@ export const authOptions: NextAuthOptions = {
         if (!credentials?.email || !credentials?.password) {
           return null;
         }
-        const admin = await prisma.adminUser.findUnique({
-          where: { email: credentials.email },
+        const login = credentials.email.trim();
+        if (!login) return null;
+        const loginLower = login.toLowerCase();
+
+        const admin = await prisma.adminUser.findFirst({
+          where: {
+            OR: [
+              { email: loginLower },
+              { username: loginLower },
+            ],
+          },
         });
         if (!admin) return null;
         const ok = await bcrypt.compare(

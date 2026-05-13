@@ -2,22 +2,19 @@
 
 import { useEffect, useRef } from "react";
 import * as THREE from "three";
-import {
-  getFloatIconTexture,
-  pickFloatIconKind,
-  disposeFloatIconTextures,
-} from "@/lib/site/background-float-textures";
-import {
-  VIRE_BG_NAV_EVENT,
-  type VireBgNavDetail,
-} from "@/lib/site/background-nav";
 
-type FloatSprite = THREE.Sprite & {
+type FloatMesh = THREE.Mesh & {
   _vel: THREE.Vector3;
-  _spin: number;
 };
 
-/** Decorative ambient canvas — OS / app motifs, FI & EU flags (Three.js sprites). */
+function disposeMesh(m: THREE.Mesh) {
+  m.geometry.dispose();
+  const mat = m.material;
+  if (Array.isArray(mat)) mat.forEach((x) => x.dispose());
+  else mat.dispose();
+}
+
+/** Decorative ambient canvas — wireframe icosahedrons (DESIGN_SYSTEM.md). */
 export function BackgroundCanvas() {
   const ref = useRef<HTMLCanvasElement>(null);
 
@@ -45,25 +42,9 @@ export function BackgroundCanvas() {
     );
     camera.position.z = 20;
 
-    const sprites: THREE.Sprite[] = [];
+    scene.add(new THREE.AmbientLight(0xffffff, 1));
 
-    let navImpulse = 0;
-
-    const bumpNavImpulse = (e: Event) => {
-      const ce = e as CustomEvent<VireBgNavDetail>;
-      const s =
-        typeof ce.detail?.strength === "number" && ce.detail.strength > 0
-          ? ce.detail.strength
-          : 1;
-      navImpulse = Math.min(1, navImpulse + 0.48 * s);
-    };
-
-    const onPopState = () => {
-      navImpulse = Math.min(1, navImpulse + 0.28);
-    };
-
-    window.addEventListener(VIRE_BG_NAV_EVENT, bumpNavImpulse);
-    window.addEventListener("popstate", onPopState);
+    const meshes: FloatMesh[] = [];
 
     const onResize = () => {
       camera.aspect = window.innerWidth / window.innerHeight;
@@ -73,55 +54,58 @@ export function BackgroundCanvas() {
     };
 
     if (reducedMotion) {
-      const tex = getFloatIconTexture("fi");
-      const mat = new THREE.SpriteMaterial({
-        map: tex,
+      const geo = new THREE.IcosahedronGeometry(0.3, 0);
+      const mat = new THREE.MeshBasicMaterial({
+        color: 0x1df5a0,
+        wireframe: true,
         transparent: true,
-        opacity: 0.14,
-        depthWrite: false,
+        opacity: 0.12,
       });
-      const sprite = new THREE.Sprite(mat);
-      sprite.scale.setScalar(1.65);
-      sprite.position.set(0, 0, 0);
-      scene.add(sprite);
-      sprites.push(sprite);
+      const mesh = new THREE.Mesh(geo, mat) as unknown as FloatMesh;
+      mesh._vel = new THREE.Vector3();
+      mesh.position.set(0, 0, 0);
+      const s = 0.9;
+      mesh.scale.setScalar(s);
+      scene.add(mesh);
+      meshes.push(mesh);
       renderer.render(scene, camera);
       window.addEventListener("resize", onResize);
 
       return () => {
-        window.removeEventListener(VIRE_BG_NAV_EVENT, bumpNavImpulse);
-        window.removeEventListener("popstate", onPopState);
         window.removeEventListener("resize", onResize);
-        const m = sprite.material as THREE.SpriteMaterial;
-        m.map = null;
-        m.dispose();
-        disposeFloatIconTextures();
+        meshes.forEach(disposeMesh);
         renderer.dispose();
       };
     }
 
     const count = Math.floor(80 + Math.random() * 41);
+    const geometry = new THREE.IcosahedronGeometry(0.3, 0);
+
     for (let i = 0; i < count; i++) {
-      const kind = pickFloatIconKind();
-      const tex = getFloatIconTexture(kind);
-      const mat = new THREE.SpriteMaterial({
-        map: tex,
+      const amber = Math.random() < 0.15;
+      const mat = new THREE.MeshBasicMaterial({
+        color: amber ? 0xf5a623 : 0x1df5a0,
+        wireframe: true,
         transparent: true,
-        opacity: 0.07 + Math.random() * 0.11,
-        depthWrite: false,
+        opacity: amber
+          ? 0.05 + Math.random() * 0.05
+          : 0.06 + Math.random() * 0.12,
       });
-      const sprite = new THREE.Sprite(mat) as FloatSprite;
-      const base = 0.4 + Math.random() * 1.15;
-      sprite.scale.set(base, base, 1);
-      sprite.position.set((Math.random() - 0.5) * 40, (Math.random() - 0.5) * 30, 0);
-      sprite._vel = new THREE.Vector3(
-        (Math.random() - 0.5) * 0.003,
-        (Math.random() - 0.5) * 0.003,
+      const mesh = new THREE.Mesh(geometry.clone(), mat) as unknown as FloatMesh;
+      const sc = 0.3 + Math.random() * 1.2;
+      mesh.scale.setScalar(sc);
+      mesh.position.set(
+        (Math.random() - 0.5) * 40,
+        (Math.random() - 0.5) * 30,
         0,
       );
-      sprite._spin = (Math.random() - 0.5) * 0.004;
-      scene.add(sprite);
-      sprites.push(sprite);
+      mesh._vel = new THREE.Vector3(
+        (Math.random() - 0.5) * 0.006,
+        (Math.random() - 0.5) * 0.006,
+        0,
+      );
+      scene.add(mesh);
+      meshes.push(mesh);
     }
 
     let animId = 0;
@@ -132,20 +116,12 @@ export function BackgroundCanvas() {
       if (now - last < 33) return;
       last = now;
 
-      const impulse = navImpulse;
-      navImpulse *= 0.9;
-
-      const spin = 1 + impulse * 0.35;
-      sprites.forEach((sp) => {
-        const mm = sp as FloatSprite;
-        const speed = 1 + impulse * 0.45;
-        mm.position.addScaledVector(mm._vel, speed);
-
-        const mat = sp.material as THREE.SpriteMaterial;
-        mat.rotation += mm._spin * spin;
-
-        if (Math.abs(sp.position.x) > 22) mm._vel.x *= -1;
-        if (Math.abs(sp.position.y) > 17) mm._vel.y *= -1;
+      meshes.forEach((mesh) => {
+        mesh.position.add(mesh._vel);
+        mesh.rotation.x += 0.002;
+        mesh.rotation.y += 0.001;
+        if (Math.abs(mesh.position.x) > 22) mesh._vel.x *= -1;
+        if (Math.abs(mesh.position.y) > 17) mesh._vel.y *= -1;
       });
 
       renderer.render(scene, camera);
@@ -164,16 +140,10 @@ export function BackgroundCanvas() {
 
     return () => {
       cancelAnimationFrame(animId);
-      window.removeEventListener(VIRE_BG_NAV_EVENT, bumpNavImpulse);
-      window.removeEventListener("popstate", onPopState);
       window.removeEventListener("resize", onResize);
       document.removeEventListener("visibilitychange", onVisibility);
-      sprites.forEach((sp) => {
-        const m = sp.material as THREE.SpriteMaterial;
-        m.map = null;
-        m.dispose();
-      });
-      disposeFloatIconTextures();
+      meshes.forEach(disposeMesh);
+      geometry.dispose();
       renderer.dispose();
     };
   }, []);

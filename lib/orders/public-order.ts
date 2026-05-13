@@ -21,6 +21,9 @@ export type PublicServiceOrder = {
   priceEur: number;
   dataMigration: boolean;
   dataMigrationSize: string | null;
+  appBundleIds: string[];
+  portableVmAddon: boolean;
+  portableVmHandoff: string | null;
 };
 
 export type PublicUsbOrder = {
@@ -57,6 +60,9 @@ export function toPublicServiceOrder(order: Order): PublicServiceOrder {
     priceEur: order.priceEur,
     dataMigration: order.dataMigration,
     dataMigrationSize: order.dataMigrationSize,
+    appBundleIds: [...order.appBundleIds],
+    portableVmAddon: order.portableVmAddon,
+    portableVmHandoff: order.portableVmHandoff,
   };
 }
 

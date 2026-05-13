@@ -1,12 +1,11 @@
 import Link from "next/link";
 import { requireAdmin } from "@/lib/auth/require-admin";
 import { prisma } from "@/lib/db/prisma";
-import fiMessages from "@/messages/fi.json";
-
-const a = fiMessages.admin;
+import { getAdminMessages } from "@/lib/admin/get-admin-messages";
 
 export default async function AdminUsbOrdersPage() {
   await requireAdmin();
+  const a = getAdminMessages().admin;
   const rows = await prisma.usbOrder.findMany({
     orderBy: { createdAt: "desc" },
     take: 200,

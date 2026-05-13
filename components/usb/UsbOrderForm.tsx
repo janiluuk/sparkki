@@ -6,8 +6,8 @@ import { useTranslations } from "next-intl";
 export function UsbOrderForm({ locale }: { locale: string }) {
   const t = useTranslations("itse");
   const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
   const [address, setAddress] = useState("");
+  const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -51,10 +51,11 @@ export function UsbOrderForm({ locale }: { locale: string }) {
         </label>
         <input
           id="usb-name"
-          className="min-h-tap w-full rounded-lg border border-em px-4 text-lg"
+          className="min-h-tap w-full rounded-lg border border-em bg-sunken px-4 text-lg text-ink placeholder:text-dust focus:border-g focus:outline-none"
           value={name}
           onChange={(e) => setName(e.target.value)}
           autoComplete="name"
+          placeholder={t("usbNamePlaceholder")}
         />
       </div>
       <div>
@@ -64,10 +65,13 @@ export function UsbOrderForm({ locale }: { locale: string }) {
         <textarea
           id="usb-address"
           rows={3}
-          className="w-full rounded-lg border border-em px-4 py-3 text-lg"
+          className="w-full resize-y rounded-lg border border-em bg-sunken px-4 py-3 text-lg text-ink placeholder:text-dust focus:border-g focus:outline-none"
           value={address}
           onChange={(e) => setAddress(e.target.value)}
+          autoComplete="street-address"
+          placeholder={t("usbAddressPlaceholder")}
         />
+        <p className="mt-2 text-base font-light text-fog">{t("usbAddressHint")}</p>
       </div>
       <div>
         <label htmlFor="usb-email" className="mb-2 block font-semibold">
@@ -76,11 +80,13 @@ export function UsbOrderForm({ locale }: { locale: string }) {
         <input
           id="usb-email"
           type="email"
-          className="min-h-tap w-full rounded-lg border border-em px-4 text-lg"
+          className="min-h-tap w-full rounded-lg border border-em bg-sunken px-4 text-lg text-ink placeholder:text-dust focus:border-g focus:outline-none"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           autoComplete="email"
+          placeholder={t("usbEmailPlaceholder")}
         />
+        <p className="mt-2 text-base font-light text-fog">{t("usbEmailHint")}</p>
       </div>
       {error ? (
         <p className="font-semibold text-danger" role="alert">

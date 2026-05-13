@@ -4,6 +4,11 @@ import type {
   ServiceTier,
   SupportTier,
 } from "@prisma/client";
+import {
+  type AppBundleId,
+  appBundlesAddonCents,
+} from "./app-bundles";
+import { PORTABLE_VM_ADDON_CENTS } from "./portable-vm";
 
 /** Default EUR prices in cents when Stripe Price IDs are not set. */
 export const TIER_BASE_CENTS: Record<
@@ -72,13 +77,15 @@ export function serviceOrderTotalWithMigrationCents(
   return base + dataMigrationAddonCents(migration.size);
 }
 
-/** Full service checkout total including delivery + HDD removal rules. */
+/** Full service checkout total including delivery + HDD removal + optional app bundles + portable VM. */
 export function serviceCheckoutTotalCents(params: {
   tier: Exclude<ServiceTier, "B2B">;
   supportTier: SupportTier;
   migration: { size: "standard" | "large" } | null;
   deliveryMethod: DeliveryMethod;
   hddRemoval: HddRemovalOption;
+  appBundles?: readonly AppBundleId[];
+  portableVm?: boolean;
 }): number {
   let total = serviceOrderTotalWithMigrationCents(
     params.tier,
@@ -87,6 +94,12 @@ export function serviceCheckoutTotalCents(params: {
   );
   total += deliveryAddonCents(params.deliveryMethod);
   total += hddRemovalAddonCents(params.tier, params.hddRemoval);
+  if (params.appBundles?.length) {
+    total += appBundlesAddonCents(params.appBundles);
+  }
+  if (params.portableVm) {
+    total += PORTABLE_VM_ADDON_CENTS;
+  }
   return total;
 }
 

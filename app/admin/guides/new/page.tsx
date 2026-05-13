@@ -1,9 +1,7 @@
 import Link from "next/link";
 import { SaveGuideForm } from "@/components/admin/SaveGuideForm";
 import { requireAdmin } from "@/lib/auth/require-admin";
-import fiMessages from "@/messages/fi.json";
-
-const a = fiMessages.admin;
+import { getAdminMessages } from "@/lib/admin/get-admin-messages";
 
 export default async function AdminGuideNewPage({
   searchParams,
@@ -11,6 +9,7 @@ export default async function AdminGuideNewPage({
   searchParams?: { error?: string };
 }) {
   await requireAdmin();
+  const a = getAdminMessages().admin;
 
   const errCodes: Record<string, string> = {
     slug: a.guideErrSlug,

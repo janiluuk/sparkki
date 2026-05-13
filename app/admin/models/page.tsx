@@ -3,9 +3,7 @@ import { ModelCheckStatus } from "@prisma/client";
 import { createComputerModel } from "@/app/admin/models/actions";
 import { prisma } from "@/lib/db/prisma";
 import { requireAdmin } from "@/lib/auth/require-admin";
-import fiMessages from "@/messages/fi.json";
-
-const a = fiMessages.admin;
+import { getAdminMessages } from "@/lib/admin/get-admin-messages";
 
 function formatYears(yearFrom: number | null, yearTo: number | null) {
   if (yearFrom != null && yearTo != null) return `${yearFrom}–${yearTo}`;
@@ -14,27 +12,28 @@ function formatYears(yearFrom: number | null, yearTo: number | null) {
   return "—";
 }
 
-function statusLabel(s: ModelCheckStatus) {
-  switch (s) {
-    case "UNCHECKED":
-      return a.modelStatus_UNCHECKED;
-    case "IN_REVIEW":
-      return a.modelStatus_IN_REVIEW;
-    case "APPROVED":
-      return a.modelStatus_APPROVED;
-    case "REJECTED":
-      return a.modelStatus_REJECTED;
-    default:
-      return s;
-  }
-}
-
 export default async function AdminModelsPage({
   searchParams,
 }: {
   searchParams?: { status?: string; error?: string };
 }) {
   await requireAdmin();
+  const a = getAdminMessages().admin;
+
+  function statusLabel(s: ModelCheckStatus) {
+    switch (s) {
+      case "UNCHECKED":
+        return a.modelStatus_UNCHECKED;
+      case "IN_REVIEW":
+        return a.modelStatus_IN_REVIEW;
+      case "APPROVED":
+        return a.modelStatus_APPROVED;
+      case "REJECTED":
+        return a.modelStatus_REJECTED;
+      default:
+        return s;
+    }
+  }
 
   const statusParam = searchParams?.status;
   const where =
