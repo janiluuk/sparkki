@@ -3,13 +3,17 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useTranslations } from "next-intl";
 import { usePathname, useRouter } from "@/i18n/navigation";
+import { MAIN_NAV_ITEMS } from "@/lib/site/main-nav";
 import {
   readRecentRoutes,
   recordRecentRoute,
 } from "@/lib/site/palette-recent-routes";
 
+type PaletteEntry = { href: string; label: string; group: "hubs" | "service" | "more" };
+
 /**
  * Phase 6 — ⌘K / Ctrl+K quick jump to main public routes (no extra dependencies).
+ * Phase 5 — catalog is grouped when not searching; hubs mirror `MAIN_NAV_ITEMS`.
  */
 function labelForHref(
   href: string,
@@ -31,40 +35,57 @@ export function CommandPalette() {
   const inputRef = useRef<HTMLInputElement>(null);
   const panelRef = useRef<HTMLDivElement>(null);
 
-  const items = useMemo(
-    () =>
-      [
-        { href: "/", label: tPal("home") },
-        { href: "/palvelu", label: tNav("service") },
-        { href: "/palvelu/b2b", label: tNav("serviceTabB2b") },
-        { href: "/care", label: tNav("serviceTabCare") },
-        { href: "/tilaus", label: tNav("serviceTabTrack") },
-        { href: "/koneet", label: tNav("koneet") },
-        { href: "/tietoa", label: tNav("infoHub") },
-        { href: "/itse", label: tNav("diy") },
-        { href: "/meista", label: tNav("aboutHub") },
-        { href: "/yhteiso", label: tNav("aboutCommunity") },
-        { href: "/tuki", label: tNav("support") },
-        { href: "/tietosuoja", label: tPal("privacy") },
-        { href: "/vire-for-good", label: tPal("forGood") },
-        { href: "/palvelu#palvelu-tilaa", label: tNav("ctaOrder") },
-      ] as const,
-    [tNav, tPal],
-  );
+  const paletteCatalog = useMemo((): readonly PaletteEntry[] => {
+    const hubs: PaletteEntry[] = MAIN_NAV_ITEMS.map((it) => ({
+      href: it.href,
+      label: tNav(it.labelKey),
+      group: "hubs",
+    }));
+    const service: PaletteEntry[] = [
+      { href: "/palvelu/b2b", label: tNav("serviceTabB2b"), group: "service" },
+      { href: "/care", label: tNav("serviceTabCare"), group: "service" },
+      { href: "/tilaus", label: tNav("serviceTabTrack"), group: "service" },
+      { href: "/koneet", label: tNav("koneet"), group: "service" },
+      {
+        href: "/palvelu#palvelu-tilaa",
+        label: tNav("ctaOrder"),
+        group: "service",
+      },
+    ];
+    const more: PaletteEntry[] = [
+      { href: "/", label: tPal("home"), group: "more" },
+      { href: "/yhteiso", label: tNav("aboutCommunity"), group: "more" },
+      { href: "/tietosuoja", label: tPal("privacy"), group: "more" },
+      { href: "/vire-for-good", label: tPal("forGood"), group: "more" },
+    ];
+    return [...hubs, ...service, ...more];
+  }, [tNav, tPal]);
 
-  const filtered = useMemo(() => {
+  const searching = q.trim() !== "";
+
+  const searchFiltered = useMemo(() => {
     const s = q.trim().toLowerCase();
-    if (!s) return items;
-    return items.filter((it) => it.label.toLowerCase().includes(s));
-  }, [items, q]);
+    if (!s) return [...paletteCatalog];
+    return paletteCatalog.filter((it) =>
+      it.label.toLowerCase().includes(s),
+    );
+  }, [paletteCatalog, q]);
 
   const recentSet = useMemo(() => new Set(recent), [recent]);
 
   const catalogItems = useMemo(() => {
-    const s = q.trim().toLowerCase();
-    if (s) return filtered;
-    return filtered.filter((it) => !recentSet.has(it.href));
-  }, [filtered, recentSet, q]);
+    if (searching) return searchFiltered;
+    return searchFiltered.filter((it) => !recentSet.has(it.href));
+  }, [searchFiltered, recentSet, searching]);
+
+  const groupedForBrowse = useMemo(() => {
+    if (searching) return null;
+    return {
+      hubs: catalogItems.filter((i) => i.group === "hubs"),
+      service: catalogItems.filter((i) => i.group === "service"),
+      more: catalogItems.filter((i) => i.group === "more"),
+    };
+  }, [catalogItems, searching]);
 
   useEffect(() => {
     const path = !pathname || pathname === "" ? "/" : pathname;
@@ -198,8 +219,7 @@ export function CommandPalette() {
           aria-label={tPal("title")}
         >
           {(() => {
-            const showRecent = q.trim() === "" && recent.length > 0;
-            const searching = q.trim() !== "";
+            const showRecent = !searching && recent.length > 0;
             if (searching && catalogItems.length === 0) {
               return (
                 <p className="px-3 py-6 text-center text-fog">{tPal("noResults")}</p>
@@ -220,8 +240,8 @@ export function CommandPalette() {
                       aria-labelledby="cmd-palette-recent-lbl"
                     >
                       {recent.map((href) => {
-                        const label = labelForHref(href, items);
-                        const known = items.some((i) => i.href === href);
+                        const label = labelForHref(href, paletteCatalog);
+                        const known = paletteCatalog.some((i) => i.href === href);
                         return (
                           <li key={`recent:${href}`}>
                             <button
@@ -243,36 +263,94 @@ export function CommandPalette() {
                   </div>
                 ) : null}
 
-                {showRecent && catalogItems.length > 0 ? (
-                  <p
-                    id="cmd-palette-all-lbl"
-                    className="mb-1 px-3 pt-1 text-xs font-semibold uppercase tracking-wide text-fog"
-                  >
-                    {tPal("allPages")}
-                  </p>
-                ) : null}
-
-                {catalogItems.length > 0 ? (
-                  <ul
-                    className="space-y-0.5"
-                    aria-labelledby={
-                      showRecent && catalogItems.length > 0
-                        ? "cmd-palette-all-lbl"
-                        : undefined
-                    }
-                  >
-                    {catalogItems.map((it) => (
-                      <li key={it.href}>
-                        <button
-                          type="button"
-                          onClick={() => go(it.href)}
-                          className="flex w-full rounded-lg px-3 py-2.5 text-left text-base text-ink transition-colors hover:bg-sunken focus-visible:outline focus-visible:outline-2 focus-visible:outline-g"
+                {searching ? (
+                  catalogItems.length > 0 ? (
+                    <ul className="space-y-0.5">
+                      {catalogItems.map((it) => (
+                        <li key={it.href}>
+                          <button
+                            type="button"
+                            onClick={() => go(it.href)}
+                            className="flex w-full rounded-lg px-3 py-2.5 text-left text-base text-ink transition-colors hover:bg-sunken focus-visible:outline focus-visible:outline-2 focus-visible:outline-g"
+                          >
+                            {it.label}
+                          </button>
+                        </li>
+                      ))}
+                    </ul>
+                  ) : null
+                ) : groupedForBrowse ? (
+                  <div className="space-y-3">
+                    {groupedForBrowse.hubs.length > 0 ? (
+                      <div role="group" aria-labelledby="cmd-pal-hubs">
+                        <p
+                          id="cmd-pal-hubs"
+                          className="mb-1 px-3 text-xs font-semibold uppercase tracking-wide text-fog"
                         >
-                          {it.label}
-                        </button>
-                      </li>
-                    ))}
-                  </ul>
+                          {tPal("groupMainHubs")}
+                        </p>
+                        <ul className="space-y-0.5">
+                          {groupedForBrowse.hubs.map((it) => (
+                            <li key={it.href}>
+                              <button
+                                type="button"
+                                onClick={() => go(it.href)}
+                                className="flex w-full rounded-lg px-3 py-2.5 text-left text-base text-ink transition-colors hover:bg-sunken focus-visible:outline focus-visible:outline-2 focus-visible:outline-g"
+                              >
+                                {it.label}
+                              </button>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    ) : null}
+                    {groupedForBrowse.service.length > 0 ? (
+                      <div role="group" aria-labelledby="cmd-pal-service">
+                        <p
+                          id="cmd-pal-service"
+                          className="mb-1 px-3 text-xs font-semibold uppercase tracking-wide text-fog"
+                        >
+                          {tPal("groupServiceExtra")}
+                        </p>
+                        <ul className="space-y-0.5">
+                          {groupedForBrowse.service.map((it) => (
+                            <li key={it.href}>
+                              <button
+                                type="button"
+                                onClick={() => go(it.href)}
+                                className="flex w-full rounded-lg px-3 py-2.5 text-left text-base text-ink transition-colors hover:bg-sunken focus-visible:outline focus-visible:outline-2 focus-visible:outline-g"
+                              >
+                                {it.label}
+                              </button>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    ) : null}
+                    {groupedForBrowse.more.length > 0 ? (
+                      <div role="group" aria-labelledby="cmd-pal-more">
+                        <p
+                          id="cmd-pal-more"
+                          className="mb-1 px-3 text-xs font-semibold uppercase tracking-wide text-fog"
+                        >
+                          {tPal("groupSiteMore")}
+                        </p>
+                        <ul className="space-y-0.5">
+                          {groupedForBrowse.more.map((it) => (
+                            <li key={it.href}>
+                              <button
+                                type="button"
+                                onClick={() => go(it.href)}
+                                className="flex w-full rounded-lg px-3 py-2.5 text-left text-base text-ink transition-colors hover:bg-sunken focus-visible:outline focus-visible:outline-2 focus-visible:outline-g"
+                              >
+                                {it.label}
+                              </button>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    ) : null}
+                  </div>
                 ) : null}
               </>
             );

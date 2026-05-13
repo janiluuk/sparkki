@@ -4,6 +4,10 @@ import { useEffect, useRef, useState, type ReactNode } from "react";
 import { useTranslations } from "next-intl";
 import { Link, usePathname } from "@/i18n/navigation";
 import { dispatchBackgroundNavInteraction } from "@/lib/site/background-nav";
+import {
+  isMainNavClusterActive,
+  MAIN_NAV_ITEMS,
+} from "@/lib/site/main-nav";
 import { feedbackPrimaryCTA } from "@/lib/site/ui-feedback";
 
 function BrandMark({ name }: { name: string }) {
@@ -121,28 +125,6 @@ export function NavBar({ locale }: { locale: string }) {
     };
   }, [mobileOpen]);
 
-  const palveluClusterActive =
-    pathname.startsWith("/palvelu") ||
-    pathname.startsWith("/care") ||
-    pathname.startsWith("/koneet") ||
-    pathname.startsWith("/tilaus");
-  const itseActive = pathname === "/itse" || pathname.startsWith("/itse/");
-  const tukiActive = pathname === "/tuki" || pathname.startsWith("/tuki/");
-  const infoHubActive =
-    pathname === "/tietoa" ||
-    pathname.startsWith("/tietoa/") ||
-    pathname === "/info" ||
-    pathname.startsWith("/info/") ||
-    pathname === "/sovellukset" ||
-    pathname.startsWith("/sovellukset/");
-  const aboutHubActive =
-    pathname === "/about" ||
-    pathname.startsWith("/about/") ||
-    pathname === "/meista" ||
-    pathname.startsWith("/meista/") ||
-    pathname === "/yhteiso" ||
-    pathname.startsWith("/yhteiso/");
-
   return (
     <header className="surface-header-scrim sparkki-header-reactive sticky top-0 z-30 border-b border-edge pt-safe backdrop-blur-spark-xl">
       <div className="mx-auto flex max-w-[1100px] flex-wrap items-center justify-between gap-4 px-6 py-4 sm:px-12 sm:py-5">
@@ -163,50 +145,20 @@ export function NavBar({ locale }: { locale: string }) {
             aria-label={t("mainNav")}
             className="hidden flex-wrap items-center gap-1 rounded-lg border border-em bg-sunken/80 p-1 md:flex"
           >
-            <Link
-              href="/palvelu"
-              onClick={onNavClick}
-              className={topTabClass(palveluClusterActive)}
-              aria-current={palveluClusterActive ? "page" : undefined}
-            >
-              {t("service")}
-            </Link>
-
-            <Link
-              href="/tietoa"
-              onClick={onNavClick}
-              className={topTabClass(infoHubActive)}
-              aria-current={infoHubActive ? "page" : undefined}
-            >
-              {t("infoHub")}
-            </Link>
-
-            <Link
-              href="/itse"
-              onClick={onNavClick}
-              className={topTabClass(itseActive)}
-              aria-current={itseActive ? "page" : undefined}
-            >
-              {t("diy")}
-            </Link>
-
-            <Link
-              href="/meista"
-              onClick={onNavClick}
-              className={topTabClass(aboutHubActive)}
-              aria-current={aboutHubActive ? "page" : undefined}
-            >
-              {t("aboutHub")}
-            </Link>
-
-            <Link
-              href="/tuki"
-              onClick={onNavClick}
-              className={topTabClass(tukiActive)}
-              aria-current={tukiActive ? "page" : undefined}
-            >
-              {t("support")}
-            </Link>
+            {MAIN_NAV_ITEMS.map((item) => {
+              const active = isMainNavClusterActive(item.cluster, pathname);
+              return (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  onClick={onNavClick}
+                  className={topTabClass(active)}
+                  aria-current={active ? "page" : undefined}
+                >
+                  {t(item.labelKey)}
+                </Link>
+              );
+            })}
           </nav>
 
           <button
@@ -225,56 +177,62 @@ export function NavBar({ locale }: { locale: string }) {
             </span>
           </button>
 
-          <Link
-            href="/palvelu#palvelu-tilaa"
-            onClick={() => {
-              feedbackPrimaryCTA();
-              onNavClick();
-            }}
-            className="sparkki-pressable inline-flex min-h-tap shrink-0 items-center justify-center rounded-lg bg-g px-5 py-2.5 text-sm font-bold tracking-tight text-canvas transition-opacity duration-150 hover:opacity-[0.85] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-g"
-          >
-            {t("ctaOrder")}
-          </Link>
-
           <div
-            className="flex gap-1 rounded-lg border border-em bg-sunken/80 p-1"
             role="group"
-            aria-label={t("localeSwitcher")}
+            aria-label={t("headerActionsLabel")}
+            className="flex shrink-0 items-center gap-2 sm:gap-3"
           >
             <Link
-              href={pathname}
-              locale="fi"
-              onClick={onNavClick}
-              aria-label={
-                locale === "fi" ? t("localeActiveFi") : t("localeSwitchToFi")
-              }
-              aria-current={locale === "fi" ? true : undefined}
-              className={`min-h-tap rounded-md px-3 py-2 text-sm font-semibold tracking-wide transition-colors duration-150 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-g ${
-                locale === "fi"
-                  ? "bg-g text-canvas"
-                  : "text-fog hover:text-ink"
-              }`}
-              hrefLang="fi"
+              href="/palvelu#palvelu-tilaa"
+              onClick={() => {
+                feedbackPrimaryCTA();
+                onNavClick();
+              }}
+              className="sparkki-pressable inline-flex min-h-tap shrink-0 items-center justify-center rounded-lg bg-g px-5 py-2.5 text-sm font-bold tracking-tight text-canvas transition-opacity duration-150 hover:opacity-[0.85] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-g"
             >
-              FI
+              {t("ctaOrder")}
             </Link>
-            <Link
-              href={pathname}
-              locale="en"
-              onClick={onNavClick}
-              aria-label={
-                locale === "en" ? t("localeActiveEn") : t("localeSwitchToEn")
-              }
-              aria-current={locale === "en" ? true : undefined}
-              className={`min-h-tap rounded-md px-3 py-2 text-sm font-semibold tracking-wide transition-colors duration-150 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-g ${
-                locale === "en"
-                  ? "bg-g text-canvas"
-                  : "text-fog hover:text-ink"
-              }`}
-              hrefLang="en"
+
+            <div
+              className="flex gap-1 rounded-lg border border-em bg-sunken/80 p-1"
+              role="group"
+              aria-label={t("localeSwitcher")}
             >
-              EN
-            </Link>
+              <Link
+                href={pathname}
+                locale="fi"
+                onClick={onNavClick}
+                aria-label={
+                  locale === "fi" ? t("localeActiveFi") : t("localeSwitchToFi")
+                }
+                aria-current={locale === "fi" ? true : undefined}
+                className={`min-h-tap rounded-md px-3 py-2 text-sm font-semibold tracking-wide transition-colors duration-150 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-g ${
+                  locale === "fi"
+                    ? "bg-g text-canvas"
+                    : "text-fog hover:text-ink"
+                }`}
+                hrefLang="fi"
+              >
+                FI
+              </Link>
+              <Link
+                href={pathname}
+                locale="en"
+                onClick={onNavClick}
+                aria-label={
+                  locale === "en" ? t("localeActiveEn") : t("localeSwitchToEn")
+                }
+                aria-current={locale === "en" ? true : undefined}
+                className={`min-h-tap rounded-md px-3 py-2 text-sm font-semibold tracking-wide transition-colors duration-150 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-g ${
+                  locale === "en"
+                    ? "bg-g text-canvas"
+                    : "text-fog hover:text-ink"
+                }`}
+                hrefLang="en"
+              >
+                EN
+              </Link>
+            </div>
           </div>
         </div>
       </div>
@@ -315,55 +273,52 @@ export function NavBar({ locale }: { locale: string }) {
               </div>
             </div>
             <nav
-              className="flex min-h-0 flex-1 flex-col gap-1 overflow-y-auto overscroll-y-contain p-3 touch-pan-y"
+              className="flex min-h-0 flex-1 flex-col gap-3 overflow-y-auto overscroll-y-contain p-3 touch-pan-y"
               aria-label={t("mainNav")}
             >
-              <MobileNavLink
-                href="/palvelu"
-                active={palveluClusterActive}
-                onPick={() => setMobileOpen(false)}
+              <div role="group" aria-labelledby="mobile-nav-hubs-heading">
+                <p
+                  id="mobile-nav-hubs-heading"
+                  className="mb-2 px-1 text-xs font-semibold uppercase tracking-wide text-fog"
+                >
+                  {tPal("mobileHubsHeading")}
+                </p>
+                <div className="flex flex-col gap-1">
+                  {MAIN_NAV_ITEMS.map((item) => (
+                    <MobileNavLink
+                      key={item.href}
+                      href={item.href}
+                      active={isMainNavClusterActive(item.cluster, pathname)}
+                      onPick={() => setMobileOpen(false)}
+                    >
+                      {t(item.labelKey)}
+                    </MobileNavLink>
+                  ))}
+                </div>
+              </div>
+              <div
+                role="group"
+                aria-labelledby="mobile-nav-order-heading"
+                className="border-t border-edge pt-3"
               >
-                {t("service")}
-              </MobileNavLink>
-              <MobileNavLink
-                href="/tietoa"
-                active={infoHubActive}
-                onPick={() => setMobileOpen(false)}
-              >
-                {t("infoHub")}
-              </MobileNavLink>
-              <MobileNavLink
-                href="/itse"
-                active={itseActive}
-                onPick={() => setMobileOpen(false)}
-              >
-                {t("diy")}
-              </MobileNavLink>
-              <MobileNavLink
-                href="/meista"
-                active={aboutHubActive}
-                onPick={() => setMobileOpen(false)}
-              >
-                {t("aboutHub")}
-              </MobileNavLink>
-              <MobileNavLink
-                href="/tuki"
-                active={tukiActive}
-                onPick={() => setMobileOpen(false)}
-              >
-                {t("support")}
-              </MobileNavLink>
-              <Link
-                href="/palvelu#palvelu-tilaa"
-                onClick={() => {
-                  feedbackPrimaryCTA();
-                  setMobileOpen(false);
-                  onNavClick();
-                }}
-                className="sparkki-pressable mt-2 inline-flex min-h-tap items-center justify-center rounded-lg bg-g px-4 py-3 text-sm font-bold text-canvas focus-visible:outline focus-visible:outline-2 focus-visible:outline-g"
-              >
-                {t("ctaOrder")}
-              </Link>
+                <p
+                  id="mobile-nav-order-heading"
+                  className="mb-2 px-1 text-xs font-semibold uppercase tracking-wide text-fog"
+                >
+                  {tPal("mobileOrderHeading")}
+                </p>
+                <Link
+                  href="/palvelu#palvelu-tilaa"
+                  onClick={() => {
+                    feedbackPrimaryCTA();
+                    setMobileOpen(false);
+                    onNavClick();
+                  }}
+                  className="sparkki-pressable inline-flex min-h-tap w-full items-center justify-center rounded-lg bg-g px-4 py-3 text-sm font-bold text-canvas focus-visible:outline focus-visible:outline-2 focus-visible:outline-g"
+                >
+                  {t("ctaOrder")}
+                </Link>
+              </div>
             </nav>
             <div className="border-t border-edge p-3 pb-safe">
               <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-fog">

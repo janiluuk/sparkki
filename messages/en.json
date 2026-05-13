@@ -32,7 +32,8 @@
     "serviceTabB2b": "Business",
     "serviceTabCare": "Sparkki Care",
     "serviceTabTrack": "Track order",
-    "breadcrumbAria": "Breadcrumb"
+    "breadcrumbAria": "Breadcrumb",
+    "headerActionsLabel": "Order & language"
   },
   "commandPalette": {
     "title": "Quick navigation",
@@ -48,7 +49,12 @@
     "closeMobileMenu": "Close menu",
     "language": "Language",
     "recentHeading": "Recently opened",
-    "allPages": "All pages"
+    "allPages": "All pages",
+    "mobileHubsHeading": "Browse",
+    "mobileOrderHeading": "Order",
+    "groupMainHubs": "Main hubs",
+    "groupServiceExtra": "Service & checkout",
+    "groupSiteMore": "More pages"
   },
   "deliveryStrip": {
     "ariaLabel": "Delivery and support",

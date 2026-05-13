@@ -32,7 +32,8 @@
     "serviceTabB2b": "Yritykset",
     "serviceTabCare": "Sparkki Care",
     "serviceTabTrack": "Seuranta",
-    "breadcrumbAria": "Murupolku"
+    "breadcrumbAria": "Murupolku",
+    "headerActionsLabel": "Tilaus ja kieli"
   },
   "commandPalette": {
     "title": "Pikanavigointi",
@@ -48,7 +49,12 @@
     "closeMobileMenu": "Sulje valikko",
     "language": "Kieli",
     "recentHeading": "Viimeksi avatut",
-    "allPages": "Kaikki sivut"
+    "allPages": "Kaikki sivut",
+    "mobileHubsHeading": "Pääalueet",
+    "mobileOrderHeading": "Tilaus",
+    "groupMainHubs": "Pääsivustot",
+    "groupServiceExtra": "Palvelu ja tilaus",
+    "groupSiteMore": "Muut sivut"
   },
   "deliveryStrip": {
     "ariaLabel": "Toimitus ja tuki",

@@ -1757,8 +1757,8 @@ Reduce cognitive overload.
 
 - [x] Reduce visible controls per screen (order wizard step 2: bundles + VM behind collapsible add-ons)
 - [x] Move advanced settings into expandable sections (migration FAQ accordions; VM legal already in `<details>`)
-- [ ] Improve grouping of actions
-- [ ] Reduce duplicate navigation
+- [x] Improve grouping of actions (**Phase 15** — `lib/site/main-nav.ts` hub list; mobile sheet “Browse” vs “Order”; ⌘K palette sections; header `Order` + locale as one action group)
+- [x] Reduce duplicate navigation (**Phase 15** — primary hubs defined once; palette composes hubs + service extras + “more” instead of one flat duplicate list)
 - [x] Improve onboarding clarity (step hint mentions optional add-ons; admin empty states explain next steps)
 - [x] Improve visual hierarchy (FAQ cards, dashed empty panels)
 - [x] Add empty states (`EmptyState` on admin orders / USB / Care; filter-aware copy + reset on orders)
