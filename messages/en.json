@@ -20,7 +20,12 @@
     "infoAppsMac": "Apps — Mac",
     "aboutCompany": "Company",
     "aboutCommunity": "Community & Discord",
-    "koneet": "Compatibility"
+    "koneet": "Compatibility",
+    "serviceSubNav": "Service — tabs",
+    "serviceTabOverview": "Overview",
+    "serviceTabB2b": "Business",
+    "serviceTabCare": "Vire Care",
+    "serviceTabTrack": "Track order"
   },
   "deliveryStrip": {
     "ariaLabel": "Delivery and support",

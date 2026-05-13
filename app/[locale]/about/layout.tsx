@@ -1,4 +1,4 @@
-import { AboutHubTabs } from "@/components/layout/AboutHubTabs";
+import { AboutHubTabs } from "@/components/navigation/AboutHubTabs";
 
 export default function AboutLayout({ children }: { children: React.ReactNode }) {
   return (

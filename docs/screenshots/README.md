@@ -1,6 +1,6 @@
 # Site screenshots
 
-PNG captures of public (Finnish + sample English) and **admin** pages for design / QA reference.
+PNG captures of public (Finnish + sample English) and **admin** pages for **QA and visual regression** alongside **[`DESIGN_SYSTEM.md`](../DESIGN_SYSTEM.md)** (the authoritative UI spec).
 
 ## Regenerate
 
@@ -35,3 +35,4 @@ Do not commit real production secrets; the script only uses env for login at cap
 
 - **[`../site-pages.md`](../site-pages.md)** — What each page is for (uses these images).
 - **[`../sitemap-routes.md`](../sitemap-routes.md)** — Which URLs appear in `sitemap.xml` vs admin-only.
+- **[`../repository-layout.md`](../repository-layout.md)** — Where scripts and app folders live.

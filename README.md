@@ -2,6 +2,8 @@
 
 Next.js site for Vire — refurbishment, DIY guides, orders, and admin tools.
 
+**Repository layout** (where to add routes, components, and docs): [`docs/repository-layout.md`](docs/repository-layout.md).
+
 ## Local development
 
 ### Database with Docker
@@ -66,7 +68,9 @@ Ensure **`.env`** has **`NEXTAUTH_URL`** and **`NEXT_PUBLIC_SITE_URL`** set to h
 
 See [`.env.example`](./.env.example) for `DATABASE_URL`, auth, Stripe, email, public URLs, try-Linux proxy, and admin seed fields (**`ADMIN_EMAIL`**, **`ADMIN_PASSWORD`**, optional **`ADMIN_USERNAME`**, etc.).
 
-**UI reference:** full-page captures of public + admin routes live in [`docs/screenshots/`](docs/screenshots/README.md); regenerate with **`npm run docs:screenshots`** (requires a running app and seeded admin).
+**Design system:** [`DESIGN_SYSTEM.md`](./DESIGN_SYSTEM.md) is the UI contract (colours, type, components); **`app/globals.css`** and **`tailwind.config.ts`** implement its tokens. **`ROADMAP.md`** instructs agents to read it before any UI work.
+
+**UI reference:** full-page captures of public + admin routes live in [`docs/screenshots/`](docs/screenshots/README.md); regenerate with **`npm run docs:screenshots`** (requires a running app and seeded admin). Use with **`docs/site-pages.md`** to see what each route is for.
 
 ### Tests and CI
 

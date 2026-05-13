@@ -21,11 +21,10 @@ function BrandMark({ name }: { name: string }) {
   );
 }
 
-function navLinkClass(active: boolean) {
-  return `min-h-tap rounded-lg px-3 py-2 text-sm font-normal transition-colors duration-150 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-g ${
-    active
-      ? "text-g"
-      : "text-fog hover:bg-g/[0.06] hover:text-ink"
+/** Segmented top nav — same affordance as locale switcher; not used for the order CTA. */
+function topTabClass(active: boolean) {
+  return `min-h-tap rounded-md px-3 py-2 text-sm font-semibold tracking-wide transition-colors duration-150 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-g ${
+    active ? "bg-g text-canvas" : "text-fog hover:text-ink"
   }`;
 }
 
@@ -34,8 +33,11 @@ export function NavBar({ locale }: { locale: string }) {
   const pathname = usePathname();
   const onNavClick = () => dispatchBackgroundNavInteraction();
 
-  const palveluActive =
-    pathname === "/palvelu" || pathname.startsWith("/palvelu/");
+  const palveluClusterActive =
+    pathname.startsWith("/palvelu") ||
+    pathname.startsWith("/care") ||
+    pathname.startsWith("/koneet") ||
+    pathname.startsWith("/tilaus");
   const itseActive = pathname === "/itse" || pathname.startsWith("/itse/");
   const tukiActive = pathname === "/tuki" || pathname.startsWith("/tuki/");
   const infoHubActive =
@@ -67,13 +69,13 @@ export function NavBar({ locale }: { locale: string }) {
         <div className="flex flex-1 flex-wrap items-center justify-end gap-2 sm:gap-3">
           <nav
             aria-label={t("mainNav")}
-            className="flex flex-wrap items-center gap-1 sm:gap-2"
+            className="flex flex-wrap items-center gap-1 rounded-lg border border-em bg-sunken/80 p-1"
           >
             <Link
               href="/palvelu"
               onClick={onNavClick}
-              className={navLinkClass(palveluActive)}
-              aria-current={palveluActive ? "page" : undefined}
+              className={topTabClass(palveluClusterActive)}
+              aria-current={palveluClusterActive ? "page" : undefined}
             >
               {t("service")}
             </Link>
@@ -81,7 +83,7 @@ export function NavBar({ locale }: { locale: string }) {
             <Link
               href="/tietoa"
               onClick={onNavClick}
-              className={navLinkClass(infoHubActive)}
+              className={topTabClass(infoHubActive)}
               aria-current={infoHubActive ? "page" : undefined}
             >
               {t("infoHub")}
@@ -90,7 +92,7 @@ export function NavBar({ locale }: { locale: string }) {
             <Link
               href="/itse"
               onClick={onNavClick}
-              className={navLinkClass(itseActive)}
+              className={topTabClass(itseActive)}
               aria-current={itseActive ? "page" : undefined}
             >
               {t("diy")}
@@ -99,7 +101,7 @@ export function NavBar({ locale }: { locale: string }) {
             <Link
               href="/meista"
               onClick={onNavClick}
-              className={navLinkClass(aboutHubActive)}
+              className={topTabClass(aboutHubActive)}
               aria-current={aboutHubActive ? "page" : undefined}
             >
               {t("aboutHub")}
@@ -108,7 +110,7 @@ export function NavBar({ locale }: { locale: string }) {
             <Link
               href="/tuki"
               onClick={onNavClick}
-              className={navLinkClass(tukiActive)}
+              className={topTabClass(tukiActive)}
               aria-current={tukiActive ? "page" : undefined}
             >
               {t("support")}

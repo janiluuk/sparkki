@@ -20,7 +20,12 @@
     "infoAppsMac": "Sovellukset — Mac",
     "aboutCompany": "Yritys",
     "aboutCommunity": "Yhteisö & Discord",
-    "koneet": "Koneet"
+    "koneet": "Yhteensopivuus",
+    "serviceSubNav": "Palvelu — välilehdet",
+    "serviceTabOverview": "Yleiskatsaus",
+    "serviceTabB2b": "Yritykset",
+    "serviceTabCare": "Vire Care",
+    "serviceTabTrack": "Seuranta"
   },
   "deliveryStrip": {
     "ariaLabel": "Toimitus ja tuki",

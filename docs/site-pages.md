@@ -1,6 +1,8 @@
 # Site pages (mini catalog)
 
-Screenshots are full-page captures from a seeded dev environment. Regenerate with **`npm run docs:screenshots`** (see [`screenshots/README.md`](./screenshots/README.md)).
+Screenshots are full-page captures from a seeded dev environment. Regenerate with **`npm run docs:screenshots`** (see [`screenshots/README.md`](./screenshots/README.md)). Visual design of these pages is defined in **[`DESIGN_SYSTEM.md`](../DESIGN_SYSTEM.md)** — use this catalog for IA and regression comparison, not as the primary spec for colours or typography.
+
+**Service cluster** (`/palvelu`, `/palvelu/b2b`, `/koneet`, `/care`, `/tilaus`) shares a horizontal **tab row** under the global header (same interaction pattern as **Learn** `/tietoa/*`). The top bar keeps a single **Palvelu** tab for that whole cluster; the primary **Tilaa** control stays a separate button.
 
 Paths below omit the locale prefix (`/fi/…` and `/en/…` mirror the same structure).
 
