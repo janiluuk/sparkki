@@ -56,7 +56,7 @@ export function NavBar({ locale }: { locale: string }) {
     pathname.startsWith("/yhteiso/");
 
   return (
-    <header className="sticky top-0 z-30 border-b border-edge bg-[rgba(16,18,20,0.92)] backdrop-blur-xl">
+    <header className="surface-header-scrim sticky top-0 z-30 border-b border-edge backdrop-blur-spark-xl">
       <div className="mx-auto flex max-w-[1100px] flex-wrap items-center justify-between gap-4 px-6 py-4 sm:px-12 sm:py-5">
         <Link
           href="/"

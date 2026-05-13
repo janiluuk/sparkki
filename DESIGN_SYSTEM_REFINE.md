@@ -4,7 +4,7 @@
 
 ---
 
-## Phase 1 — implementation log (in progress)
+## Phase 1 — implementation log (complete)
 
 Shipped in codebase (incremental):
 
@@ -18,12 +18,26 @@ Shipped in codebase (incremental):
 - [x] **Health API** — `service: "sparkki"`.
 - [x] **Nav event** — `sparkki-bg-navigate` (was `vire-bg-navigate`).
 
+## Phase 2 — implementation log (complete)
+
+Shipped in codebase:
+
+- [x] **Spacing** — `--space-*` scale and card padding tokens in `app/globals.css`; Tailwind `spacing` extend (`spark-*`, `spark-card`).
+- [x] **Typography scale** — `--text-xs` … `--text-xl`, line-height tokens; Tailwind `fontSize` (`spark-xs`, `spark-sm`, `spark-body`).
+- [x] **Motion** — `--duration-*`, `--ease-*`; body background uses `--duration-theme-bg` (separate from route transition).
+- [x] **Elevation** — `--shadow-*`, `--shadow-glow-accent`; Tailwind `boxShadow` (`elevation-*`, `glow-accent`).
+- [x] **Semantic colors** — aliases (`--color-accent`, `--color-surface-*`, `--color-text-*`, borders, danger/success).
+- [x] **Blur / depth** — `--blur-*`; Tailwind `backdropBlur` (`spark-*`); sticky header uses `.surface-header-scrim` + backdrop blur.
+- [x] **Radii** — `--radius-*`; Tailwind `borderRadius` (`spark-*`).
+- [x] **Dual class names** — `.sparkki-*` mirrors for `.vire-card`, `.vire-hero`, `.vire-eyebrow`, `.vire-btn-*` (incremental migration).
+- [x] **Hardcoded colors reduced** — Discord block, guide cards, OG image, `global-error`, community page lead use tokens / brand classes.
+
 Follow-ups (later phases or ops):
 
 - [ ] Sweep **ROADMAP.md**, **FEATURES.md**, **DESIGN_SYSTEM.md** for legacy “Vire” product naming.
 - [ ] Optional URL rename `/vire-for-good` → `/sparkki-for-good` + redirects.
 - [ ] Replace `app/favicon.ico` with raster favicons derived from spark mark if needed for older clients.
-- [ ] **Phase 2+** — spacing/motion tokens, `vire-*` CSS class aliases → `sparkki-*`, Framer Motion, etc.
+- [ ] **Phase 3+** — Framer Motion / page transitions; finish renaming `vire-*` usage in TSX to `sparkki-*` where safe.
 
 ---
 
@@ -190,14 +204,14 @@ Create a coherent premium interface language.
 
 ## Tasks
 
-- [ ] Create spacing token system
-- [ ] Create typography hierarchy
-- [ ] Create motion token system
-- [ ] Create surface elevation system
-- [ ] Create semantic color tokens
-- [ ] Create blur/depth layers
-- [ ] Standardize border radii
-- [ ] Remove hardcoded colors
+- [x] Create spacing token system
+- [x] Create typography hierarchy
+- [x] Create motion token system
+- [x] Create surface elevation system
+- [x] Create semantic color tokens
+- [x] Create blur/depth layers
+- [x] Standardize border radii
+- [x] Remove hardcoded colors (major surfaces; full sweep ongoing)
 
 ---
 
