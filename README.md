@@ -42,6 +42,8 @@ npx prisma db seed
 
 Same as above — **`docker compose up -d --build`** is the full stack (Postgres, one-shot migrate, Next.js `web`). The `web` entrypoint runs **`prisma migrate deploy`** on start, then **`node server.js`** (listen **0.0.0.0:3000** inside the container; host port **`1337`** by default via **`APP_PORT`**).
 
+**Image build + Prisma:** `next build` may query the database. For a reproducible **`web`** image build, start **`db`** first, then run **`./scripts/docker-build-web.sh`** (or bring **`db`** up and use **`docker compose build web`**). Compose defaults **`DATABASE_URL`** at build time to **`host.docker.internal`** and your **`POSTGRES_*`** values; override with **`DATABASE_URL_BUILD`** if needed. Details: **`docs/repository-layout.md`** § Known sharp edges.
+
 Open **http://localhost:1337/fi** (or **http://127.0.0.1:1337/fi**). Quick checks:
 
 ```bash

@@ -13,7 +13,7 @@ Where code and assets live, and where to add new work. **Next.js App Router** ru
 | **`messages/`** | `fi.json` / `en.json` — all user-facing copy (public + admin namespaces). |
 | **`content/`** | MDX guides + frontmatter (source for DIY content). |
 | **`prisma/`** | Schema, migrations, seed. |
-| **`scripts/`** | Deploy (`lab-stack-up.sh`), tooling (`docs-screenshots.ts`), etc. |
+| **`scripts/`** | Deploy (`lab-stack-up.sh`), Docker web build helper (`docker-build-web.sh`), tooling (`docs-screenshots.ts`), etc. |
 | **`e2e/`** | Playwright specs. |
 | **`tests/`** | Vitest unit + functional tests. |
 | **`docs/`** | Operations, API notes, site catalog, screenshots, **this file**. |
@@ -36,7 +36,7 @@ Spec / planning docs at repo root: **`ROADMAP.md`**, **`FEATURES.md`**, **`DESIG
 
 ## Known sharp edges
 
-1. **`next build` and Prisma** — Some static pages call Prisma during the build. If `DATABASE_URL` is unset or points at a DB that is not reachable from the **Docker build** container (e.g. `localhost:5432` with no DB), you may see Prisma errors in build logs; the build can still complete when pages degrade gracefully. For reproducible image builds, point `DATABASE_URL` at a reachable DB during `docker compose build`, or refactor data-heavy SSG to dynamic routes. Tracked in **`ROADMAP.md`** (review backlog).
+1. **`next build` and Prisma** — Some static pages call Prisma during the build. The **`web`** image sets **`build.extra_hosts`** so **`host.docker.internal`** resolves inside the build container, and passes **`DATABASE_URL`** from **`DATABASE_URL_BUILD`** (default: same user/password/db as Compose **`db`**, host **`host.docker.internal`**, port **`POSTGRES_PORT`**). Start **`db`** first, then run **`./scripts/docker-build-web.sh`** (or **`docker compose up -d db`**, wait for healthy, then **`docker compose build web`**). Override with **`DATABASE_URL_BUILD`** in **`.env`** if your mapping differs. Plain **`docker build`** without Compose still defaults to **`localhost:5432`** in the Dockerfile and may not reach a DB. Alternative mitigations: data-heavy SSG → **`dynamic = 'force-dynamic'`** or client fetch.
 2. **`npm audit` and overrides** — **`package.json`** declares **`overrides.cookie`** so patched **cookie** wins where npm can dedupe (next-auth / @auth). Run **`npm run security:audit:prod`** for release checks; see **`docs/operations.md`**.
 3. **`@/*` imports** — TypeScript path alias maps to the repo root (`tsconfig.json`). Prefer `@/components/...`, `@/lib/...` over deep relatives.
 
