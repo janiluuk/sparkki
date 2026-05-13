@@ -1,4 +1,4 @@
-# Vire — Implementation Roadmap
+# Sparkki — Implementation Roadmap
 > Drop this file in the root of your repo. It is the single source of truth for **build order, stack, and phase checklists**. Use it together with:
 >
 > | Doc | Role |
@@ -30,7 +30,7 @@
 
 ## Feature expansion backlog
 
-Prioritised product specs (11 features: data migration add-on, Vire Care, `/koneet` database, spec checker PDF, components transparency, starter kit, Vire for Good, group bookings, corporate donations, workshops, annual hardware report) live in **`FEATURES.md`**. Default implementation order is the priority table there unless you are told otherwise. Stack and phases: this file (**`ROADMAP.md`**). UI: **`DESIGN_SYSTEM.md`**.
+Prioritised product specs (11 features: data migration add-on, Sparkki Care, `/koneet` database, spec checker PDF, components transparency, starter kit, Sparkki for Good, group bookings, corporate donations, workshops, annual hardware report) live in **`FEATURES.md`**. Default implementation order is the priority table there unless you are told otherwise. Stack and phases: this file (**`ROADMAP.md`**). UI: **`DESIGN_SYSTEM.md`**.
 
 ---
 
@@ -435,8 +435,10 @@ export default makeSource({ contentDirPath: 'content', documentTypes: [Guide] })
 
 ## Site map (updated)
 
+> Example tree uses paths without locale prefix; the App Router lives under `app/[locale]/…`. Production origin is **`NEXT_PUBLIC_SITE_URL`**.
+
 ```
-vire.fi/
+/
 ├── /                    Main page
 ├── /palvelu             Service detail + order wizard
 ├── /itse                DIY hub (guides, videos, USB order)
@@ -461,7 +463,7 @@ vire.fi/
 ## Project file structure
 
 ```
-vire/
+sparkki/   (repository root — historical clones may still use a `vire/` folder name)
 ├── app/
 │   ├── layout.tsx              ← BackgroundCanvas here
 │   ├── page.tsx                ← /
@@ -738,16 +740,16 @@ Planned product expansion (Care subscription, `/koneet`, group bookings, donatio
 - [x] Order tracking page `app/[locale]/tilaus/[id]/page.tsx` (+ hub `/tilaus`) — public lookup by order ID + email; service and USB orders.
 - [x] Bulk B2B quote form on `/palvelu` — different flow from single-unit order (`/[locale]/palvelu/b2b`, email via `B2B_QUOTE_NOTIFY_EMAIL` + Resend).
 - [x] Expand guide library: all 7 guides written and published (`content/guides/*.mdx` + seed `Guide` rows; FI body / EN titles in DB).
-- [x] Vire YouTube channel linked everywhere (when `NEXT_PUBLIC_YOUTUBE_CHANNEL_URL` is set: home, footer, community).
-- [x] Vire Checker desktop app — `apps/vire-checker/` (Tauri 2 + Vite). UI imports shared `lib/specs/compatibility.ts` (`checkCompatibility`); output is JSON (`input` + `output`). Run: `cd apps/vire-checker && npm install && npm run tauri dev`.
+- [x] Sparkki YouTube channel linked everywhere (when `NEXT_PUBLIC_YOUTUBE_CHANNEL_URL` is set: home, footer, community).
+- [x] Sparkki Checker desktop app — `apps/vire-checker/` (Tauri 2 + Vite; folder name legacy). UI imports shared `lib/specs/compatibility.ts` (`checkCompatibility`); output is JSON (`input` + `output`). Run: `cd apps/vire-checker && npm install && npm run tauri dev`.
 - [x] Switch component sourcing to wholesale (Crucial/Kingston) when volume > 20 units/month — **ops policy**: when fulfilled SSD/RAM component orders average **>20 units/month** for **two consecutive months**, open or renegotiate Crucial/Kingston (or equivalent) wholesale accounts before scaling acquisition; track unit counts in finance/ops; no storefront code change required.
 - [x] Admin dashboard stats: revenue chart, orders per week, model approval rate — 7-day order bars + week revenue + approval %.
 - [x] Rate limiting on API routes (use `@upstash/ratelimit` or simple IP check) — shared `lib/http/rate-limit.ts` on order lookup + Stripe checkout routes.
 - [x] Laptop spec hints from the web — `lib/specs/laptop-specs.ts` + `POST /api/public/laptop-specs`: SearXNG when `SPECS_SEARXNG_BASE_URL` is set + optional local LLM (`SPECS_AI_BASE_URL`, OpenAI-compatible or Ollama). Wired into order wizard (debounced), public order lookup response, and admin order detail.
 - [x] **Info hub** — `/{locale}/tietoa/*` sidebar IA (Linux Mint, stability, common concerns, app alternatives Windows/Mac with `sourceOs` on `data/apps.json`). Legacy `/info` → `/tietoa/linux`, `/sovellukset` → `/tietoa/sovellukset/windows`.
-- [x] **Vire Care landing + subscription** — `/{locale}/care` (tiers + post-90-day timeline); Basic: `POST /api/care/checkout` → Stripe Billing subscription; webhook sync in `lib/billing/care-webhook.ts`; thank-you `/{locale}/care/kiitos`; admin list `/admin/care`. Env: `STRIPE_PRICE_CARE_MONTHLY`.
+- [x] **Sparkki Care landing + subscription** — `/{locale}/care` (tiers + post-90-day timeline); Basic: `POST /api/care/checkout` → Stripe Billing subscription; webhook sync in `lib/billing/care-webhook.ts`; thank-you `/{locale}/care/kiitos`; admin list `/admin/care`. Env: `STRIPE_PRICE_CARE_MONTHLY`.
 - [x] **Compatibility database (public)** — `/{locale}/koneet` + `/{locale}/koneet/[slug]` backed by `ComputerModel`; sitemap includes model URLs.
-- [x] **Vire for Good** — `/{locale}/vire-for-good` two-field form; email via `VIRE_FOR_GOOD_NOTIFY_EMAIL` or fallback `B2B_QUOTE_NOTIFY_EMAIL`.
+- [x] **Sparkki for Good** — `/{locale}/vire-for-good` two-field form (URL path unchanged); email via `VIRE_FOR_GOOD_NOTIFY_EMAIL` or fallback `B2B_QUOTE_NOTIFY_EMAIL`.
 - [x] **Order-time app bundles** — Optional **curated app packs** the customer selects in the **service order wizard** (and pays for if priced): e.g. **local AI** (LLM + tooling), **media creator** pack, **music production** pack, developer essentials, etc. Requires: Prisma/Stripe fields (or JSON on `Order`), wizard UI + pricing in **`lib/billing`**, fulfillment notes for install scripts, admin order detail showing chosen bundles, transactional copy in **`lib/email`**.
 - [x] **Portable VM from existing system** — Optional add-on service: create a **portable virtual machine** (or bootable disk image) that captures the **current contents/state of the customer’s machine** before wipe / Linux install (e.g. P2V-style image, OVA/QCOW2, or agreed export format on external storage). Requires: clear **scope & licensing copy** (especially Windows in a VM), **data-handling SLA**, wizard + `Order` fields, priced line item in Stripe, handoff medium (customer USB/NAS vs shipped drive), and admin/fulfillment checklist.
 
@@ -774,7 +776,7 @@ Planned product expansion (Care subscription, `/koneet`, group bookings, donatio
   - Fedora: `192.168.2.100:6081`
 - [x] **You provide** the actual desktops (VMs or bare-metal sessions) + **TigerVNC/x11vnc** (or equivalent) and **websockify** listening on those ports; the repo ships the **proxy contract** and compose skeleton, not full Mint/Fedora OCI images (those you tailor later). **Runbook:** `infra/try-linux/README.md` § *Demo desktops* and *Snapshots / reset*.
 
-**Environment (Vire Next app):**
+**Environment (Sparkki Next app):**
 
 ```bash
 # Public base URL of the try-linux proxy (no trailing slash). Example:
