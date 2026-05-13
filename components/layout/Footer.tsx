@@ -9,7 +9,7 @@ export async function Footer() {
 
   return (
     <footer className="mt-auto border-t border-edge bg-raised/75 text-ink backdrop-blur-xl">
-      <div className="mx-auto max-w-[1100px] px-6 py-12 sm:px-12 sm:py-14">
+      <div className="mx-auto max-w-[1100px] px-6 pb-[max(3rem,env(safe-area-inset-bottom,0px))] pt-12 sm:px-12 sm:pb-[max(3.5rem,env(safe-area-inset-bottom,0px))] sm:pt-14">
         <div className="grid grid-cols-1 gap-10 sm:grid-cols-2 lg:grid-cols-[minmax(0,1.5fr)_repeat(3,minmax(0,1fr))] lg:gap-12">
           <div className="max-w-md lg:max-w-none">
             <p className="mb-2 font-mono text-[10px] font-normal uppercase tracking-[0.22em] text-fog">

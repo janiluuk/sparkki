@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { DM_Mono, Inter, Syne } from "next/font/google";
 import Script from "next/script";
 import { DaytimeTheme } from "@/components/layout/DaytimeTheme";
@@ -35,6 +35,11 @@ export const metadata: Metadata = {
     "Vanhojen tietokoneiden uusiokäyttö — SSD, RAM, Linux. Nordic-henkinen palvelu.",
 };
 
+/** Enables `env(safe-area-inset-*)` for notched devices (Phase 7 — mobile UX). */
+export const viewport: Viewport = {
+  viewportFit: "cover",
+};
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -45,7 +50,7 @@ export default function RootLayout({
       lang="fi"
       className={`${inter.variable} ${syne.variable} ${dmMono.variable} scroll-smooth`}
     >
-      <body className="min-h-dvh bg-canvas font-sans font-light text-lg text-ink antialiased">
+      <body className="min-h-dvh overflow-x-hidden bg-canvas font-sans font-light text-lg text-ink antialiased">
         <DaytimeTheme />
         {children}
         {plausibleDomain ? (

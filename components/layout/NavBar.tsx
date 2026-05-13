@@ -49,7 +49,7 @@ function MobileNavLink({
         onPick();
         dispatchBackgroundNavInteraction();
       }}
-      className={`min-h-tap rounded-lg px-4 py-3 text-base font-semibold transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-g ${
+      className={`min-h-12 rounded-lg px-4 py-3 text-base font-semibold transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-g md:min-h-tap ${
         active ? "bg-g text-canvas" : "text-ink hover:bg-sunken"
       }`}
       aria-current={active ? "page" : undefined}
@@ -103,7 +103,7 @@ export function NavBar({ locale }: { locale: string }) {
     pathname.startsWith("/yhteiso/");
 
   return (
-    <header className="surface-header-scrim sticky top-0 z-30 border-b border-edge backdrop-blur-spark-xl">
+    <header className="surface-header-scrim sticky top-0 z-30 border-b border-edge pt-safe backdrop-blur-spark-xl">
       <div className="mx-auto flex max-w-[1100px] flex-wrap items-center justify-between gap-4 px-6 py-4 sm:px-12 sm:py-5">
         <Link
           href="/"
@@ -235,23 +235,29 @@ export function NavBar({ locale }: { locale: string }) {
             role="dialog"
             aria-modal="true"
             aria-label={tPal("mobileMenuTitle")}
-            className="sparkki-wizard-full fixed inset-y-0 right-0 z-[46] flex w-[min(100vw,20rem)] flex-col border-l border-edge bg-canvas shadow-elevation-md md:hidden"
+            className="sparkki-mobile-sheet fixed inset-x-0 bottom-0 z-[46] flex max-h-[min(88dvh,28rem)] flex-col rounded-t-2xl border border-b-0 border-edge bg-canvas shadow-elevation-md md:hidden"
           >
-            <div className="flex items-center justify-between border-b border-edge px-4 py-3">
-              <span className="text-sm font-semibold uppercase tracking-wide text-fog">
-                {tPal("mobileMenuTitle")}
-              </span>
-              <button
-                type="button"
-                className="min-h-tap min-w-12 rounded-lg border border-em px-3 text-lg text-ink hover:bg-sunken focus-visible:outline focus-visible:outline-2 focus-visible:outline-g"
-                onClick={() => setMobileOpen(false)}
-              >
-                <span className="sr-only">{tPal("closeMobileMenu")}</span>
-                <span aria-hidden>×</span>
-              </button>
+            <div className="flex shrink-0 flex-col items-center border-b border-edge px-4 pb-2 pt-1">
+              <span
+                className="h-1 w-10 shrink-0 rounded-full bg-em/80"
+                aria-hidden
+              />
+              <div className="mt-3 flex w-full items-center justify-between">
+                <span className="text-sm font-semibold uppercase tracking-wide text-fog">
+                  {tPal("mobileMenuTitle")}
+                </span>
+                <button
+                  type="button"
+                  className="min-h-tap min-w-12 rounded-lg border border-em px-3 text-lg text-ink hover:bg-sunken focus-visible:outline focus-visible:outline-2 focus-visible:outline-g"
+                  onClick={() => setMobileOpen(false)}
+                >
+                  <span className="sr-only">{tPal("closeMobileMenu")}</span>
+                  <span aria-hidden>×</span>
+                </button>
+              </div>
             </div>
             <nav
-              className="flex flex-1 flex-col gap-1 overflow-y-auto p-3"
+              className="flex min-h-0 flex-1 flex-col gap-1 overflow-y-auto overscroll-y-contain p-3 touch-pan-y"
               aria-label={t("mainNav")}
             >
               <MobileNavLink
@@ -300,7 +306,7 @@ export function NavBar({ locale }: { locale: string }) {
                 {t("ctaOrder")}
               </Link>
             </nav>
-            <div className="border-t border-edge p-3">
+            <div className="border-t border-edge p-3 pb-safe">
               <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-fog">
                 {tPal("language")}
               </p>

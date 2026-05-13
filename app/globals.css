@@ -153,6 +153,17 @@
   }
 }
 
+@keyframes spark-sheet-up {
+  from {
+    opacity: 0;
+    transform: translateY(100%);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 @keyframes spark-spin {
   to {
     transform: rotate(360deg);
@@ -416,6 +427,17 @@ body {
     }
   }
 
+  /* Phase 7 — mobile nav bottom sheet */
+  .sparkki-mobile-sheet {
+    animation: spark-sheet-up var(--duration-panel) var(--ease-out-soft) both;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .sparkki-mobile-sheet {
+      animation: none;
+    }
+  }
+
   /* Phase 4 — route content enter (see LocaleMainMotion) */
   .sparkki-page-enter {
     animation: spark-page-enter var(--duration-route) var(--ease-out-soft) both;
@@ -635,5 +657,14 @@ body {
 @layer utilities {
   .text-balance {
     text-wrap: balance;
+  }
+
+  /* Phase 7 — iOS / notched safe areas (requires viewport-fit=cover) */
+  .pb-safe {
+    padding-bottom: max(0.75rem, env(safe-area-inset-bottom, 0px));
+  }
+
+  .pt-safe {
+    padding-top: max(0.25rem, env(safe-area-inset-top, 0px));
   }
 }

@@ -308,13 +308,13 @@ Reduce cognitive overload.
 
 ## Tasks
 
-- [ ] Optimize thumb reach
-- [ ] Increase tap targets
-- [ ] Add bottom sheets
-- [ ] Improve stacked layouts
-- [ ] Reduce overflow issues
-- [ ] Add gesture support
-- [ ] Improve performance on mobile GPUs
+- [x] Optimize thumb reach (mobile nav as **bottom sheet** + drag handle; fullscreen wizard **sticky footer** for Back/Next + safe-area padding)
+- [x] Increase tap targets (wizard nav **grid** + `min-h-12` on mobile; sheet links `min-h-12`)
+- [x] Add bottom sheets (primary mobile menu: `sparkki-mobile-sheet` slide-up)
+- [x] Improve stacked layouts (wizard **2-col** primary actions on small screens)
+- [x] Reduce overflow issues (`overflow-x-hidden` on `body`; `break-words` on wizard summary contact)
+- [x] Add gesture support (`touch-pan-x` / `touch-pan-y` / `overscroll-*` on wizard + sheet; `touch-none` on background canvas)
+- [x] Improve performance on mobile GPUs (fewer wireframe meshes + lower **pixel ratio** cap when viewport &lt; 640px)
 
 ---
 

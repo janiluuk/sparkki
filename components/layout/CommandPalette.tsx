@@ -173,7 +173,7 @@ export function CommandPalette() {
             </ul>
           )}
         </nav>
-        <p className="border-t border-edge px-4 py-2 text-center text-xs text-fog">
+        <p className="border-t border-edge px-4 py-2 pb-safe text-center text-xs text-fog sm:pb-2">
           {tPal("closeHint")}
         </p>
       </div>

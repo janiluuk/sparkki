@@ -262,6 +262,52 @@ export function OrderWizard({ locale }: { locale: string }) {
     ? "sparkki-wizard-full fixed inset-0 z-[100] flex flex-col border border-edge bg-canvas"
     : "vire-card mx-auto max-w-4xl scroll-mt-28 p-6 md:p-10";
 
+  const wizardNavButtonRow = (
+    <div
+      className={
+        fullMode
+          ? "flex flex-wrap justify-between gap-3"
+          : "mt-10 grid grid-cols-2 gap-3 md:mt-10 md:flex md:flex-wrap md:justify-between md:gap-4"
+      }
+    >
+      <button
+        type="button"
+        className="min-h-12 w-full rounded-lg border border-em px-6 py-3 font-semibold text-ink disabled:opacity-40 md:min-h-tap md:w-auto"
+        disabled={step === 0}
+        onClick={() => setStep((s) => Math.max(0, s - 1))}
+      >
+        {w("back")}
+      </button>
+      <button
+        type="button"
+        className="min-h-12 w-full rounded-lg bg-vire-green px-6 py-3 font-semibold text-canvas disabled:opacity-40 md:min-h-tap md:w-auto"
+        disabled={
+          (step === 0 && !canNextFrom0) ||
+          (step === 1 && !canNextFrom1) ||
+          (step === 2 && !canNextFrom2) ||
+          step === 3
+        }
+        onClick={() => {
+          if (step === 0 && canNextFrom0) setStep(1);
+          else if (step === 1 && canNextFrom1) setStep(2);
+          else if (step === 2 && canNextFrom2) setStep(3);
+        }}
+      >
+        {w("next")}
+      </button>
+    </div>
+  );
+
+  const wizardLegalHintEl = (
+    <p
+      className={`break-words text-fog ${
+        fullMode ? "mt-3 text-xs sm:text-sm" : "mt-6 text-sm"
+      }`}
+    >
+      {t("wizardLegalHint")}
+    </p>
+  );
+
   return (
     <>
       {fullMode ? (
@@ -305,7 +351,7 @@ export function OrderWizard({ locale }: { locale: string }) {
 
         <nav
           aria-label={w("stepperLabel")}
-          className="mx-auto mt-4 max-w-4xl overflow-x-auto pb-1"
+          className="mx-auto mt-4 max-w-4xl overflow-x-auto overscroll-x-contain pb-1 touch-pan-x [-webkit-overflow-scrolling:touch]"
         >
           <ol className="flex min-w-min items-start gap-0 sm:gap-1">
             {STEP_NAV_KEYS.map((key, i) => {
@@ -367,16 +413,25 @@ export function OrderWizard({ locale }: { locale: string }) {
       </div>
 
       <div
-        className={`mx-auto w-full max-w-4xl flex-1 overflow-y-auto px-4 py-6 md:px-6 md:py-8 ${
-          fullMode ? "min-h-0" : ""
-        }`}
+        className={
+          fullMode
+            ? "mx-auto flex w-full max-w-4xl min-h-0 flex-1 flex-col"
+            : "mx-auto w-full max-w-4xl"
+        }
       >
         <div
-          id={stepContentId}
-          role="region"
-          aria-labelledby="wizard-title"
-          aria-describedby={`${stepContentId}-hint`}
+          className={
+            fullMode
+              ? "min-h-0 flex-1 overflow-y-auto overscroll-y-contain px-4 py-4 touch-pan-y md:px-6 md:py-6"
+              : "px-4 py-6 md:px-6 md:py-8"
+          }
         >
+          <div
+            id={stepContentId}
+            role="region"
+            aria-labelledby="wizard-title"
+            aria-describedby={`${stepContentId}-hint`}
+          >
           {step === 0 ? (
             <div className="space-y-4">
               <h3 className="text-2xl font-semibold text-ink">{w("step1Title")}</h3>
@@ -773,7 +828,7 @@ export function OrderWizard({ locale }: { locale: string }) {
                         : w("vmHandoffShippedSummary")}
                     </p>
                   ) : null}
-                  <p>
+                  <p className="break-words">
                     <strong>{w("summaryContact")}:</strong>{" "}
                     {customerContact.trim()}
                   </p>
@@ -802,37 +857,20 @@ export function OrderWizard({ locale }: { locale: string }) {
               ) : null}
             </div>
           ) : null}
+          </div>
+          {!fullMode ? (
+            <>
+              {wizardNavButtonRow}
+              {wizardLegalHintEl}
+            </>
+          ) : null}
         </div>
-
-        <div className="mt-10 flex flex-wrap justify-between gap-4">
-          <button
-            type="button"
-            className="min-h-tap rounded-lg border border-em px-6 py-3 font-semibold text-ink disabled:opacity-40"
-            disabled={step === 0}
-            onClick={() => setStep((s) => Math.max(0, s - 1))}
-          >
-            {w("back")}
-          </button>
-          <button
-            type="button"
-            className="min-h-tap rounded-lg bg-vire-green px-6 py-3 font-semibold text-canvas disabled:opacity-40"
-            disabled={
-              (step === 0 && !canNextFrom0) ||
-              (step === 1 && !canNextFrom1) ||
-              (step === 2 && !canNextFrom2) ||
-              step === 3
-            }
-            onClick={() => {
-              if (step === 0 && canNextFrom0) setStep(1);
-              else if (step === 1 && canNextFrom1) setStep(2);
-              else if (step === 2 && canNextFrom2) setStep(3);
-            }}
-          >
-            {w("next")}
-          </button>
-        </div>
-
-        <p className="mt-6 text-sm text-fog">{t("wizardLegalHint")}</p>
+        {fullMode ? (
+          <div className="shrink-0 border-t border-edge bg-canvas/95 px-4 pb-safe pt-4 backdrop-blur-md md:px-6">
+            {wizardNavButtonRow}
+            {wizardLegalHintEl}
+          </div>
+        ) : null}
       </div>
     </section>
     </>

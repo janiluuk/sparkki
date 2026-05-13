@@ -58,7 +58,15 @@ export function BackgroundCanvas() {
       antialias: true,
     });
     renderer.setSize(window.innerWidth, window.innerHeight);
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
+    const narrowViewport = () => window.innerWidth < 640;
+    const applyRendererQuality = () => {
+      const narrow = narrowViewport();
+      renderer.setPixelRatio(
+        Math.min(window.devicePixelRatio, narrow ? 1.25 : 2),
+      );
+    };
+    applyRendererQuality();
 
     const scene = new THREE.Scene();
     const camera = new THREE.PerspectiveCamera(
@@ -77,6 +85,7 @@ export function BackgroundCanvas() {
       camera.aspect = window.innerWidth / window.innerHeight;
       camera.updateProjectionMatrix();
       renderer.setSize(window.innerWidth, window.innerHeight);
+      applyRendererQuality();
       renderer.render(scene, camera);
     };
 
@@ -107,7 +116,9 @@ export function BackgroundCanvas() {
       };
     }
 
-    const count = Math.floor(80 + Math.random() * 41);
+    const count = narrowViewport()
+      ? 28
+      : Math.floor(80 + Math.random() * 41);
     const geometry = new THREE.IcosahedronGeometry(0.3, 0);
 
     for (let i = 0; i < count; i++) {
@@ -198,7 +209,7 @@ export function BackgroundCanvas() {
     <canvas
       ref={ref}
       aria-hidden
-      className="pointer-events-none fixed inset-0 -z-10 h-full min-h-dvh w-full"
+      className="pointer-events-none fixed inset-0 -z-10 h-full min-h-dvh w-full touch-none"
     />
   );
 }
