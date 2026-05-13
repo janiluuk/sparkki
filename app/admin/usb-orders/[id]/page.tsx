@@ -2,14 +2,13 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { requireAdmin } from "@/lib/auth/require-admin";
 import { prisma } from "@/lib/db/prisma";
-import fiMessages from "@/messages/fi.json";
-
-const a = fiMessages.admin;
+import { getAdminMessages } from "@/lib/admin/get-admin-messages";
 
 type Props = { params: { id: string } };
 
 export default async function AdminUsbOrderDetailPage({ params }: Props) {
   await requireAdmin();
+  const a = getAdminMessages().admin;
   const order = await prisma.usbOrder.findUnique({ where: { id: params.id } });
   if (!order) notFound();
 

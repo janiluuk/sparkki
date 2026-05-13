@@ -4,6 +4,7 @@ import type { ServiceTier } from "@prisma/client";
 import {
   DeliveryMethod,
   HddRemovalOption,
+  PortableVmHandoff,
   SupportTier,
 } from "@prisma/client";
 import { getRequestId, logApiEvent } from "@/lib/logging/log";
@@ -14,6 +15,10 @@ import {
   hddRemovalAddonCents,
   serviceCheckoutTotalCents,
 } from "@/lib/billing/pricing";
+import {
+  APP_BUNDLE_ZOD_ENUM,
+  normalizeAppBundleIds,
+} from "@/lib/billing/app-bundles";
 import { checkRateLimit, getClientIpFromHeaders } from "@/lib/http/rate-limit";
 import { getSiteUrl } from "@/lib/site/site-url";
 import {
@@ -31,6 +36,13 @@ const checkoutSchema = z
     locale: z.enum(["fi", "en"]),
     dataMigration: z.boolean().optional(),
     dataMigrationSize: z.enum(["standard", "large"]).optional().nullable(),
+    appBundleIds: z
+      .array(z.enum(APP_BUNDLE_ZOD_ENUM))
+      .max(APP_BUNDLE_ZOD_ENUM.length)
+      .optional()
+      .default([]),
+    portableVmAddon: z.boolean().optional().default(false),
+    portableVmHandoff: z.nativeEnum(PortableVmHandoff).optional().nullable(),
   })
   .superRefine((val, ctx) => {
     if (val.dataMigration && !val.dataMigrationSize) {
@@ -44,6 +56,20 @@ const checkoutSchema = z
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
         path: ["dataMigrationSize"],
+        message: "unexpected_when_disabled",
+      });
+    }
+    if (val.portableVmAddon && !val.portableVmHandoff) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ["portableVmHandoff"],
+        message: "required_when_portable_vm",
+      });
+    }
+    if (!val.portableVmAddon && val.portableVmHandoff) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ["portableVmHandoff"],
         message: "unexpected_when_disabled",
       });
     }
@@ -107,12 +133,20 @@ export async function POST(req: Request) {
     ? { size: data.dataMigrationSize! }
     : null;
   const supportTier = SupportTier.EMAIL;
+  const appBundles = normalizeAppBundleIds(data.appBundleIds ?? []);
+  const portableVmSelected =
+    Boolean(data.portableVmAddon) && data.portableVmHandoff != null;
+  const portableVmHandoff = portableVmSelected
+    ? data.portableVmHandoff!
+    : null;
   const priceEur = serviceCheckoutTotalCents({
     tier: data.tier,
     supportTier,
     migration,
     deliveryMethod: data.deliveryMethod,
     hddRemoval: data.hddRemoval,
+    appBundles,
+    portableVm: portableVmSelected,
   });
 
   const parsedContact = parseCustomerContact(data.customerContact);
@@ -138,6 +172,9 @@ export async function POST(req: Request) {
       locale: data.locale,
       dataMigration: migration != null,
       dataMigrationSize: migration?.size ?? null,
+      appBundleIds: appBundles,
+      portableVmAddon: portableVmSelected,
+      portableVmHandoff,
     },
   });
 
@@ -154,6 +191,8 @@ export async function POST(req: Request) {
     {
       postShip: data.deliveryMethod === "DROP_OFF",
       hddVireCents: hddCents,
+      appBundles,
+      portableVm: portableVmSelected,
     },
   );
 

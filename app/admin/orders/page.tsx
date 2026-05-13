@@ -2,9 +2,7 @@ import Link from "next/link";
 import { OrderStatus, Prisma } from "@prisma/client";
 import { requireAdmin } from "@/lib/auth/require-admin";
 import { prisma } from "@/lib/db/prisma";
-import fiMessages from "@/messages/fi.json";
-
-const a = fiMessages.admin;
+import { getAdminMessages } from "@/lib/admin/get-admin-messages";
 
 const PAGE_SIZE = 25;
 
@@ -28,11 +26,6 @@ const SORT_KEYS: SortKey[] = [
 
 function isOrderStatus(s: string | undefined): s is OrderStatus {
   return !!s && STATUSES.includes(s as OrderStatus);
-}
-
-function statusLabel(s: OrderStatus): string {
-  const key = `status_${s}` as keyof typeof a;
-  return (a[key] as string) ?? s;
 }
 
 function parseSortKey(s: string | undefined): SortKey {
@@ -71,6 +64,13 @@ type Props = {
 
 export default async function AdminOrdersPage({ searchParams }: Props) {
   await requireAdmin();
+  const a = getAdminMessages().admin;
+
+  function statusLabel(s: OrderStatus): string {
+    const key = `status_${s}` as keyof typeof a;
+    return (a[key] as string) ?? s;
+  }
+
   const filter = isOrderStatus(searchParams.status)
     ? { status: searchParams.status }
     : {};

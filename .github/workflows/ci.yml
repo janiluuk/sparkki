@@ -74,6 +74,20 @@ jobs:
       - name: Build
         run: npm run build
 
+      - name: Lighthouse CI (budgets, informational)
+        continue-on-error: true
+        run: |
+          cd .next/standalone
+          PORT=1337 HOSTNAME=127.0.0.1 node server.js &
+          SERVER_PID=$!
+          cd ../..
+          for i in $(seq 1 90); do
+            if curl -sf "http://127.0.0.1:1337/fi" >/dev/null; then echo "Lighthouse: server ready"; break; fi
+            sleep 2
+          done
+          npx @lhci/cli autorun --config=./lighthouserc.json
+          kill $SERVER_PID 2>/dev/null || true
+
       - name: Install Playwright browsers
         run: npx playwright install chromium --with-deps
 

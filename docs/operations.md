@@ -11,6 +11,8 @@ Point an external checker (Uptime Kuma, Grafana Cloud, Better Stack, etc.) at:
 
 Configure reasonable intervals (for example 1–5 minutes) and alert on non-200 responses or missing JSON `ok`.
 
+**Optional — GitHub Actions:** workflow **`synthetic-monitoring.yml`** runs on a schedule when you set repository variable **`SYNTHETIC_MONITORING_BASE_URL`** (production origin, no trailing slash). If unset, the job exits successfully without probing — use for repos that have not configured a live URL yet.
+
 ## Structured logging
 
 API routes and the Stripe webhook emit **`logApiEvent`** lines from **`lib/logging/log.ts`**.

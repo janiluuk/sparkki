@@ -5,11 +5,12 @@ import { readGuideMdxSource } from "@/lib/content/guide-content";
 import { parseGuideMdx } from "@/lib/content/guide-mdx";
 import { prisma } from "@/lib/db/prisma";
 import { requireAdmin } from "@/lib/auth/require-admin";
-import fiMessages from "@/messages/fi.json";
+import { getAdminMessages } from "@/lib/admin/get-admin-messages";
 
-const a = fiMessages.admin;
-
-function guideErrorMessage(code: string | undefined) {
+function guideErrorMessage(
+  code: string | undefined,
+  a: ReturnType<typeof getAdminMessages>["admin"],
+) {
   if (!code) return null;
   switch (code) {
     case "slug":
@@ -33,6 +34,7 @@ export default async function AdminGuideEditPage({
   searchParams?: { error?: string; saved?: string };
 }) {
   await requireAdmin();
+  const a = getAdminMessages().admin;
   const guide = await prisma.guide.findUnique({ where: { slug: params.slug } });
   if (!guide) notFound();
 
@@ -40,7 +42,7 @@ export default async function AdminGuideEditPage({
   const parsed = raw ? parseGuideMdx(raw) : { data: {}, content: "" };
   const mdxContent = parsed.content ?? "";
 
-  const errMsg = guideErrorMessage(searchParams?.error);
+  const errMsg = guideErrorMessage(searchParams?.error, a);
   const saved = searchParams?.saved === "1";
 
   return (

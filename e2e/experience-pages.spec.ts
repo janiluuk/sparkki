@@ -1,0 +1,57 @@
+import { expect, test } from "@playwright/test";
+
+test.describe("key public journeys", () => {
+  test("Learn hub overview and upgrade process page", async ({ page }) => {
+    await page.goto("/fi/tietoa", { waitUntil: "domcontentloaded" });
+    await expect(
+      page.getByRole("heading", {
+        level: 1,
+        name: /Vanha tietokone pystyy vielä paljon/i,
+      }),
+    ).toBeVisible();
+
+    await page.goto("/fi/tietoa/linux", { waitUntil: "domcontentloaded" });
+    await expect(
+      page.getByRole("heading", { level: 1, name: /Päivitysprosessi/i }),
+    ).toBeVisible();
+  });
+
+  test("Learn hub: stability & comfort article loads", async ({ page }) => {
+    await page.goto("/fi/tietoa/vakaus", { waitUntil: "domcontentloaded" });
+    await expect(
+      page.getByRole("heading", { level: 1, name: /Vakaus ja mukavuus/i }),
+    ).toBeVisible();
+  });
+
+  test("compatibility search page and empty-query state", async ({ page }) => {
+    await page.goto("/fi/koneet", { waitUntil: "domcontentloaded" });
+    await expect(
+      page.getByRole("heading", { level: 1, name: /Yhteensopivuus|Compatibility/i }),
+    ).toBeVisible();
+    await expect(page.locator("#koneet-q")).toBeVisible();
+    await expect(page.getByRole("search").getByRole("button")).toBeVisible();
+  });
+
+  test("DIY hub lists guides section", async ({ page }) => {
+    await page.goto("/fi/itse", { waitUntil: "domcontentloaded" });
+    await expect(
+      page.getByRole("heading", { level: 1, name: /Tee itse/i }),
+    ).toBeVisible();
+    await expect(page.getByRole("heading", { name: /Oppaat/i })).toBeVisible();
+  });
+
+  test("Vire for Good application page", async ({ page }) => {
+    await page.goto("/fi/vire-for-good", { waitUntil: "domcontentloaded" });
+    await expect(
+      page.getByRole("heading", { level: 1, name: /Vire for Good/i }),
+    ).toBeVisible();
+    await expect(page.getByLabel(/Miksi haet alennusta/i)).toBeVisible();
+  });
+
+  test("Vire Care landing", async ({ page }) => {
+    await page.goto("/fi/care", { waitUntil: "domcontentloaded" });
+    await expect(
+      page.getByRole("heading", { level: 1, name: /Vire Care/i }),
+    ).toBeVisible();
+  });
+});

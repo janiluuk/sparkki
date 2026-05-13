@@ -1,10 +1,13 @@
 import type { ServiceTier, SupportTier } from "@prisma/client";
+import type { AppBundleId } from "./app-bundles";
+import { APP_BUNDLE_CENTS } from "./app-bundles";
 import {
   DELIVERY_POST_CENTS,
   dataMigrationAddonCents,
   getStripePriceIdForTier,
   serviceOrderTotalCents,
 } from "./pricing";
+import { PORTABLE_VM_ADDON_CENTS } from "./portable-vm";
 
 export type CheckoutLineItem =
   | { price: string; quantity: number }
@@ -72,6 +75,56 @@ function hddRemovalStripeProduct(
   };
 }
 
+function appBundleStripeProduct(
+  id: AppBundleId,
+  receiptLocale: "fi" | "en",
+): { name: string; description: string } {
+  const names: Record<AppBundleId, { fi: string; en: string }> = {
+    local_ai: {
+      fi: "Ohjelmapaketti — paikallinen AI (LLM ja työkalut)",
+      en: "App pack — local AI (LLM & tools)",
+    },
+    media_creator: {
+      fi: "Ohjelmapaketti — media ja editointi",
+      en: "App pack — media creation",
+    },
+    music_production: {
+      fi: "Ohjelmapaketti — musiikintuotanto",
+      en: "App pack — music production",
+    },
+    developer_essentials: {
+      fi: "Ohjelmapaketti — kehittäjän peruspino",
+      en: "App pack — developer essentials",
+    },
+  };
+  const desc =
+    receiptLocale === "en"
+      ? "Selected during checkout — we install and configure on the new system."
+      : "Valittu tilauksessa — asennamme ja konfiguroimme uuteen järjestelmään.";
+  const n = names[id];
+  return {
+    name: receiptLocale === "en" ? n.en : n.fi,
+    description: desc,
+  };
+}
+
+function portableVmStripeProduct(
+  receiptLocale: "fi" | "en",
+): { name: string; description: string } {
+  if (receiptLocale === "en") {
+    return {
+      name: "Vire — Portable VM / disk image (pre-install capture)",
+      description:
+        "Create a virtual-machine or disk image of the system state before Linux install — format agreed in intake. Customer responsible for OS licensing in any VM.",
+    };
+  }
+  return {
+    name: "Vire — Kannettava virtuaalikone / levykuva (ennen asennusta)",
+    description:
+      "Virtuaalikoneen tai levykuvan laatiminen järjestelmän tilasta ennen Linux-asennusta — muoto sovitaan käynnistyksessä. Käyttöjärjestelmän lisensointi VM:ssä on asiakkaan vastuulla.",
+  };
+}
+
 export function buildServiceLineItems(
   tier: Exclude<ServiceTier, "B2B">,
   supportTier: SupportTier,
@@ -80,6 +133,8 @@ export function buildServiceLineItems(
   extras?: {
     postShip?: boolean;
     hddVireCents?: number;
+    appBundles?: readonly AppBundleId[];
+    portableVm?: boolean;
   },
 ): CheckoutLineItem[] {
   const priceId = getStripePriceIdForTier(tier);
@@ -126,11 +181,37 @@ export function buildServiceLineItems(
     },
   };
 
+  const bundleIds = extras?.appBundles ?? [];
+  const bundleItems: CheckoutLineItem[] = bundleIds.map((id) => {
+    const meta = appBundleStripeProduct(id, receiptLocale);
+    return {
+      quantity: 1,
+      price_data: {
+        currency: "eur",
+        unit_amount: APP_BUNDLE_CENTS[id],
+        product_data: { name: meta.name, description: meta.description },
+      },
+    };
+  });
+
+  const vmCents = extras?.portableVm ? PORTABLE_VM_ADDON_CENTS : 0;
+  const vmMeta = portableVmStripeProduct(receiptLocale);
+  const vmItem: CheckoutLineItem = {
+    quantity: 1,
+    price_data: {
+      currency: "eur",
+      unit_amount: vmCents,
+      product_data: { name: vmMeta.name, description: vmMeta.description },
+    },
+  };
+
   if (priceId) {
     const items: CheckoutLineItem[] = [{ price: priceId, quantity: 1 }];
     if (migration) items.push(migrationItem);
     if (postCents > 0) items.push(postItem);
     if (hddCents > 0) items.push(hddItem);
+    items.push(...bundleItems);
+    if (vmCents > 0) items.push(vmItem);
     return items;
   }
   const amount = serviceOrderTotalCents(tier, supportTier);
@@ -150,6 +231,8 @@ export function buildServiceLineItems(
   if (migration) items.push(migrationItem);
   if (postCents > 0) items.push(postItem);
   if (hddCents > 0) items.push(hddItem);
+  items.push(...bundleItems);
+  if (vmCents > 0) items.push(vmItem);
   return items;
 }
 

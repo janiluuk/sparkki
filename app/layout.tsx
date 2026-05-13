@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { DM_Mono, DM_Sans, Syne } from "next/font/google";
 import Script from "next/script";
+import { DaytimeTheme } from "@/components/layout/DaytimeTheme";
 import { getSiteUrl } from "@/lib/site/site-url";
 import "./globals.css";
 
@@ -44,6 +45,7 @@ export default function RootLayout({
       className={`${dmSans.variable} ${syne.variable} ${dmMono.variable} scroll-smooth`}
     >
       <body className="min-h-dvh bg-canvas font-sans font-light text-lg text-ink antialiased">
+        <DaytimeTheme />
         {children}
         {plausibleDomain ? (
           <Script

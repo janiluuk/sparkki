@@ -2,12 +2,11 @@ import Link from "next/link";
 import { GuidePublishToggle } from "@/components/admin/GuidePublishToggle";
 import { prisma } from "@/lib/db/prisma";
 import { requireAdmin } from "@/lib/auth/require-admin";
-import fiMessages from "@/messages/fi.json";
-
-const a = fiMessages.admin;
+import { getAdminMessages } from "@/lib/admin/get-admin-messages";
 
 export default async function AdminGuidesPage() {
   await requireAdmin();
+  const a = getAdminMessages().admin;
   const guides = await prisma.guide.findMany({
     orderBy: [{ order: "asc" }, { slug: "asc" }],
   });

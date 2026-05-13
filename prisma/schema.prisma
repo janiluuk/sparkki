@@ -33,6 +33,16 @@ model Order {
   dataMigration    Boolean        @default(false)
   dataMigrationSize String?       // "standard" | "large" when dataMigration is true
   dataMigrationNotes String?      // admin: what was migrated / verification
+  /// Optional curated app packs (e.g. local_ai, media_creator) — see lib/billing/app-bundles.ts
+  appBundleIds     String[]       @default([])
+  /// Optional P2V-style image before Linux install — priced add-on; see lib/billing/portable-vm.ts
+  portableVmAddon  Boolean        @default(false)
+  portableVmHandoff PortableVmHandoff?
+}
+
+enum PortableVmHandoff {
+  CUSTOMER_STORAGE
+  SHIPPED_MEDIA
 }
 
 enum OrderStatus {

@@ -38,6 +38,15 @@ const nextConfig = {
       ],
     };
   },
+  async redirects() {
+    return [
+      {
+        source: "/admin/ai-tools",
+        destination: "/admin/ai-testing",
+        permanent: false,
+      },
+    ];
+  },
   async headers() {
     const security = [
       { key: "X-Content-Type-Options", value: "nosniff" },

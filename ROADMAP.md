@@ -732,8 +732,8 @@ Planned product expansion (Care subscription, `/koneet`, group bookings, donatio
 - [x] **Vire Care landing** — `/{locale}/care` (tiers + post-90-day timeline; Stripe subscription checkout deferred).
 - [x] **Compatibility database (public)** — `/{locale}/koneet` + `/{locale}/koneet/[slug]` backed by `ComputerModel`; sitemap includes model URLs.
 - [x] **Vire for Good** — `/{locale}/vire-for-good` two-field form; email via `VIRE_FOR_GOOD_NOTIFY_EMAIL` or fallback `B2B_QUOTE_NOTIFY_EMAIL`.
-- [ ] **Order-time app bundles** — Optional **curated app packs** the customer selects in the **service order wizard** (and pays for if priced): e.g. **local AI** (LLM + tooling), **media creator** pack, **music production** pack, developer essentials, etc. Requires: Prisma/Stripe fields (or JSON on `Order`), wizard UI + pricing in **`lib/billing`**, fulfillment notes for install scripts, admin order detail showing chosen bundles, transactional copy in **`lib/email`**.
-- [ ] **Portable VM from existing system** — Optional add-on service: create a **portable virtual machine** (or bootable disk image) that captures the **current contents/state of the customer’s machine** before wipe / Linux install (e.g. P2V-style image, OVA/QCOW2, or agreed export format on external storage). Requires: clear **scope & licensing copy** (especially Windows in a VM), **data-handling SLA**, wizard + `Order` fields, priced line item in Stripe, handoff medium (customer USB/NAS vs shipped drive), and admin/fulfillment checklist.
+- [x] **Order-time app bundles** — Optional **curated app packs** the customer selects in the **service order wizard** (and pays for if priced): e.g. **local AI** (LLM + tooling), **media creator** pack, **music production** pack, developer essentials, etc. Requires: Prisma/Stripe fields (or JSON on `Order`), wizard UI + pricing in **`lib/billing`**, fulfillment notes for install scripts, admin order detail showing chosen bundles, transactional copy in **`lib/email`**.
+- [x] **Portable VM from existing system** — Optional add-on service: create a **portable virtual machine** (or bootable disk image) that captures the **current contents/state of the customer’s machine** before wipe / Linux install (e.g. P2V-style image, OVA/QCOW2, or agreed export format on external storage). Requires: clear **scope & licensing copy** (especially Windows in a VM), **data-handling SLA**, wizard + `Order` fields, priced line item in Stripe, handoff medium (customer USB/NAS vs shipped drive), and admin/fulfillment checklist.
 
 ---
 
@@ -788,15 +788,15 @@ noVNC entry URLs are documented in `infra/try-linux/README.md` (typically `.../t
 *Short working queue. Reconcile with checkboxes below; edit this list when items ship.*
 
 1. **Content-Security-Policy** — **`ENABLE_CSP_REPORT_ONLY=true`** emits report-only CSP from **`next.config.mjs`**; tighten policy using violation reports (**`docs/operations.md`**). Enforcing CSP with nonces still open.
-2. **E2E** — smoke, locale, service wizard (mocked checkout → **`/palvelu/kiitos`**), admin login + orders list, public routes + **`/meista`** rewrite; see **`e2e/*.spec.ts`**.
-3. **Synthetic monitoring** — external ping of `/api/health` + one public page — **runbook:** **`docs/operations.md`** (Docker healthcheck already in compose).
+2. **E2E + a11y** — **shipped:** smoke, locale, wizard (mocked checkout), admin login + orders, public routes + **`/meista`**, support + order lookup + experience pages, **axe-core** (**`e2e/a11y-axe.spec.ts`**), **Lighthouse CI** (informational) — see **`e2e/*.spec.ts`**, **`lighthouserc.json`**. Playwright **`webServer`** runs **`prisma migrate deploy`** before **`node server.js`** so the e2e DB matches the Prisma client.
+3. **Synthetic monitoring** — **shipped in repo:** optional scheduled workflow **`synthetic-monitoring.yml`** when **`SYNTHETIC_MONITORING_BASE_URL`** is set — see **`docs/operations.md`**. External Uptime Kuma / Grafana still recommended.
 4. **Admin audit trail** — **shipped:** `AdminAuditLog` + order detail log; guides/models mutations logged; extend UI as needed.
 5. **Structured logging** — **shipped:** JSON + request id on checkout, support-contact, Stripe webhook (`lib/logging/log.ts`, **`docs/operations.md`**).
 
 #### Product / UX (still open from earlier phases)
 
-- [ ] **App bundles at checkout** — Customizable **software bundles** selected during the consumer order flow (examples: local AI stack, media creator pack, music pack); persisted on the order, visible in admin, reflected in pricing/notes for fulfillment.
-- [ ] **Portable VM / disk image add-on** — Optional paid step in the order flow: deliver a **VM or image** of the machine’s **pre-service contents** for archival or later use on another host; document format, customer storage, and OS licensing limits in public copy and ops.
+- [x] **App bundles at checkout** — Customizable **software bundles** selected during the consumer order flow (examples: local AI stack, media creator pack, music pack); persisted on the order, visible in admin, reflected in pricing/notes for fulfillment.
+- [x] **Portable VM / disk image add-on** — Optional paid step in the order flow: deliver a **VM or image** of the machine’s **pre-service contents** for archival or later use on another host; document format, customer storage, and OS licensing limits in public copy and ops.
 - [x] **Booking embed** on `/tuki` — Calendly iframe when **`NEXT_PUBLIC_CALENDLY_EMBED_URL`** is set.
 - [x] **Discord widget** on `/yhteiso` — **`NEXT_PUBLIC_DISCORD_WIDGET_GUILD_ID`** + Discord widget iframe.
 - [x] **`/tuki` contact form** — `POST /api/public/support-contact`, rate limit, **`SUPPORT_NOTIFY_EMAIL`** + Resend.
@@ -830,14 +830,14 @@ noVNC entry URLs are documented in `infra/try-linux/README.md` (typically `.../t
 
 #### Performance & accessibility
 
-- [ ] **CI Lighthouse / axe budgets** (optional gates) — prevent regressions on `/` and `/palvelu` if cost is acceptable in GitHub Actions.
-- [ ] **Admin i18n** — admin UI is FI-only via `fiMessages`; move strings to next-intl or add EN for bilingual operators.
+- [x] **CI Lighthouse / axe budgets** (optional gates) — prevent regressions on `/` and `/palvelu` if cost is acceptable in GitHub Actions.
+- [x] **Admin i18n** — admin UI uses **`ADMIN_LOCALE`** cookie + **`getAdminMessages()`** (`lib/admin/`) with **`messages/en.json`** `admin` strings; FI/EN switcher in **`app/admin/layout.tsx`**. Legacy hardcoded `fiMessages` imports removed from admin pages.
 
 #### Developer experience
 
 - [x] **`apps/vire-checker` LAN + spec/AI docs** — see `apps/vire-checker/README.md` (server-side env, Docker/LAN reachability, curl example, future Tauri HTTP scope).
-- [ ] **`apps/vire-checker` optional “fetch specs” UI** — call Vire `POST /api/public/laptop-specs` when a base URL is configured (needs Tauri HTTP allowlist + env such as `VITE_VIRE_API_BASE`).
-- [ ] **Dependency / secret hygiene** — **`npm audit`** runs in CI (informational / non-blocking); pre-commit secret scan (gitleaks) optional.
+- [x] **`apps/vire-checker` optional “fetch specs” UI** — **`VITE_VIRE_API_BASE`** enables **Hae speksit verkosta** → `POST /api/public/laptop-specs` (see **`apps/vire-checker/README.md`**).
+- [x] **Dependency / secret hygiene** — **`npm audit`** in CI (informational / non-blocking); pre-commit secret scan (gitleaks) optional.
 
 ---
 

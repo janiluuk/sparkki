@@ -8,15 +8,21 @@ import {
 } from "@/lib/specs/laptop-specs";
 import { requireAdmin } from "@/lib/auth/require-admin";
 import { prisma } from "@/lib/db/prisma";
-import fiMessages from "@/messages/fi.json";
+import {
+  APP_BUNDLE_CONFIRM_LABEL,
+  isAppBundleId,
+} from "@/lib/billing/app-bundles";
+import {
+  PORTABLE_VM_HANDOFF_LABEL,
+  isPortableVmHandoff,
+} from "@/lib/billing/portable-vm";
+import { getAdminMessages } from "@/lib/admin/get-admin-messages";
 import {
   sendOrderDone,
   updateDataMigrationNotes,
   updateOrderNotes,
   updateOrderStatus,
 } from "../actions";
-
-const a = fiMessages.admin;
 
 const STATUSES = [
   "PENDING",
@@ -31,11 +37,6 @@ type Props = {
   searchParams: { email?: string };
 };
 
-function statusLabel(s: string): string {
-  const key = `status_${s}` as keyof typeof a;
-  return (a[key] as string) ?? s;
-}
-
 function auditMetaCell(value: unknown): string {
   if (value == null) return "—";
   try {
@@ -45,8 +46,33 @@ function auditMetaCell(value: unknown): string {
   }
 }
 
+function formatOrderAppBundles(ids: string[]): string {
+  if (!ids.length) return "—";
+  return ids
+    .map((id) =>
+      isAppBundleId(id) ? APP_BUNDLE_CONFIRM_LABEL[id].fi : id,
+    )
+    .join(", ");
+}
+
+function formatPortableVm(order: {
+  portableVmAddon: boolean;
+  portableVmHandoff: string | null;
+}): string {
+  if (!order.portableVmAddon) return "—";
+  const h = order.portableVmHandoff;
+  if (h && isPortableVmHandoff(h)) return PORTABLE_VM_HANDOFF_LABEL[h].fi;
+  return "—";
+}
+
 export default async function AdminOrderDetailPage({ params, searchParams }: Props) {
   await requireAdmin();
+  const a = getAdminMessages().admin;
+  function statusLabel(s: string): string {
+    const key = `status_${s}` as keyof typeof a;
+    return (a[key] as string) ?? s;
+  }
+
   const order = await prisma.order.findUnique({ where: { id: params.id } });
   if (!order) notFound();
 
@@ -138,6 +164,14 @@ export default async function AdminOrderDetailPage({ params, searchParams }: Pro
           </dd>
         </div>
         <div>
+          <dt className="font-semibold text-fog">{a.colAppBundles}</dt>
+          <dd>{formatOrderAppBundles(order.appBundleIds)}</dd>
+        </div>
+        <div>
+          <dt className="font-semibold text-fog">{a.colPortableVm}</dt>
+          <dd>{formatPortableVm(order)}</dd>
+        </div>
+        <div>
           <dt className="font-semibold text-fog">{a.colComputer}</dt>
           <dd>
             {[order.computerMake, order.computerModel].filter(Boolean).join(" ") ||
@@ -194,6 +228,20 @@ export default async function AdminOrderDetailPage({ params, searchParams }: Pro
           </div>
         ) : null}
       </dl>
+
+      {order.portableVmAddon ? (
+        <section
+          aria-labelledby="portable-vm-ops"
+          className="mt-10 rounded-xl border border-g/25 bg-g/[0.06] p-6"
+        >
+          <h2 id="portable-vm-ops" className="text-xl font-bold text-ink">
+            {a.portableVmOpsTitle}
+          </h2>
+          <p className="mt-4 whitespace-pre-line text-base font-light leading-relaxed text-fog">
+            {a.portableVmOpsChecklist}
+          </p>
+        </section>
+      ) : null}
 
       <section className="mt-10 space-y-6 border-t border-edge pt-8">
         <form action={updateOrderStatus} className="space-y-3">

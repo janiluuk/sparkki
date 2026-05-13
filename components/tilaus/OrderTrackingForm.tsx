@@ -5,6 +5,24 @@ import { useLocale, useTranslations } from "next-intl";
 import { LaptopSpecsCard } from "@/components/laptop-specs/LaptopSpecsCard";
 import type { LaptopSpecsInsight } from "@/lib/specs/laptop-specs";
 import type { PublicServiceOrder, PublicUsbOrder } from "@/lib/orders/public-order";
+import {
+  isAppBundleId,
+  type AppBundleId,
+} from "@/lib/billing/app-bundles";
+import { isPortableVmHandoff } from "@/lib/billing/portable-vm";
+
+type TilausBundleKey =
+  | "bundle_local_ai"
+  | "bundle_media_creator"
+  | "bundle_music_production"
+  | "bundle_developer_essentials";
+
+const TILAUS_BUNDLE_MSG: Record<AppBundleId, TilausBundleKey> = {
+  local_ai: "bundle_local_ai",
+  media_creator: "bundle_media_creator",
+  music_production: "bundle_music_production",
+  developer_essentials: "bundle_developer_essentials",
+};
 
 type Props =
   | { variant: "hub" }
@@ -202,6 +220,31 @@ function OrderSummary({
                 : o.dataMigrationSize === "standard"
                   ? t("migrationStandard")
                   : t("emptyValue")}
+            </dd>
+          </>
+        ) : null}
+        {o.appBundleIds.length > 0 ? (
+          <>
+            <dt className="font-semibold text-fog">{t("fieldAppBundles")}</dt>
+            <dd>
+              {o.appBundleIds
+                .map((id) =>
+                  isAppBundleId(id) ? t(TILAUS_BUNDLE_MSG[id]) : id,
+                )
+                .join(", ")}
+            </dd>
+          </>
+        ) : null}
+        {o.portableVmAddon ? (
+          <>
+            <dt className="font-semibold text-fog">{t("fieldPortableVm")}</dt>
+            <dd>
+              {o.portableVmHandoff &&
+              isPortableVmHandoff(o.portableVmHandoff)
+                ? o.portableVmHandoff === "CUSTOMER_STORAGE"
+                  ? t("portableVmHandoffCustomer")
+                  : t("portableVmHandoffShipped")
+                : t("emptyValue")}
             </dd>
           </>
         ) : null}

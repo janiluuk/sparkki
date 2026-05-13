@@ -58,6 +58,7 @@
 body {
   color: var(--text);
   background-color: var(--bg);
+  transition: background-color 1.4s ease;
   font-size: 1.125rem;
   line-height: 1.65;
   font-weight: 300;
@@ -194,7 +195,7 @@ body {
     font-size: 11px;
     line-height: 1.5;
     font-style: italic;
-    color: var(--dim);
+    color: var(--muted);
     font-weight: 300;
   }
 
@@ -242,7 +243,8 @@ body {
     font-weight: 800;
     line-height: 1;
     letter-spacing: -2px;
-    color: rgba(29, 245, 160, 0.08);
+    /* Large text (≥24px): meet ≥3:1 vs canvas for decorative numerals */
+    color: rgba(29, 245, 160, 0.58);
     margin-bottom: 12px;
   }
 

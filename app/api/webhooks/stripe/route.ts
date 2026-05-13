@@ -51,6 +51,9 @@ async function handleCheckoutSessionCompleted(session: Stripe.Checkout.Session) 
             order.dataMigrationSize === "large"
               ? order.dataMigrationSize
               : null,
+          appBundleIds: order.appBundleIds,
+          portableVmAddon: order.portableVmAddon,
+          portableVmHandoff: order.portableVmHandoff,
         });
       }
     }

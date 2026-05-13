@@ -1,7 +1,5 @@
 import { saveGuide } from "@/app/admin/guides/actions";
-import fiMessages from "@/messages/fi.json";
-
-const a = fiMessages.admin;
+import { getAdminMessages } from "@/lib/admin/get-admin-messages";
 
 export type SaveGuideFormDefaults = {
   editorSlug: string | null;
@@ -19,7 +17,8 @@ export type SaveGuideFormDefaults = {
   mdxContent?: string;
 };
 
-export function SaveGuideForm({ defaults }: { defaults: SaveGuideFormDefaults }) {
+export async function SaveGuideForm({ defaults }: { defaults: SaveGuideFormDefaults }) {
+  const a = getAdminMessages().admin;
   const isEdit = Boolean(defaults.editorSlug);
 
   return (

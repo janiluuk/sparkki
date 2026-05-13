@@ -796,7 +796,7 @@ Colour the stat value when it has semantic meaning:
 - Canvas CSS: `position: fixed; inset: 0; z-index: -1; pointer-events: none`
 - Never use `OrbitControls` or any user-interactive camera
 
-**Current implementation (repo):** the live `BackgroundCanvas` may use **textured billboard sprites** (e.g. OS logos, FI/EU) with similar drift, edge wrap, 30fps cap, visibility pause, reduced-motion handling, and fixed camera — not necessarily wireframe icosahedrons. When changing the background, keep the **performance and accessibility** rules above; the wireframe mesh spec above remains the canonical “pure token” look if you switch back to geometry.
+The running app should match this wireframe spec unless a deliberate visual experiment replaces it — if so, preserve the **performance and accessibility** rules above.
 
 ---
 
@@ -918,10 +918,9 @@ These are non-negotiable and apply to every component.
 ```
 vire.fi/
 ├── /                          Homepage
-├── /palvelu                   Service detail + embedded order wizard (`#palvelu-tilaa` opens fullscreen)
-├── /tietoa                    Learn hub overview (sidebar layout)
-│   ├── /tietoa/hyodyt         Benefits (privacy, Finnish, economy, games, data…)
-│   ├── /tietoa/linux          About Linux Mint (+ try-Linux browser demo)
+├── /palvelu                   Service detail + order wizard
+├── /tietoa                    Info hub (sidebar layout)
+│   ├── /tietoa/linux          About Linux Mint
 │   ├── /tietoa/vakaus         Stability & comfort
 │   ├── /tietoa/huolia         Common concerns (FAQ)
 │   ├── /tietoa/sovellukset/windows   App alternatives — Windows tab
@@ -934,7 +933,6 @@ vire.fi/
 ├── /koneet                    Compatibility database
 │   └── /koneet/[slug]         Individual model page
 ├── /vire-for-good             Social pricing tier
-├── /tilaus                    Order tracking hub
 └── /admin                     Admin panel (protected)
 ```
 
@@ -943,19 +941,22 @@ vire.fi/
 Primary nav links:
 
 1. **Palvelu** — direct link to `/palvelu`
-2. **Learn / Tietoa** — primary link to `/tietoa` (overview); **▾** opens submenu:
-   - Overview → `/tietoa`
-   - Benefits → `/tietoa/hyodyt`
-   - Linux Mint → `/tietoa/linux`
-   - Stability & comfort → `/tietoa/vakaus`
-   - Common concerns → `/tietoa/huolia`
-   - Apps — Windows → `/tietoa/sovellukset/windows`
-   - Apps — Mac → `/tietoa/sovellukset/mac`
+2. **Tietoa ▾** — dropdown with:
+   - Linux Mintistä → `/tietoa/linux`
+   - Vakaus & mukavuus → `/tietoa/vakaus`
+   - Yleisiä huolia → `/tietoa/huolia`
+   - Sovellukset — Windows → `/tietoa/sovellukset/windows`
+   - Sovellukset — Mac → `/tietoa/sovellukset/mac`
 3. **Tee itse** — direct link to `/itse`
-4. **Koneet** — direct link to `/koneet` (compatibility DB)
-5. **Meistä ▾** — dropdown: Company → `/meista`, Community & Discord → `/meista/yhteiso`
-6. **Tuki** — direct link to `/tuki`
-7. **Tilaa →** — CTA to `/palvelu#palvelu-tilaa` (order wizard)
+4. **Meistä ▾** — dropdown with:
+   - Yritys → `/meista`
+   - Yhteisö & Discord → `/meista/yhteiso`
+5. **Tuki** — direct link to `/tuki`
+6. **Tilaa →** (CTA button, always rightmost) — `/palvelu#palvelu-tilaa`
+
+The main **Tietoa** label can still deep-link to `/tietoa` where useful; the ▾ control opens the focused submenu above (no Overview/Benefits items in the dropdown — those pages remain reachable from the hub and footer where linked).
+
+Locale-prefixed routes use `/[locale]/…` in the Next.js app (e.g. `/fi/palvelu`).
 
 Dropdown styling:
 
@@ -1363,14 +1364,16 @@ Each pricing card now includes a dim note about HDD removal:
 
 ## Updated footer structure
 
-Footer columns (4-column grid, wider brand column):
+Footer columns (4-column grid):
 
-1. **Logo + tagline** (`1.5fr`)
-2. **Palvelu** — How it works, Pricing, B2B, Care, Compatibility (`/koneet`), Vire for Good
-3. **Learn / Tietoa** — Overview (`/tietoa`), Benefits (`/tietoa/hyodyt`), Linux Mint, Apps (Windows tab), DIY (`/itse`), Community (`/meista/yhteiso`)
-4. **Contact** — email, Support, Privacy, optional YouTube
+1. **Logo + tagline** (wider: `1.5fr`)
+2. **Palvelu** — Miten toimii, Hinnat, B2B, Tilaa
+3. **Tietoa** — Linux Mintistä, Sovellukset, Tee itse, Yhteisö (links to `/meista/yhteiso`)
+4. **Yhteys** — hei@vire.fi (or operational inbox), Tuki, Tietosuoja
 
-Community link targets `/meista/yhteiso`. Label copy is locale-specific (`footer.*` / `nav.*`).
+Community link in the footer goes to `/meista/yhteiso`, not a standalone `/yhteiso` route.
+
+**Optional** links (Care, compatibility DB, Vire for Good, YouTube, Discord, order tracking) may appear in page body or secondary surfaces — they are not required in this minimal footer grid.
 
 ---
 
@@ -1397,13 +1400,15 @@ Removed: name, computer make, computer model, RAM, disk type, device count, addr
 
 ### Order wizard (`/palvelu`)
 
-The consumer checkout lives on **`/palvelu`** (embedded wizard + optional fullscreen via `#palvelu-tilaa`). Do not use a separate `/tilaa` route in new code.
+The consumer checkout lives on **`/palvelu`** (embedded wizard + optional fullscreen via `#palvelu-tilaa`).
 
-**5 steps** in the live wizard: (1) computer description free text, (2) service tier + delivery cards, (3) HDD preference with amber callout, (4) phone-or-email contact, (5) summary + Stripe pay. There is **no separate support-tier step** — default included support applies; Care upsell is documented as post-purchase email sequence.
+**4 steps** in the live wizard: (1) computer description free text, (2) service tier + delivery cards (one step), (3) HDD preference with amber callout, (4) phone-or-email contact **with** order summary and Stripe pay on the same step — there is no separate summary-only step in the stepper.
 
-**Removed from wizard:** separate make/model fields (replaced by step 1 free text); RAM amount; disk type; full name; support tier selection (default 90-day email support; Care+ upsell at day 75 via email); separate address fields during checkout (address only when needed, via follow-up); structured subject lines.
+There is **no separate support-tier step** — default 90-day email support; Care+ upsell at day 75 via email.
 
-**Total wizard inputs:** minimal set: one free-text computer field, tier + delivery selections, HDD choice, unified contact — aligned with product copy.
+**Removed from wizard:** separate make/model fields; RAM; disk type; full name; support tier selector; address fields at checkout (follow-up when needed); structured subject lines.
+
+**Total wizard inputs:** one free-text computer field, tier + delivery card choices, HDD choice, unified contact — then pay.
 
 ---
 
