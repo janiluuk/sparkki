@@ -40,6 +40,9 @@ model Order {
   portableVmHandoff PortableVmHandoff?
   /// Post-checkout Care interest from wizard (`PLUS` | `PRO`).
   carePackageInterest String?
+  /// Scheduled Care upsell emails (days after `completedAt`).
+  careUpsell75SentAt  DateTime?
+  careUpsell88SentAt  DateTime?
 }
 
 enum PortableVmHandoff {
@@ -175,6 +178,8 @@ model ComputerModel {
   notes      String?
   checkedBy  String?
   checkedAt  DateTime?
+  /// Public URL segment (`/koneet/[slug]`); derived from make+model.
+  slug       String?  @unique
 
   @@unique([make, model])
 }

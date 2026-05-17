@@ -6,6 +6,7 @@ import { getServerSession } from "next-auth/next";
 import { ModelCheckStatus } from "@prisma/client";
 import { recordAdminAudit } from "@/lib/admin/admin-audit";
 import { parseComputerModelCsv } from "@/lib/admin/parse-computer-model-csv";
+import { computerModelSlugFields } from "@/lib/koneet/computer-model-db";
 import { authOptions } from "@/lib/auth/auth-options";
 import { prisma } from "@/lib/db/prisma";
 
@@ -39,6 +40,7 @@ export async function createComputerModel(formData: FormData) {
         yearFrom,
         yearTo,
         status: "UNCHECKED",
+        ...computerModelSlugFields(make, model),
       },
     });
     await recordAdminAudit({
@@ -153,6 +155,7 @@ export async function importComputerModelsCsv(formData: FormData) {
         data: {
           make: row.make,
           model: row.model,
+          ...computerModelSlugFields(row.make, row.model),
           yearFrom: row.yearFrom,
           yearTo: row.yearTo,
           compatible: row.compatible,

@@ -20,6 +20,7 @@ import {
   normalizeAppBundleIds,
 } from "@/lib/billing/app-bundles";
 import { checkRateLimit, getClientIpFromHeaders } from "@/lib/http/rate-limit";
+import { rateLimitUnavailableResponse } from "@/lib/http/rate-limit-production";
 import { getSiteUrl } from "@/lib/site/site-url";
 import { lookupComputerForWizard } from "@/lib/orders/computer-lookup";
 import {
@@ -88,6 +89,9 @@ const checkoutSchema = z
   });
 
 export async function POST(req: Request) {
+  const blocked = rateLimitUnavailableResponse(req.headers);
+  if (blocked) return blocked;
+
   const requestId = getRequestId(req);
   let body: unknown;
   try {

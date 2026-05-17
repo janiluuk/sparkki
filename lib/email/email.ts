@@ -409,6 +409,59 @@ export async function sendCarePaymentFailedEmail(params: {
   return { ok: true };
 }
 
+export type CareUpsellKind = "day75" | "day88";
+
+export async function sendCareUpsellEmail(params: {
+  kind: CareUpsellKind;
+  to: string;
+  customerName: string;
+  locale?: string | null;
+  orderId: string;
+}): Promise<{ ok: boolean; error?: string }> {
+  const resend = getResend();
+  if (!resend) {
+    return { ok: false, error: "resend_not_configured" };
+  }
+  const loc = normalizeMailLocale(params.locale);
+  const from = process.env.RESEND_FROM ?? "Sparkki <onboarding@resend.dev>";
+  const base = getSiteUrl();
+  const careUrl = `${base}/${loc}/care`;
+  const daysLeft = params.kind === "day75" ? 15 : 2;
+  const subject =
+    loc === "en"
+      ? params.kind === "day75"
+        ? "Your Sparkki support continues — consider Care"
+        : "Support ends soon — Sparkki Care"
+      : params.kind === "day75"
+        ? "Sparkki-tukesi jatkuu — tutustu Careen"
+        : "Tuki päättyy pian — Sparkki Care";
+  const greet =
+    params.customerName.trim().length > 0
+      ? loc === "en"
+        ? `Hi ${escapeHtml(params.customerName)},`
+        : `Hei ${escapeHtml(params.customerName)},`
+      : loc === "en"
+        ? "Hello,"
+        : "Hei,";
+  const bodyEn =
+    params.kind === "day75"
+      ? `<p>${greet}</p><p>About 75 days have passed since we completed your Sparkki service (order <strong>${escapeHtml(params.orderId)}</strong>). Your included email support runs for 90 days after delivery — about <strong>${daysLeft} days</strong> remain.</p><p><strong>Sparkki Care</strong> continues remote help, Discord priority, and practical tips for a small monthly fee. Cancel anytime.</p><p><a href="${careUrl}">Learn about Sparkki Care →</a></p>`
+      : `<p>${greet}</p><p>Your included Sparkki support for order <strong>${escapeHtml(params.orderId)}</strong> ends in about <strong>${daysLeft} days</strong>.</p><p>With <strong>Sparkki Care</strong> you keep calm, ongoing help after the free period — subscribe before support ends.</p><p><a href="${careUrl}">Subscribe to Sparkki Care →</a></p>`;
+  const bodyFi =
+    params.kind === "day75"
+      ? `<p>${greet}</p><p>Noin 75 päivää on kulunut Sparkki-palvelun valmistumisesta (tilaus <strong>${escapeHtml(params.orderId)}</strong>). Mukana tullut sähköpostituki kestää 90 päivää toimituksesta — noin <strong>${daysLeft} päivää</strong> jäljellä.</p><p><strong>Sparkki Care</strong> jatkaa etäapua, Discord-prioriteettia ja käytännön vinkkejä pienellä kuukausimaksulla. Voit lopettaa milloin tahansa.</p><p><a href="${careUrl}">Tutustu Sparkki Careen →</a></p>`
+      : `<p>${greet}</p><p>Tilauksen <strong>${escapeHtml(params.orderId)}</strong> mukainen Sparkki-tuki päättyy noin <strong>${daysLeft} päivän</strong> kuluttua.</p><p><strong>Sparkki Care</strong> -tilauksella saat rauhallisen jatkotuen maksuttoman jakson jälkeen — tilaa ennen tuen päättymistä.</p><p><a href="${careUrl}">Tilaa Sparkki Care →</a></p>`;
+  const html = loc === "en" ? bodyEn : bodyFi;
+  const { error } = await resend.emails.send({
+    from,
+    to: params.to,
+    subject,
+    html,
+  });
+  if (error) return { ok: false, error: error.message };
+  return { ok: true };
+}
+
 function escapeHtml(s: string): string {
   return s
     .replace(/&/g, "&amp;")
