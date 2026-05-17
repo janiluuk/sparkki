@@ -1,6 +1,13 @@
 "use client";
 
-import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
+import {
+  useEffect,
+  useLayoutEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
+import { createPortal } from "react-dom";
 import { useSearchParams } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { Link, usePathname, useRouter } from "@/i18n/navigation";
@@ -354,9 +361,10 @@ export function OrderWizard({
 
   const stepContentId = `wizard-step-${step}-region`;
   const stepHint = w(STEP_HINT_KEYS[step]);
+  const contentMaxClass = fullMode ? "max-w-5xl" : "max-w-4xl";
 
   const shellClass = fullMode
-    ? "sparkki-wizard-full fixed inset-0 z-[100] flex flex-col border border-edge bg-canvas"
+    ? "sparkki-wizard-full fixed inset-0 z-[100] flex flex-col border-0 bg-canvas"
     : "sparkki-card mx-auto max-w-4xl scroll-mt-28 p-6 md:p-10";
 
   const wizardNavButtonRow = (
@@ -407,7 +415,7 @@ export function OrderWizard({
     </p>
   );
 
-  return (
+  const wizardTree = (
     <>
       {fullMode ? (
         <div
@@ -431,7 +439,7 @@ export function OrderWizard({
           fullMode ? "sticky top-0 z-10 px-4 pt-safe md:px-6" : ""
         }`}
       >
-        <div className="mx-auto flex max-w-4xl flex-wrap items-start justify-between gap-3">
+        <div className={`mx-auto flex w-full ${contentMaxClass} flex-wrap items-start justify-between gap-3`}>
           <div className="min-w-0 flex-1">
             <h2 id="wizard-title" className="text-2xl font-bold text-ink md:text-3xl">
               {w("title")}
@@ -450,7 +458,7 @@ export function OrderWizard({
 
         <nav
           aria-label={w("stepperLabel")}
-          className="mx-auto mt-4 max-w-4xl overflow-x-auto overscroll-x-contain pb-1 touch-pan-x [-webkit-overflow-scrolling:touch]"
+          className={`mx-auto mt-4 w-full ${contentMaxClass} overflow-x-auto overscroll-x-contain pb-1 touch-pan-x [-webkit-overflow-scrolling:touch]`}
         >
           <ol className="flex min-w-min items-start gap-0 sm:gap-1">
             {STEP_NAV_KEYS.map((key, i) => {
@@ -507,7 +515,7 @@ export function OrderWizard({
 
         <p
           id={`${stepContentId}-hint`}
-          className="mx-auto mt-3 max-w-4xl rounded-lg border border-g/20 bg-g/[0.06] px-3 py-2 text-sm leading-snug text-ink md:text-base"
+          className={`mx-auto mt-3 w-full ${contentMaxClass} rounded-lg border border-g/20 bg-g/[0.06] px-3 py-2 text-sm leading-snug text-ink md:text-base`}
         >
           <span className="font-semibold text-g" aria-hidden>
             {w(STEP_NAV_KEYS[step])}.{" "}
@@ -519,7 +527,7 @@ export function OrderWizard({
         </p>
 
         {step > 0 && computerDescription.trim() ? (
-          <div className="mx-auto mt-3 max-w-4xl">
+          <div className={`mx-auto mt-3 w-full ${contentMaxClass}`}>
             <WizardComputerChip
               description={computerDescription}
               onEdit={() => setStep(WIZARD_STEP.computer)}
@@ -527,14 +535,16 @@ export function OrderWizard({
           </div>
         ) : null}
 
-        <WizardLiveTotalBar live={liveTotal} />
+        <div className={`mx-auto mt-4 w-full ${contentMaxClass}`}>
+          <WizardLiveTotalBar live={liveTotal} />
+        </div>
       </div>
 
       <div
         className={
           fullMode
-            ? "mx-auto flex w-full max-w-4xl min-h-0 flex-1 flex-col"
-            : "mx-auto w-full max-w-4xl"
+            ? `mx-auto flex w-full ${contentMaxClass} min-h-0 flex-1 flex-col`
+            : `mx-auto w-full ${contentMaxClass}`
         }
       >
         <div
@@ -1092,4 +1102,10 @@ export function OrderWizard({
     </section>
     </>
   );
+
+  if (fullMode && typeof document !== "undefined") {
+    return createPortal(wizardTree, document.body);
+  }
+
+  return wizardTree;
 }

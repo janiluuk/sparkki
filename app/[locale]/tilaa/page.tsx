@@ -21,9 +21,5 @@ export default async function TilaaPage({
 }: {
   params: { locale: string };
 }) {
-  return (
-    <div className="mx-auto max-w-content px-6 py-8 sm:px-12 sm:py-10">
-      <OrderWizardLazy locale={locale} fullscreenOnOrderPage />
-    </div>
-  );
+  return <OrderWizardLazy locale={locale} fullscreenOnOrderPage />;
 }

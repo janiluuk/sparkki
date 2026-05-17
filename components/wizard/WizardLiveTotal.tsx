@@ -46,7 +46,7 @@ export function WizardLiveTotalBar({ live, compact = false }: Props) {
         className={
           compact
             ? "shrink-0 text-right"
-            : "mx-auto mt-4 flex max-w-4xl flex-wrap items-end justify-between gap-3 rounded-xl border border-g/25 bg-g/[0.06] px-4 py-3"
+            : "mx-auto mt-4 flex w-full flex-wrap items-end justify-between gap-3 rounded-xl border border-g/25 bg-g/[0.06] px-4 py-3"
         }
         data-testid="wizard-live-total"
       >
