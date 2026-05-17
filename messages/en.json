@@ -781,6 +781,7 @@
       "specsCompatLabel": "Compatibility estimate",
       "specsSpeedGain": "Estimated speed-up",
       "compatStatus_compatible": "Good candidate",
+      "compatStatus_potentially_good": "Potentially good",
       "compatStatus_borderline": "Borderline — we will verify",
       "compatStatus_incompatible": "Not recommended",
       "specsRowModel": "Model",

@@ -117,6 +117,9 @@ export function WizardComputerStep({
     [lookup, specLabels, selectedMatchId],
   );
 
+  const noVerifiedMatch =
+    trimmed.length >= 3 && !loading && lookup != null && lookup.matches.length === 0;
+
   return (
     <div className="space-y-4">
       <h3 className="text-2xl font-semibold text-ink">{w("step1Title")}</h3>
@@ -251,8 +254,13 @@ export function WizardComputerStep({
       {!loading && lookup?.compatibility ? (
         <p className="rounded-lg border border-g/25 bg-g/[0.06] px-4 py-3 text-sm text-ink">
           <span className="font-semibold">{w("specsCompatLabel")}: </span>
-          {w(`compatStatus_${lookup.compatibility.status}` as "compatStatus_compatible")}
-          {lookup.compatibility.speedGainEstimate !== "—" ? (
+          {noVerifiedMatch
+            ? w("compatStatus_potentially_good")
+            : w(
+                `compatStatus_${lookup.compatibility.status}` as "compatStatus_compatible",
+              )}
+          {!noVerifiedMatch &&
+          lookup.compatibility.speedGainEstimate !== "—" ? (
             <span className="text-fog">
               {" "}
               · {w("specsSpeedGain")}: {lookup.compatibility.speedGainEstimate}

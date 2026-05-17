@@ -213,7 +213,8 @@ export async function lookupComputerForWizard(
     compatibility = {
       status: c.status,
       reasons: c.reasons,
-      speedGainEstimate: c.speedGainEstimate,
+      /** No catalog row — do not show heuristic speed-up on public checker. */
+      speedGainEstimate: "—",
     };
   }
 

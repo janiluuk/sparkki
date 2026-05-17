@@ -780,6 +780,7 @@
       "specsCompatLabel": "Yhteensopivuusarvio",
       "specsSpeedGain": "Arvioitu nopeutus",
       "compatStatus_compatible": "Sopii päivitykseen",
+      "compatStatus_potentially_good": "Mahdollisesti sopiva",
       "compatStatus_borderline": "Rajatapaus — tarkistetaan",
       "compatStatus_incompatible": "Ei suositella",
       "specsRowModel": "Malli",

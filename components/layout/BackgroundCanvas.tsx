@@ -4,9 +4,11 @@ import { useEffect, useRef } from "react";
 import * as THREE from "three";
 import { usePathname } from "@/i18n/navigation";
 import {
+  BG_DRIFT_VEL_SCALE,
   BG_NAV_ENERGY_BUMP,
   BG_NAV_ENERGY_DECAY,
   BG_NAV_ENERGY_MAX,
+  BG_ROT_VEL_SCALE,
 } from "@/lib/site/background-animation";
 import { SPARKKI_BG_NAV_EVENT } from "@/lib/site/background-nav";
 
@@ -15,14 +17,11 @@ type FloatObject = THREE.Object3D & {
 };
 
 type IconKind =
-  | "icosa"
   | "penguin"
   | "gear"
   | "cube"
   | "disc"
-  | "gem"
-  | "window"
-  | "knot";
+  | "window";
 
 function disposeFloatObject(obj: THREE.Object3D) {
   const mats = new Set<THREE.Material>();
@@ -88,30 +87,22 @@ function makeWindowIcon(mat: THREE.Material): THREE.Group {
 function pickKind(narrow: boolean): IconKind {
   const r = Math.random();
   if (narrow) {
-    if (r < 0.2) return "penguin";
-    if (r < 0.38) return "icosa";
-    if (r < 0.52) return "gear";
-    if (r < 0.64) return "cube";
-    if (r < 0.74) return "gem";
+    if (r < 0.42) return "penguin";
+    if (r < 0.58) return "gear";
+    if (r < 0.72) return "cube";
     if (r < 0.84) return "window";
-    if (r < 0.92) return "disc";
-    return "knot";
+    return "disc";
   }
-  if (r < 0.16) return "penguin";
-  if (r < 0.3) return "window";
-  if (r < 0.44) return "gear";
-  if (r < 0.56) return "icosa";
-  if (r < 0.66) return "cube";
-  if (r < 0.76) return "gem";
-  if (r < 0.86) return "disc";
-  if (r < 0.93) return "knot";
-  return "icosa";
+  if (r < 0.38) return "penguin";
+  if (r < 0.52) return "window";
+  if (r < 0.66) return "gear";
+  if (r < 0.78) return "cube";
+  if (r < 0.9) return "disc";
+  return "penguin";
 }
 
 function createIcon(kind: IconKind, mat: THREE.Material): THREE.Object3D {
   switch (kind) {
-    case "icosa":
-      return new THREE.Mesh(new THREE.IcosahedronGeometry(0.32, 0), mat);
     case "penguin":
       return makePenguinIcon(mat);
     case "gear":
@@ -126,17 +117,10 @@ function createIcon(kind: IconKind, mat: THREE.Material): THREE.Object3D {
         new THREE.CylinderGeometry(0.28, 0.28, 0.05, 20),
         mat,
       );
-    case "gem":
-      return new THREE.Mesh(new THREE.OctahedronGeometry(0.34, 0), mat);
     case "window":
       return makeWindowIcon(mat);
-    case "knot":
-      return new THREE.Mesh(
-        new THREE.TorusKnotGeometry(0.16, 0.05, 48, 8, 2, 3),
-        mat,
-      );
     default:
-      return new THREE.Mesh(new THREE.IcosahedronGeometry(0.32, 0), mat);
+      return makePenguinIcon(mat);
   }
 }
 
@@ -150,9 +134,10 @@ function spawnFloatIcon(narrow: boolean): FloatObject {
   );
   const kind = pickKind(narrow);
   const root = createIcon(kind, mat) as FloatObject;
+  const drift = 0.00115 * BG_DRIFT_VEL_SCALE;
   root._vel = new THREE.Vector3(
-    (Math.random() - 0.5) * 0.002,
-    (Math.random() - 0.5) * 0.002,
+    (Math.random() - 0.5) * drift,
+    (Math.random() - 0.5) * drift,
     0,
   );
   const sc = 0.35 + Math.random() * 1.15;
@@ -168,7 +153,7 @@ function spawnFloatIcon(narrow: boolean): FloatObject {
 
 /**
  * Decorative ambient canvas — wireframe mix of icon-inspired shapes
- * (penguin, window grid, gear, gem, disc, cube, knot) + icosahedrons.
+ * (penguin, window grid, gear, disc, cube) — no wireframe polyhedra (read as X marks).
  */
 export function BackgroundCanvas() {
   const ref = useRef<HTMLCanvasElement>(null);
@@ -288,15 +273,16 @@ export function BackgroundCanvas() {
       }
 
       const navNorm = Math.min(1, navBoost / BG_NAV_ENERGY_MAX);
-      const motionScale = 1 + navNorm * 1.85;
-      const maxVel = 0.011 + navNorm * 0.022;
+      const motionScale = 1 + navNorm * 1.25;
+      const maxVel = (0.0065 + navNorm * 0.012) * BG_DRIFT_VEL_SCALE;
+      const rotStep = 0.0004 * BG_ROT_VEL_SCALE;
       floats.forEach((obj) => {
         obj.position.addScaledVector(obj._vel, motionScale);
-        obj.rotation.x += 0.0007 * motionScale;
-        obj.rotation.y += 0.00035 * motionScale;
+        obj.rotation.x += rotStep * motionScale;
+        obj.rotation.y += rotStep * 0.5 * motionScale;
         if (navBoost > 0) {
-          obj._vel.x += (Math.random() - 0.5) * 0.024 * navNorm;
-          obj._vel.y += (Math.random() - 0.5) * 0.024 * navNorm;
+          obj._vel.x += (Math.random() - 0.5) * 0.014 * navNorm;
+          obj._vel.y += (Math.random() - 0.5) * 0.014 * navNorm;
         }
         obj._vel.x = Math.max(-maxVel, Math.min(maxVel, obj._vel.x));
         obj._vel.y = Math.max(-maxVel, Math.min(maxVel, obj._vel.y));

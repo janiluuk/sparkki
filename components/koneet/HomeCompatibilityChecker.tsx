@@ -287,8 +287,13 @@ export function HomeCompatibilityChecker({
       {!loading && lookup?.compatibility ? (
         <p className="mt-4 rounded-lg border border-g/25 bg-g/[0.06] px-4 py-3 text-sm text-ink">
           <span className="font-semibold">{w("specsCompatLabel")}: </span>
-          {w(`compatStatus_${lookup.compatibility.status}` as "compatStatus_compatible")}
-          {lookup.compatibility.speedGainEstimate !== "—" ? (
+          {noVerifiedMatch
+            ? w("compatStatus_potentially_good")
+            : w(
+                `compatStatus_${lookup.compatibility.status}` as "compatStatus_compatible",
+              )}
+          {!noVerifiedMatch &&
+          lookup.compatibility.speedGainEstimate !== "—" ? (
             <span className="text-fog">
               {" "}
               · {w("specsSpeedGain")}: {lookup.compatibility.speedGainEstimate}
