@@ -902,4 +902,5 @@ body {
 /* Fullscreen order wizard must sit above site chrome (footer overlap in E2E + small viewports). */
 body[data-wizard-fullscreen] footer {
   pointer-events: none;
+  visibility: hidden;
 }

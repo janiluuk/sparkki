@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { Link, usePathname, useRouter } from "@/i18n/navigation";
@@ -84,9 +84,9 @@ const WIZ_BUNDLE_MSG: Record<AppBundleId, WizardBundleKey> = {
   developer_essentials: "bundle_developer_essentials",
 };
 
-function useWizardFullscreen() {
+function useWizardFullscreen(forceOnOrderPage?: boolean) {
   const pathname = usePathname();
-  const isOrderPage = isOrderWizardRoute(pathname);
+  const isOrderPage = forceOnOrderPage || isOrderWizardRoute(pathname);
   const [full, setFull] = useState(isOrderPage);
 
   useEffect(() => {
@@ -112,7 +112,7 @@ function useWizardFullscreen() {
     setFull(window.location.hash === `#${WIZARD_ANCHOR}`);
   }, [pathname, isOrderPage]);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (!full) return;
     const prev = document.body.style.overflow;
     document.body.style.overflow = "hidden";
@@ -137,14 +137,21 @@ function useWizardFullscreen() {
   return full;
 }
 
-export function OrderWizard({ locale }: { locale: string }) {
+export function OrderWizard({
+  locale,
+  fullscreenOnOrderPage = false,
+}: {
+  locale: string;
+  /** When true on `/tilaa`, fullscreen + body lock apply on first paint (E2E-safe). */
+  fullscreenOnOrderPage?: boolean;
+}) {
   const t = useTranslations("palvelu");
   const w = useTranslations("palvelu.wizard");
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const isOrderPage = isOrderWizardRoute(pathname);
-  const fullMode = useWizardFullscreen();
+  const fullMode = useWizardFullscreen(fullscreenOnOrderPage || isOrderPage);
   const wizardRef = useRef<HTMLElement>(null);
   const appliedPrefillRef = useRef(false);
 

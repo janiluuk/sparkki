@@ -23,6 +23,38 @@ export async function setupWizardE2e(page: Page): Promise<void> {
   await mockComputerLookupRoute(page);
 }
 
+export async function waitForWizardReady(page: Page): Promise<void> {
+  await expect(page.getByTestId("order-wizard")).toHaveAttribute(
+    "data-order-wizard-dialog",
+    "",
+    { timeout: 15_000 },
+  );
+  await expect(page.locator("body")).toHaveAttribute(
+    "data-wizard-fullscreen",
+    "true",
+    { timeout: 15_000 },
+  );
+}
+
+export async function mockCheckoutRoute(page: Page): Promise<void> {
+  const origin =
+    process.env.PLAYWRIGHT_BASE_URL ?? "http://127.0.0.1:1337";
+  await page.route("**/api/checkout", async (route) => {
+    if (route.request().method() !== "POST") {
+      await route.continue();
+      return;
+    }
+    await route.fulfill({
+      status: 200,
+      contentType: "application/json",
+      body: JSON.stringify({
+        url: `${origin}/fi/palvelu/kiitos?session_id=e2e_mock`,
+        orderId: "e2e_order",
+      }),
+    });
+  });
+}
+
 function wizard(page: Page): Locator {
   return page.getByTestId("order-wizard");
 }
@@ -51,11 +83,7 @@ export async function completeServiceOrder(
   const tier = config.tier ?? DEFAULT_TIER;
 
   await page.goto("/fi/tilaa", { waitUntil: "networkidle" });
-  await expect(page.getByTestId("order-wizard")).toHaveAttribute(
-    "data-order-wizard-dialog",
-    "",
-    { timeout: 15_000 },
-  );
+  await waitForWizardReady(page);
 
   await w.locator("#wiz-computer").fill(computer);
   await clickNext(w);

@@ -23,7 +23,7 @@ export default async function TilaaPage({
 }) {
   return (
     <div className="mx-auto max-w-content px-6 py-8 sm:px-12 sm:py-10">
-      <OrderWizardLazy locale={locale} />
+      <OrderWizardLazy locale={locale} fullscreenOnOrderPage />
     </div>
   );
 }

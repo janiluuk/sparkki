@@ -30,10 +30,19 @@ const OrderWizardClient = dynamic(
   },
 );
 
-export function OrderWizardLazy({ locale }: { locale: string }) {
+export function OrderWizardLazy({
+  locale,
+  fullscreenOnOrderPage = false,
+}: {
+  locale: string;
+  fullscreenOnOrderPage?: boolean;
+}) {
   return (
     <Suspense fallback={<OrderWizardSkeleton />}>
-      <OrderWizardClient locale={locale} />
+      <OrderWizardClient
+        locale={locale}
+        fullscreenOnOrderPage={fullscreenOnOrderPage}
+      />
     </Suspense>
   );
 }
