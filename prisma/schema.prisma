@@ -119,6 +119,27 @@ model LaptopReferenceSpec {
   @@index([manufacturer, modelName])
 }
 
+/// Cached SearXNG/LLM laptop spec lookups (per make+model+locale) for faster repeat requests.
+model LaptopSpecsInternetCache {
+  id               String   @id @default(cuid())
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+  makeNorm         String
+  modelNorm        String
+  locale           String
+  makeDisplay      String
+  modelDisplay     String
+  summary          String?
+  specUrl          String?
+  searxResultCount Int      @default(0)
+  usedLlm          Boolean  @default(false)
+  expiresAt        DateTime
+
+  @@unique([makeNorm, modelNorm, locale])
+  @@index([expiresAt])
+  @@index([updatedAt])
+}
+
 /// Anonymous compatibility runs from POST /api/compatibility (wizard, /koneet, etc.) for aggregate stats.
 model CompatibilityCheck {
   id                  String   @id @default(cuid())

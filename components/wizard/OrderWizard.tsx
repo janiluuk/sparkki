@@ -13,7 +13,6 @@ import {
   DeliveryMethod,
   HddRemovalOption,
   PortableVmHandoff,
-  SupportTier,
 } from "@prisma/client";
 import {
   APP_BUNDLE_CENTS,
@@ -24,7 +23,6 @@ import { PORTABLE_VM_ADDON_CENTS } from "@/lib/billing/portable-vm";
 import {
   DELIVERY_POST_CENTS,
   hddRemovalAddonCents,
-  serviceCheckoutTotalCents,
   TIER_BASE_CENTS,
 } from "@/lib/billing/pricing";
 import {
@@ -37,6 +35,8 @@ import {
   formatWizardPriceEuro,
   WizardPrice,
 } from "@/components/wizard/WizardPrice";
+import { WizardLiveTotalBar } from "@/components/wizard/WizardLiveTotal";
+import { computeWizardLiveTotal } from "@/lib/wizard/wizard-live-total";
 
 const WIZARD_ANCHOR = ORDER_WIZARD_HASH;
 
@@ -182,18 +182,18 @@ export function OrderWizard({ locale }: { locale: string }) {
   const hadAddonsSelectionRef = useRef(false);
   const [addonsSectionOpen, setAddonsSectionOpen] = useState(false);
 
-  const pricePreview = useMemo(() => {
-    if (!tier || !delivery) return null;
-    return serviceCheckoutTotalCents({
-      tier,
-      supportTier: SupportTier.FULL,
-      migration: null,
-      deliveryMethod: delivery,
-      hddRemoval,
-      appBundles,
-      portableVm: portableVmOn && portableVmHandoff != null,
-    });
-  }, [tier, delivery, hddRemoval, appBundles, portableVmOn, portableVmHandoff]);
+  const liveTotal = useMemo(
+    () =>
+      computeWizardLiveTotal({
+        tier,
+        delivery,
+        hddRemoval,
+        appBundles,
+        portableVmOn,
+        portableVmReady: portableVmHandoff != null,
+      }),
+    [tier, delivery, hddRemoval, appBundles, portableVmOn, portableVmHandoff],
+  );
 
   const hddExtraCents =
     tier != null
@@ -498,6 +498,8 @@ export function OrderWizard({ locale }: { locale: string }) {
           </span>
           {stepHint}
         </p>
+
+        <WizardLiveTotalBar live={liveTotal} />
       </div>
 
       <div
@@ -1051,14 +1053,14 @@ export function OrderWizard({ locale }: { locale: string }) {
                     <strong>{w("summaryContact")}:</strong>{" "}
                     {customerContact.trim()}
                   </p>
-                  {pricePreview != null ? (
+                  {liveTotal.checkoutTotalCents != null ? (
                     <div className="rounded-xl border border-edge bg-sunken/40 px-5 py-4">
                       <p className="text-sm font-semibold text-fog">
                         {w("summaryPrice")}
                       </p>
                       <WizardPrice
                         variant="total"
-                        cents={pricePreview}
+                        cents={liveTotal.checkoutTotalCents}
                         decimals={2}
                         className="mt-1"
                       />

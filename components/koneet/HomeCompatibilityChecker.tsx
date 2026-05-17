@@ -127,6 +127,7 @@ export function HomeCompatibilityChecker({
       id={KONEET_SECTION_ID}
       aria-labelledby="home-compat-title"
       className="scroll-mt-28"
+      data-testid="home-compatibility-checker"
     >
       <header>
         <h2

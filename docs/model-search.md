@@ -8,6 +8,7 @@ Sparkki uses **two related but separate** lookup paths. Configure the right piec
 | Web-enriched spec hints (summary + link) | `POST /api/public/laptop-specs` → `lib/specs/laptop-specs.ts` | Optional (`LaptopReferenceSpec` adds `referenceSummary`) | **Yes** (for web results) | Optional (better summaries) |
 | Order status page extras | `POST /api/public/order-lookup` | Order row | Uses `resolveLaptopSpecs` when `SPECS_*` set | Optional |
 | Admin → AI testing | `/admin/ai-testing` | — | Same as laptop-specs | Same |
+| Admin → Models | `/admin/models` | **Yes** (all three tables below) | — | — |
 
 All `SPECS_*` calls run **on the Sparkki Node.js server** (Docker `web`, `next start`, or `next dev`). The browser never talks to SearXNG or Ollama directly.
 
@@ -19,6 +20,7 @@ All `SPECS_*` calls run **on the Sparkki Node.js server** (Docker `web`, `next s
 
 - **`ComputerModel`** — Sparkki’s own compatibility list (make, model, years, verdict, SSD slot, max RAM, status). Powers list matching and the compatibility estimate on the home checker.
 - **`LaptopReferenceSpec`** — Imported retail-style catalog (`data/reference-laptops.json`). Powers CPU/RAM/storage **reference** rows in the specs table (not an official manufacturer spec sheet).
+- **`LaptopSpecsInternetCache`** — Persisted SearXNG/LLM results (`summary`, `specUrl`) per make+model+locale. Filled automatically on each live `resolveLaptopSpecs` call; repeat lookups skip the web until `expiresAt`. View and counts in **Admin → Models** (`/admin/models`).
 
 See also [`data/README-reference-laptops.md`](../data/README-reference-laptops.md).
 
@@ -75,8 +77,18 @@ SPECS_AI_KIND="ollama"
 | `SPECS_AI_KIND` | Recommended | `ollama` \| `openai` \| `auto`. Use **`ollama`** for a native Ollama host. |
 | `SPECS_AI_API_KEY` | Optional | `Bearer` token for OpenAI-compatible `/v1/chat/completions`. |
 | `SPECS_LOOKUP_ENABLED` | Optional | Set to `false` to disable SearXNG/LLM/reference enrichment everywhere. |
+| `SPECS_CACHE_TTL_DAYS` | Optional | Days to keep cached lookups that returned a summary or spec URL (default **30**). |
+| `SPECS_CACHE_EMPTY_TTL_HOURS` | Optional | Hours to cache empty SearXNG results (default **24**, avoids hammering failed searches). |
 
 Restart the app after changing env vars.
+
+### Lookup order (web specs)
+
+1. In-memory cache (per Node process, ~6 h).
+2. **`LaptopSpecsInternetCache`** in PostgreSQL (if not expired).
+3. Live SearXNG (+ optional LLM), then **upsert** into the database.
+
+Reference dataset text (`referenceSummary`) is always resolved fresh from **`LaptopReferenceSpec`** on each request.
 
 ---
 
@@ -245,6 +257,7 @@ Open **`/admin/ai-testing`** (admin login required). The env panel shows whether
 |------|------|
 | `lib/orders/computer-lookup.ts` | Wizard / home compatibility |
 | `lib/specs/laptop-specs.ts` | SearXNG + LLM |
+| `lib/specs/laptop-specs-cache.ts` | PostgreSQL cache read/write |
 | `lib/specs/laptop-reference-lookup.ts` | Reference dataset matching |
 | `lib/specs/compatibility.ts` | Verdict rules |
 | `app/api/public/computer-lookup/route.ts` | Public computer API |

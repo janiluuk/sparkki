@@ -822,6 +822,46 @@ noVNC entry URLs are documented in `infra/try-linux/README.md` (typically `.../t
 
 #### Product / UX (still open from earlier phases)
 
+#### Order wizard & service landing — UX review (May 2026)
+
+*Review of the current `/` service home, home compatibility checker, and `/tilaa` order wizard. Use as a prioritised backlog; check off when shipped.*
+
+**Shipped from this review**
+
+- [x] **Live running total in the order wizard** — sticky bar in the wizard header updates as tier, delivery, HDD, bundles, and portable VM selections change (`WizardLiveTotalBar`, `computeWizardLiveTotal`). Care monthly plans are called out as excluded from the Stripe total.
+
+**High impact (recommended next)**
+
+- [ ] **Split wizard step 2 (service)** — Today one screen mixes tier, support/Care, delivery, and optional add-ons. Consider two steps: (1) service tier + delivery, (2) support + add-ons — or collapse Care into a single line with “compare” link to `/care` to reduce cognitive load.
+- [ ] **Human-readable summary on step 4** — Replace raw enum values (`HOME_PICKUP`, `SPARKKI_REMOVES`) with the same labels used on selection cards; add “Edit” links that jump back to the relevant step.
+- [ ] **Home checker → order continuity** — After prefill to `/tilaa` step 2, show a compact “Computer: …” chip with “Edit” returning to step 1 so users can fix model/year without hunting the stepper.
+- [ ] **Expand `ComputerModel` coverage** — Home lookup and compatibility badges only reflect admin-seeded models; import workflow or bulk CSV from completed jobs would make the checker feel trustworthy.
+- [ ] **Wire web specs into home checker (optional)** — `computer-lookup` is DB-only today; optional call to `resolveLaptopSpecs` (with timeout) would show SearXNG/LLM hints on the marketing page when `SPECS_*` is configured (see `docs/model-search.md`).
+
+**Clarity & trust**
+
+- [ ] **Care pricing disclosure** — On support cards, add one line: “Charged monthly after delivery, not in this checkout” (FI/EN). Live total already notes exclusion; reinforce on the card.
+- [ ] **Install-only tier scope** — Short bullet on the card: what is *not* included (no new SSD/RAM) to avoid surprise upgrades in support calls.
+- [ ] **Delivery price on cards** — Show “+15 €” (or “0 €”) consistently on all delivery options, not only postitus.
+- [ ] **No-match path on home checker** — Offer “Contact support” mailto/link alongside “Continue to order” when `matches.length === 0`.
+
+**Mobile & accessibility**
+
+- [ ] **Sticky total + safe area** — Verify live total and footer nav on iOS Safari (`pb-safe`); ensure `aria-live` updates are not too chatty when toggling bundles rapidly.
+- [ ] **Stepper labels on small screens** — Step names are hidden below `sm`; show the active step name under the step indicator on mobile.
+- [ ] **Focus order in fullscreen wizard** — On open, focus first field (computer) or step heading; trap already exists — audit with keyboard-only run.
+
+**Performance & polish**
+
+- [ ] **Debounce computer lookup on home** — Same 450 ms as wizard; consider skeleton rows instead of text-only “loading”.
+- [ ] **Prefetch `/tilaa`** — `RoutePrefetchWarmup` / hub CTA hover prefetch for faster wizard open.
+- [ ] **Background motion** — Respect `prefers-reduced-motion` for 2D canvas (today WebGL + CSS sheen respect it; verify `SparkiBackground`).
+
+**Content / IA**
+
+- [ ] **Pricing section on home** — `PalveluMainContent` ends with a thin pricing note; link to tier cards in wizard or restore compact comparison table from old marketing home.
+- [ ] **B2B CTA placement** — Keep banner but avoid competing with primary “Continue to order” on the checker block.
+
 - [x] **App bundles at checkout** — Customizable **software bundles** selected during the consumer order flow (examples: local AI stack, media creator pack, music pack); persisted on the order, visible in admin, reflected in pricing/notes for fulfillment.
 - [x] **Portable VM / disk image add-on** — Optional paid step in the order flow: deliver a **VM or image** of the machine’s **pre-service contents** for archival or later use on another host; document format, customer storage, and OS licensing limits in public copy and ops.
 - [x] **Booking embed** on `/tuki` — Calendly iframe when **`NEXT_PUBLIC_CALENDLY_EMBED_URL`** is set.
