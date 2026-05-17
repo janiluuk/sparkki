@@ -1,7 +1,8 @@
 import { getTranslations } from "next-intl/server";
-import { Link } from "@/i18n/navigation";
 import { HomeCompatibilityCheckerDynamic } from "@/components/koneet/HomeCompatibilityCheckerDynamic";
 import { ComponentSourcingSection } from "@/components/palvelu/ComponentSourcingSection";
+import { PalveluB2bTeaser } from "@/components/palvelu/PalveluB2bTeaser";
+import { ServicePricingSection } from "@/components/palvelu/ServicePricingSection";
 import {
   BenefitGrid,
   FAQAccordion,
@@ -169,20 +170,9 @@ export async function PalveluMainContent({
         <BenefitGrid items={supportItems} columns={4} />
       </InfoBlock>
 
-      <section
-        aria-labelledby="b2b-title"
-        className="sparkki-card border-g/30 bg-g/[0.05] p-8 sm:p-10"
-      >
-        <h2 id="b2b-title" className="font-display text-2xl font-extrabold text-ink">
-          {t("b2bBanner")}
-        </h2>
-        <p className="mt-4 max-w-2xl text-lg leading-relaxed text-ink">{t("b2b.intro")}</p>
-        <Link href="/palvelu/b2b" className="sparkki-btn-secondary mt-6">
-          {t("b2bCta")}
-        </Link>
-      </section>
+      <ServicePricingSection />
 
-      <InfoBlock title={t("pricingTitle")} intro={t("pricingNote")} />
+      <PalveluB2bTeaser />
     </>
   );
 }

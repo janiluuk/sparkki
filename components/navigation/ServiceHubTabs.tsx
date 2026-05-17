@@ -4,6 +4,7 @@ import { memo, useCallback } from "react";
 import { useTranslations } from "next-intl";
 import { Link, usePathname } from "@/i18n/navigation";
 import { dispatchBackgroundNavInteraction } from "@/lib/site/background-nav";
+import { usePrefetchRoute } from "@/lib/site/route-prefetch";
 
 const TABS = [
   { href: "/", key: "serviceTabOverview" as const, match: "mainPalvelu" as const },
@@ -50,16 +51,20 @@ const ServiceHubTab = memo(function ServiceHubTab({
   label,
   active,
   onNavClick,
+  prefetchOnHover,
 }: {
   href: string;
   label: string;
   active: boolean;
   onNavClick: () => void;
+  prefetchOnHover?: () => void;
 }) {
   return (
     <Link
       href={href}
       onClick={onNavClick}
+      onMouseEnter={prefetchOnHover}
+      onFocus={prefetchOnHover}
       className={tabClass(active)}
       aria-current={active ? "page" : undefined}
     >
@@ -71,6 +76,7 @@ const ServiceHubTab = memo(function ServiceHubTab({
 export function ServiceHubTabs() {
   const pathname = usePathname();
   const t = useTranslations("nav");
+  const prefetchOrder = usePrefetchRoute("/tilaa");
   const onNavClick = useCallback(() => {
     dispatchBackgroundNavInteraction();
   }, []);
@@ -87,6 +93,7 @@ export function ServiceHubTabs() {
           label={t(key)}
           active={isActive(pathname, match)}
           onNavClick={onNavClick}
+          prefetchOnHover={href === "/tilaa" ? prefetchOrder : undefined}
         />
       ))}
     </nav>

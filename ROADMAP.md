@@ -832,35 +832,35 @@ noVNC entry URLs are documented in `infra/try-linux/README.md` (typically `.../t
 
 **High impact (recommended next)**
 
-- [ ] **Split wizard step 2 (service)** — Today one screen mixes tier, support/Care, delivery, and optional add-ons. Consider two steps: (1) service tier + delivery, (2) support + add-ons — or collapse Care into a single line with “compare” link to `/care` to reduce cognitive load.
-- [ ] **Human-readable summary on step 4** — Replace raw enum values (`HOME_PICKUP`, `SPARKKI_REMOVES`) with the same labels used on selection cards; add “Edit” links that jump back to the relevant step.
-- [ ] **Home checker → order continuity** — After prefill to `/tilaa` step 2, show a compact “Computer: …” chip with “Edit” returning to step 1 so users can fix model/year without hunting the stepper.
-- [ ] **Expand `ComputerModel` coverage** — Home lookup and compatibility badges only reflect admin-seeded models; import workflow or bulk CSV from completed jobs would make the checker feel trustworthy.
-- [ ] **Wire web specs into home checker (optional)** — `computer-lookup` is DB-only today; optional call to `resolveLaptopSpecs` (with timeout) would show SearXNG/LLM hints on the marketing page when `SPECS_*` is configured (see `docs/model-search.md`).
+- [x] **Split wizard step 2 (service)** — Five-step wizard: (1) computer, (2) tier + delivery, (3) support + add-ons, (4) HDD, (5) contact & pay.
+- [x] **Human-readable summary on step 4** — Summary uses card labels; “Edit” jumps to the relevant step (`WizardOrderSummary`).
+- [x] **Home checker → order continuity** — Sticky “Computer: …” chip with Edit on wizard steps after computer (`WizardComputerChip`).
+- [x] **Expand `ComputerModel` coverage** — Admin bulk CSV import on `/admin/models` (`importComputerModelsCsv`, `parse-computer-model-csv.ts`).
+- [x] **Wire web specs into home checker (optional)** — `includeWebSpecs` on `POST /api/public/computer-lookup` (5s timeout when `SPECS_*` configured); home checker shows hint block.
 
 **Clarity & trust**
 
-- [ ] **Care pricing disclosure** — On support cards, add one line: “Charged monthly after delivery, not in this checkout” (FI/EN). Live total already notes exclusion; reinforce on the card.
-- [ ] **Install-only tier scope** — Short bullet on the card: what is *not* included (no new SSD/RAM) to avoid surprise upgrades in support calls.
-- [ ] **Delivery price on cards** — Show “+15 €” (or “0 €”) consistently on all delivery options, not only postitus.
-- [ ] **No-match path on home checker** — Offer “Contact support” mailto/link alongside “Continue to order” when `matches.length === 0`.
+- [x] **Care pricing disclosure** — Care+ / Care Pro cards show `supportCareMonthlyNote` (monthly after delivery, not in checkout).
+- [x] **Install-only tier scope** — `tierInstallOnlyExcluded` on the install-only tier card.
+- [x] **Delivery price on cards** — All delivery options show `WizardPrice` (+15 € postitus, 0 € pickup/self).
+- [x] **No-match path on home checker** — Mailto support button beside “Continue to order” when no verified match.
 
 **Mobile & accessibility**
 
-- [ ] **Sticky total + safe area** — Verify live total and footer nav on iOS Safari (`pb-safe`); ensure `aria-live` updates are not too chatty when toggling bundles rapidly.
-- [ ] **Stepper labels on small screens** — Step names are hidden below `sm`; show the active step name under the step indicator on mobile.
-- [ ] **Focus order in fullscreen wizard** — On open, focus first field (computer) or step heading; trap already exists — audit with keyboard-only run.
+- [x] **Sticky total + safe area** — Fullscreen wizard header `sticky top-0 pt-safe`; footer `pb-safe`; live total debounced SR announce (`liveTotalSrAnnounce`, 650 ms).
+- [x] **Stepper labels on small screens** — Active step name shown under the step dot on mobile (`sm:hidden`); all labels from `sm` up.
+- [x] **Focus order in fullscreen wizard** — `focusWizardStepContent` on step change (field → heading); tab trap unchanged; region labelled by step hint.
 
 **Performance & polish**
 
-- [ ] **Debounce computer lookup on home** — Same 450 ms as wizard; consider skeleton rows instead of text-only “loading”.
-- [ ] **Prefetch `/tilaa`** — `RoutePrefetchWarmup` / hub CTA hover prefetch for faster wizard open.
-- [ ] **Background motion** — Respect `prefers-reduced-motion` for 2D canvas (today WebGL + CSS sheen respect it; verify `SparkiBackground`).
+- [x] **Debounce computer lookup on home** — Shared `COMPUTER_LOOKUP_DEBOUNCE_MS` (450 ms); `ComputerLookupSpecsSkeleton` on home + wizard.
+- [x] **Prefetch `/tilaa`** — `RoutePrefetchWarmup` prioritizes `/tilaa`; hover/focus prefetch on nav CTA, hub tab, and home “Continue to order”.
+- [x] **Background motion** — `SparkiBackground` static frame + dimmed canvas when `prefers-reduced-motion`; listens for OS setting changes.
 
 **Content / IA**
 
-- [ ] **Pricing section on home** — `PalveluMainContent` ends with a thin pricing note; link to tier cards in wizard or restore compact comparison table from old marketing home.
-- [ ] **B2B CTA placement** — Keep banner but avoid competing with primary “Continue to order” on the checker block.
+- [x] **Pricing section on home** — `ServicePricingSection`: four-tier comparison, prices from `TIER_BASE_CENTS`, CTA to `/tilaa` (`#pricing-title` for footer).
+- [x] **B2B CTA placement** — `PalveluB2bTeaser`: compact text link after pricing, not a competing card near the checker.
 
 - [x] **App bundles at checkout** — Customizable **software bundles** selected during the consumer order flow (examples: local AI stack, media creator pack, music pack); persisted on the order, visible in admin, reflected in pricing/notes for fulfillment.
 - [x] **Portable VM / disk image add-on** — Optional paid step in the order flow: deliver a **VM or image** of the machine’s **pre-service contents** for archival or later use on another host; document format, customer storage, and OS licensing limits in public copy and ops.

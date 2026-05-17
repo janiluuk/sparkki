@@ -34,6 +34,11 @@ export type ComputerLookupCompatibility = {
   speedGainEstimate: string;
 };
 
+export type ComputerLookupWebSpecs = {
+  summary: string | null;
+  specUrl: string | null;
+};
+
 export type ComputerLookupResult = {
   coerced: { make: string; model: string };
   matches: ComputerLookupMatch[];
@@ -41,6 +46,8 @@ export type ComputerLookupResult = {
   yearOptions: number[];
   needsYearChoice: boolean;
   compatibility: ComputerLookupCompatibility | null;
+  /** Optional SearXNG/LLM hints when `includeWebSpecs` is requested and configured. */
+  webSpecs?: ComputerLookupWebSpecs | null;
 };
 
 function normalizeSearch(s: string): string {

@@ -10,7 +10,10 @@ import {
   computerStepNeedsYear,
 } from "@/lib/wizard/computer-spec-rows";
 import { buildWizardPrefillQuery } from "@/lib/wizard/wizard-prefill";
+import { COMPUTER_LOOKUP_DEBOUNCE_MS } from "@/lib/wizard/computer-lookup-client";
 import { ORDER_WIZARD_PATH } from "@/lib/site/order-wizard-path";
+import { usePrefetchRouteHandlers } from "@/lib/site/route-prefetch";
+import { ComputerLookupSpecsSkeleton } from "@/components/wizard/ComputerLookupSpecsSkeleton";
 import { KONEET_SECTION_ID } from "@/components/koneet/koneet-section-id";
 
 type Props = {
@@ -25,6 +28,7 @@ export function HomeCompatibilityChecker({
   const t = useTranslations("koneet");
   const w = useTranslations("palvelu.wizard");
   const router = useRouter();
+  const orderPrefetch = usePrefetchRouteHandlers(ORDER_WIZARD_PATH);
 
   const [description, setDescription] = useState(initialDescription);
   const [lookup, setLookup] = useState<ComputerLookupResult | null>(null);
@@ -55,6 +59,7 @@ export function HomeCompatibilityChecker({
           locale: loc,
           selectedYear,
           selectedMatchId,
+          includeWebSpecs: true,
         }),
         signal: ac.signal,
       })
@@ -72,7 +77,7 @@ export function HomeCompatibilityChecker({
         .finally(() => {
           if (!ac.signal.aborted) setLoading(false);
         });
-    }, 450);
+    }, COMPUTER_LOOKUP_DEBOUNCE_MS);
     return () => {
       ac.abort();
       window.clearTimeout(timer);
@@ -163,13 +168,11 @@ export function HomeCompatibilityChecker({
         </p>
       </div>
 
-      {loading ? (
-        <p className="mt-4 text-base text-fog" aria-live="polite">
-          {w("specsLoading")}
-        </p>
+      {loading && trimmed.length >= 3 ? (
+        <ComputerLookupSpecsSkeleton className="mt-6" />
       ) : null}
 
-      {lookup && lookup.matches.length > 1 ? (
+      {!loading && lookup && lookup.matches.length > 1 ? (
         <div className="mt-6 space-y-2">
           <p className="text-sm font-semibold text-ink">{w("specsPickModel")}</p>
           <ul className="space-y-2" role="listbox" aria-label={w("specsPickModel")}>
@@ -201,7 +204,7 @@ export function HomeCompatibilityChecker({
         </div>
       ) : null}
 
-      {showYearPicker ? (
+      {!loading && showYearPicker ? (
         <div className="mt-6 space-y-2">
           <label htmlFor="home-compat-year" className="block text-sm font-semibold text-ink">
             {w("specsYearLabel")}
@@ -226,7 +229,7 @@ export function HomeCompatibilityChecker({
         </div>
       ) : null}
 
-      {tableRows.length > 0 ? (
+      {!loading && tableRows.length > 0 ? (
         <div className="mt-6 overflow-x-auto rounded-xl border border-edge">
           <table className="w-full min-w-[280px] border-collapse text-left text-sm">
             <caption className="sr-only">{w("specsTableCaption")}</caption>
@@ -251,12 +254,37 @@ export function HomeCompatibilityChecker({
         <p
           className="mt-4 rounded-lg border border-amber/30 bg-amber/[0.06] px-4 py-3 text-sm text-ink"
           role="status"
+          data-testid="home-no-match-notice"
         >
           {t("homeNoMatchSupport")}
         </p>
       ) : null}
 
-      {lookup?.compatibility ? (
+      {!loading && lookup?.webSpecs?.summary ? (
+        <div
+          className="mt-4 rounded-lg border border-edge bg-sunken/40 px-4 py-3 text-sm text-ink"
+          data-testid="home-web-specs-hint"
+        >
+          <p className="font-semibold text-fog">{t("homeWebSpecsLabel")}</p>
+          <p className="mt-2 whitespace-pre-wrap font-light leading-relaxed">
+            {lookup.webSpecs.summary}
+          </p>
+          {lookup.webSpecs.specUrl ? (
+            <p className="mt-2">
+              <a
+                href={lookup.webSpecs.specUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="font-medium text-g underline-offset-2 hover:underline"
+              >
+                {t("homeWebSpecsLink")}
+              </a>
+            </p>
+          ) : null}
+        </div>
+      ) : null}
+
+      {!loading && lookup?.compatibility ? (
         <p className="mt-4 rounded-lg border border-g/25 bg-g/[0.06] px-4 py-3 text-sm text-ink">
           <span className="font-semibold">{w("specsCompatLabel")}: </span>
           {w(`compatStatus_${lookup.compatibility.status}` as "compatStatus_compatible")}
@@ -269,12 +297,22 @@ export function HomeCompatibilityChecker({
         </p>
       ) : null}
 
-      <div className="mt-8">
+      <div className="mt-8 flex flex-wrap items-center gap-3">
+        {noVerifiedMatch ? (
+          <a
+            href={`mailto:${t("homeSupportEmail")}`}
+            className="min-h-tap rounded-lg border border-em px-6 py-3 text-sm font-semibold text-ink transition-colors hover:border-g hover:text-g focus-visible:outline focus-visible:outline-2 focus-visible:outline-g"
+            data-testid="home-contact-support"
+          >
+            {t("homeContactSupport")}
+          </a>
+        ) : null}
         <button
           type="button"
           className="min-h-tap rounded-lg bg-g px-6 py-3 text-sm font-semibold text-canvas hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-40"
           disabled={!canContinue}
           onClick={goToOrder}
+          {...orderPrefetch}
         >
           {t("homeContinueCta")}
         </button>

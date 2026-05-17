@@ -1,6 +1,9 @@
 import Link from "next/link";
 import { ModelCheckStatus } from "@prisma/client";
-import { createComputerModel } from "@/app/admin/models/actions";
+import {
+  createComputerModel,
+  importComputerModelsCsv,
+} from "@/app/admin/models/actions";
 import { prisma } from "@/lib/db/prisma";
 import { requireAdmin } from "@/lib/auth/require-admin";
 import { getAdminMessages } from "@/lib/admin/get-admin-messages";
@@ -22,7 +25,14 @@ function truncate(s: string | null, max: number): string {
 export default async function AdminModelsPage({
   searchParams,
 }: {
-  searchParams?: { status?: string; error?: string };
+  searchParams?: {
+    status?: string;
+    error?: string;
+    detail?: string;
+    imported?: string;
+    skipped?: string;
+    parseErrors?: string;
+  };
 }) {
   await requireAdmin();
   const a = getAdminMessages().admin;
@@ -79,7 +89,26 @@ export default async function AdminModelsPage({
           ? a.modelsErrorDuplicate
           : err === "id"
             ? a.modelsErrorId
-            : null;
+            : err === "csv_empty"
+              ? a.modelsErrorCsvEmpty
+              : err === "csv_parse"
+                ? a.modelsErrorCsvParse
+                : null;
+
+  const imported = searchParams?.imported
+    ? parseInt(searchParams.imported, 10)
+    : null;
+  const skipped = searchParams?.skipped
+    ? parseInt(searchParams.skipped, 10)
+    : null;
+  const parseErrors = searchParams?.parseErrors
+    ? parseInt(searchParams.parseErrors, 10)
+    : null;
+  const importOk =
+    imported != null &&
+    !Number.isNaN(imported) &&
+    skipped != null &&
+    !Number.isNaN(skipped);
 
   return (
     <div className="mx-auto max-w-6xl px-4 py-10">
@@ -92,6 +121,15 @@ export default async function AdminModelsPage({
       {errMsg ? (
         <p className="mt-4 rounded-lg border border-amber/30 bg-amber/10 px-4 py-3 text-ink">
           {errMsg}
+        </p>
+      ) : null}
+
+      {importOk ? (
+        <p className="mt-4 rounded-lg border border-g/30 bg-g/10 px-4 py-3 text-ink">
+          {a.modelsCsvSuccess
+            .replace("{created}", String(imported))
+            .replace("{skipped}", String(skipped))
+            .replace("{parseErrors}", String(parseErrors ?? 0))}
         </p>
       ) : null}
 
@@ -187,6 +225,26 @@ export default async function AdminModelsPage({
               {a.modelsAddSubmit}
             </button>
           </div>
+        </form>
+      </section>
+
+      <section className="sparkki-card mt-8 p-6 sm:p-8">
+        <h2 className="text-xl font-bold text-ink">{a.modelsCsvTitle}</h2>
+        <p className="mt-2 text-lg text-fog">{a.modelsCsvIntro}</p>
+        <form action={importComputerModelsCsv} className="mt-4 space-y-4">
+          <textarea
+            name="csv"
+            rows={8}
+            className="w-full rounded-lg border border-em bg-canvas px-4 py-3 font-mono text-sm text-ink"
+            placeholder="make,model,yearFrom,yearTo&#10;Lenovo,ThinkPad T450,2015,2016"
+            spellCheck={false}
+          />
+          <button
+            type="submit"
+            className="min-h-tap rounded-xl bg-sparkki-green px-6 py-3 font-semibold text-canvas hover:opacity-[0.85]"
+          >
+            {a.modelsCsvSubmit}
+          </button>
         </form>
       </section>
 

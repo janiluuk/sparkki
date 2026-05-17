@@ -23,7 +23,6 @@ import {
 import { PORTABLE_VM_ADDON_CENTS } from "@/lib/billing/portable-vm";
 import {
   DELIVERY_POST_CENTS,
-  hddRemovalAddonCents,
   TIER_BASE_CENTS,
 } from "@/lib/billing/pricing";
 import {
@@ -32,12 +31,14 @@ import {
 } from "@/lib/contact/contact-field-validation";
 import type { ComputerLookupResult } from "@/lib/orders/computer-lookup";
 import { WizardComputerStep } from "@/components/wizard/WizardComputerStep";
-import {
-  formatWizardPriceEuro,
-  WizardPrice,
-} from "@/components/wizard/WizardPrice";
+import { WizardPrice } from "@/components/wizard/WizardPrice";
+import { WizardComputerChip } from "@/components/wizard/WizardComputerChip";
 import { WizardLiveTotalBar } from "@/components/wizard/WizardLiveTotal";
+import { WizardOrderSummary } from "@/components/wizard/WizardOrderSummary";
 import { computeWizardLiveTotal } from "@/lib/wizard/wizard-live-total";
+import type { WizardSupportChoice, WizardTier } from "@/lib/wizard/wizard-types";
+import { WIZARD_STEP } from "@/lib/wizard/wizard-display-labels";
+import { focusWizardStepContent } from "@/lib/wizard/wizard-step-focus";
 
 const WIZARD_ANCHOR = ORDER_WIZARD_HASH;
 
@@ -57,6 +58,7 @@ const STEP_NAV_KEYS = [
   "stepNav2",
   "stepNav3",
   "stepNav4",
+  "stepNav5",
 ] as const;
 
 const STEP_HINT_KEYS = [
@@ -64,11 +66,10 @@ const STEP_HINT_KEYS = [
   "stepHint1",
   "stepHint2",
   "stepHint3",
+  "stepHint4",
 ] as const;
 
-type Tier = "INSTALL_ONLY" | "SSD_BASIC" | "SSD_RAM" | "FULL_SERVICE";
-
-export type WizardSupportChoice = "INCLUDED" | "CARE_PLUS" | "CARE_PRO";
+export type { WizardSupportChoice } from "@/lib/wizard/wizard-types";
 
 type WizardBundleKey =
   | "bundle_local_ai"
@@ -115,8 +116,10 @@ function useWizardFullscreen() {
     if (!full) return;
     const prev = document.body.style.overflow;
     document.body.style.overflow = "hidden";
+    document.body.dataset.wizardFullscreen = "true";
     return () => {
       document.body.style.overflow = prev;
+      delete document.body.dataset.wizardFullscreen;
     };
   }, [full]);
 
@@ -158,7 +161,7 @@ export function OrderWizard({ locale }: { locale: string }) {
   const [step, setStep] = useState(0);
 
   const [computerDescription, setComputerDescription] = useState("");
-  const [tier, setTier] = useState<Tier | null>("INSTALL_ONLY");
+  const [tier, setTier] = useState<WizardTier | null>("INSTALL_ONLY");
   const [supportChoice, setSupportChoice] =
     useState<WizardSupportChoice>("INCLUDED");
   const [selectedYear, setSelectedYear] = useState<number | null>(null);
@@ -195,11 +198,6 @@ export function OrderWizard({ locale }: { locale: string }) {
       }),
     [tier, delivery, hddRemoval, appBundles, portableVmOn, portableVmHandoff],
   );
-
-  const hddExtraCents =
-    tier != null
-      ? hddRemovalAddonCents(tier, hddRemoval)
-      : 0;
 
   function closeFullscreen() {
     if (isOrderPage) {
@@ -238,14 +236,19 @@ export function OrderWizard({ locale }: { locale: string }) {
     }
 
     document.addEventListener("keydown", onKeyDown);
-    const id = window.requestAnimationFrame(() => {
-      focusables()[0]?.focus();
-    });
     return () => {
       document.removeEventListener("keydown", onKeyDown);
-      window.cancelAnimationFrame(id);
     };
   }, [fullMode]);
+
+  useEffect(() => {
+    if (!wizardRef.current) return;
+    const root = wizardRef.current;
+    const id = window.requestAnimationFrame(() => {
+      focusWizardStepContent(step, root);
+    });
+    return () => window.cancelAnimationFrame(id);
+  }, [step, fullMode]);
 
   useEffect(() => {
     const on = appBundles.length > 0 || portableVmOn;
@@ -261,7 +264,7 @@ export function OrderWizard({ locale }: { locale: string }) {
     setComputerDescription(prefill.computer);
     if (prefill.matchId) setSelectedMatchId(prefill.matchId);
     if (prefill.year != null) setSelectedYear(prefill.year);
-    if (prefill.step != null && prefill.step >= 1 && prefill.step < 4) {
+    if (prefill.step != null && prefill.step >= 1 && prefill.step < 5) {
       setStep(prefill.step);
     }
   }, [searchParams]);
@@ -271,7 +274,7 @@ export function OrderWizard({ locale }: { locale: string }) {
   }, [step]);
 
   useEffect(() => {
-    if (step === 3) setContactFieldBlurred(false);
+    if (step === WIZARD_STEP.contact) setContactFieldBlurred(false);
   }, [step]);
 
   async function startCheckout() {
@@ -327,17 +330,15 @@ export function OrderWizard({ locale }: { locale: string }) {
     }
   }
 
-  const totalSteps = 4;
+  const totalSteps = 5;
   const needsYear =
     computerLookup != null &&
     (computerLookup.needsYearChoice || computerLookup.yearOptions.length > 1);
   const canNextFrom0 =
     computerDescription.trim().length >= 3 && (!needsYear || selectedYear != null);
-  const canNextFrom1 =
-    tier != null &&
-    delivery != null &&
-    (!portableVmOn || portableVmHandoff != null);
-  const canNextFrom2 = true;
+  const canNextFrom1 = tier != null && delivery != null;
+  const canNextFrom2 = !portableVmOn || portableVmHandoff != null;
+  const canNextFrom3 = true;
   const contactIssue = getContactFieldIssue(customerContact);
   const contactOk = contactIssue === null;
   const computerIssue = getComputerDescriptionIssue(computerDescription, 3);
@@ -374,12 +375,14 @@ export function OrderWizard({ locale }: { locale: string }) {
           (step === 0 && !canNextFrom0) ||
           (step === 1 && !canNextFrom1) ||
           (step === 2 && !canNextFrom2) ||
-          step === 3
+          (step === 3 && !canNextFrom3) ||
+          step === 4
         }
         onClick={() => {
           if (step === 0 && canNextFrom0) setStep(1);
           else if (step === 1 && canNextFrom1) setStep(2);
           else if (step === 2 && canNextFrom2) setStep(3);
+          else if (step === 3 && canNextFrom3) setStep(4);
         }}
       >
         {w("next")}
@@ -418,7 +421,7 @@ export function OrderWizard({ locale }: { locale: string }) {
       >
       <div
         className={`shrink-0 border-b border-edge bg-canvas/95 px-0 py-3 backdrop-blur-md md:py-4 ${
-          fullMode ? "px-4 md:px-6" : ""
+          fullMode ? "sticky top-0 z-10 px-4 pt-safe md:px-6" : ""
         }`}
       >
         <div className="mx-auto flex max-w-4xl flex-wrap items-start justify-between gap-3">
@@ -465,6 +468,14 @@ export function OrderWizard({ locale }: { locale: string }) {
                     >
                       {i + 1}
                     </span>
+                    {active ? (
+                      <span
+                        className="mt-1.5 block max-w-[7rem] text-center text-[10px] font-semibold uppercase leading-tight tracking-wide text-ink sm:hidden"
+                        aria-hidden
+                      >
+                        {w(key)}
+                      </span>
+                    ) : null}
                     <span
                       className={`mt-1.5 hidden max-w-[5.5rem] text-center text-[10px] font-semibold uppercase leading-tight tracking-wide sm:block sm:max-w-[6.5rem] sm:text-[11px] ${
                         active ? "text-ink" : done ? "text-fog" : "text-ink/70"
@@ -500,6 +511,15 @@ export function OrderWizard({ locale }: { locale: string }) {
           {stepHint}
         </p>
 
+        {step > 0 && computerDescription.trim() ? (
+          <div className="mx-auto mt-3 max-w-4xl">
+            <WizardComputerChip
+              description={computerDescription}
+              onEdit={() => setStep(WIZARD_STEP.computer)}
+            />
+          </div>
+        ) : null}
+
         <WizardLiveTotalBar live={liveTotal} />
       </div>
 
@@ -520,7 +540,7 @@ export function OrderWizard({ locale }: { locale: string }) {
           <div
             id={stepContentId}
             role="region"
-            aria-labelledby="wizard-title"
+            aria-labelledby={`${stepContentId}-hint`}
             aria-describedby={`${stepContentId}-hint`}
           >
           {step === 0 ? (
@@ -574,77 +594,11 @@ export function OrderWizard({ locale }: { locale: string }) {
                       <span className="mt-2 block text-[13px] font-light leading-snug text-fog">
                         {w(descKey)}
                       </span>
-                    </button>
-                  ))}
-                </div>
-              </div>
-              <div>
-                <h3 className="text-2xl font-semibold text-ink">
-                  {w("step2SupportTitle")}
-                </h3>
-                <p className="mt-2 text-base font-light text-fog">
-                  {w("step2SupportIntro")}
-                </p>
-                <div
-                  className="mt-4 grid gap-3 lg:grid-cols-3"
-                  role="radiogroup"
-                  aria-label={w("step2SupportTitle")}
-                >
-                  {(
-                    [
-                      [
-                        "INCLUDED",
-                        "supportIncludedTitle",
-                        "supportIncludedPrice",
-                        [
-                          "supportIncludedF1",
-                          "supportIncludedF2",
-                          "supportIncludedF3",
-                        ],
-                      ],
-                      [
-                        "CARE_PLUS",
-                        "supportCarePlusTitle",
-                        "supportCarePlusPrice",
-                        [
-                          "supportCarePlusF1",
-                          "supportCarePlusF2",
-                          "supportCarePlusF3",
-                        ],
-                      ],
-                      [
-                        "CARE_PRO",
-                        "supportCareProTitle",
-                        "supportCareProPrice",
-                        [
-                          "supportCareProF1",
-                          "supportCareProF2",
-                          "supportCareProF3",
-                        ],
-                      ],
-                    ] as const
-                  ).map(([value, titleKey, priceKey, featureKeys]) => (
-                    <button
-                      key={value}
-                      type="button"
-                      role="radio"
-                      aria-checked={supportChoice === value}
-                      onClick={() => setSupportChoice(value)}
-                      className={`flex min-h-tap flex-col rounded-2xl border p-5 text-left transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-g ${
-                        supportChoice === value
-                          ? "border-g bg-g/[0.08]"
-                          : "border-edge bg-card hover:border-em"
-                      }`}
-                    >
-                      <span className="text-base font-semibold text-ink">
-                        {w(titleKey)}
-                      </span>
-                      <WizardPrice variant="card" text={w(priceKey)} className="mt-2" />
-                      <ul className="mt-3 list-inside list-disc space-y-1 text-[13px] font-light text-fog">
-                        {featureKeys.map((fk) => (
-                          <li key={fk}>{w(fk)}</li>
-                        ))}
-                      </ul>
+                      {value === "INSTALL_ONLY" ? (
+                        <span className="mt-2 block text-[13px] font-medium leading-snug text-fog">
+                          {w("tierInstallOnlyExcluded")}
+                        </span>
+                      ) : null}
                     </button>
                   ))}
                 </div>
@@ -656,11 +610,11 @@ export function OrderWizard({ locale }: { locale: string }) {
                 <div className="mt-4 grid gap-2.5 md:grid-cols-3">
                   {(
                     [
-                      ["HOME_PICKUP", "deliveryHome", "deliveryHomeSub"],
-                      ["DROP_OFF", "deliveryPost", "deliveryPostSub"],
-                      ["SELF", "deliverySelf", "deliverySelfSub"],
+                      ["HOME_PICKUP", "deliveryHome", "deliveryHomeSub", 0],
+                      ["DROP_OFF", "deliveryPost", "deliveryPostSub", DELIVERY_POST_CENTS],
+                      ["SELF", "deliverySelf", "deliverySelfSub", 0],
                     ] as const
-                  ).map(([value, titleKey, subKey]) => (
+                  ).map(([value, titleKey, subKey, feeCents]) => (
                     <button
                       key={value}
                       type="button"
@@ -686,9 +640,93 @@ export function OrderWizard({ locale }: { locale: string }) {
                       </span>
                       <WizardPrice
                         variant="line"
-                        cents={value === "DROP_OFF" ? DELIVERY_POST_CENTS : 0}
-                        prefix={value === "DROP_OFF" ? "+" : ""}
+                        cents={feeCents}
+                        prefix={feeCents > 0 ? "+" : ""}
                       />
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </div>
+          ) : null}
+
+          {step === 2 ? (
+            <div className="space-y-10">
+              <div>
+                <h3 className="text-2xl font-semibold text-ink">
+                  {w("step2SupportTitle")}
+                </h3>
+                <p className="mt-2 text-base font-light text-fog">
+                  {w("step2SupportIntro")}
+                </p>
+                <div
+                  className="mt-4 grid gap-3 lg:grid-cols-3"
+                  role="radiogroup"
+                  aria-label={w("step2SupportTitle")}
+                >
+                  {(
+                    [
+                      [
+                        "INCLUDED",
+                        "supportIncludedTitle",
+                        "supportIncludedPrice",
+                        [
+                          "supportIncludedF1",
+                          "supportIncludedF2",
+                          "supportIncludedF3",
+                        ],
+                        false,
+                      ],
+                      [
+                        "CARE_PLUS",
+                        "supportCarePlusTitle",
+                        "supportCarePlusPrice",
+                        [
+                          "supportCarePlusF1",
+                          "supportCarePlusF2",
+                          "supportCarePlusF3",
+                        ],
+                        true,
+                      ],
+                      [
+                        "CARE_PRO",
+                        "supportCareProTitle",
+                        "supportCareProPrice",
+                        [
+                          "supportCareProF1",
+                          "supportCareProF2",
+                          "supportCareProF3",
+                        ],
+                        true,
+                      ],
+                    ] as const
+                  ).map(([value, titleKey, priceKey, featureKeys, showCareNote]) => (
+                    <button
+                      key={value}
+                      type="button"
+                      role="radio"
+                      aria-checked={supportChoice === value}
+                      onClick={() => setSupportChoice(value)}
+                      className={`flex min-h-tap flex-col rounded-2xl border p-5 text-left transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-g ${
+                        supportChoice === value
+                          ? "border-g bg-g/[0.08]"
+                          : "border-edge bg-card hover:border-em"
+                      }`}
+                    >
+                      <span className="text-base font-semibold text-ink">
+                        {w(titleKey)}
+                      </span>
+                      <WizardPrice variant="card" text={w(priceKey)} className="mt-2" />
+                      {showCareNote ? (
+                        <p className="mt-2 text-xs font-medium leading-snug text-fog">
+                          {w("supportCareMonthlyNote")}
+                        </p>
+                      ) : null}
+                      <ul className="mt-3 list-inside list-disc space-y-1 text-[13px] font-light text-fog">
+                        {featureKeys.map((fk) => (
+                          <li key={fk}>{w(fk)}</li>
+                        ))}
+                      </ul>
                     </button>
                   ))}
                 </div>
@@ -867,7 +905,7 @@ export function OrderWizard({ locale }: { locale: string }) {
             </div>
           ) : null}
 
-          {step === 2 ? (
+          {step === 3 ? (
             <div className="space-y-6">
               <h3 className="text-2xl font-semibold text-ink">{w("stepHddTitle")}</h3>
               <div
@@ -937,7 +975,7 @@ export function OrderWizard({ locale }: { locale: string }) {
             </div>
           ) : null}
 
-          {step === 3 ? (
+          {step === 4 ? (
             <div className="space-y-8">
               <div className="space-y-4">
                 <h3 className="text-2xl font-semibold text-ink">
@@ -995,80 +1033,22 @@ export function OrderWizard({ locale }: { locale: string }) {
               </div>
 
               {contactOk ? (
-                <div className="space-y-4 border-t border-edge pt-8 text-lg text-ink">
-                  <h3 className="text-2xl font-semibold">{w("stepSummaryTitle")}</h3>
-                  <p>
-                    <strong>{w("summaryComputer")}:</strong>{" "}
-                    <span className="whitespace-pre-wrap text-base font-normal">
-                      {computerDescription.trim()}
-                    </span>
-                  </p>
-                  <p>
-                    <strong>{w("summaryTier")}:</strong>{" "}
-                    {tier != null
-                      ? w(
-                          tier === "INSTALL_ONLY"
-                            ? "tierInstallOnly"
-                            : tier === "SSD_BASIC"
-                              ? "tierBasic"
-                              : tier === "SSD_RAM"
-                                ? "tierRam"
-                                : "tierFull",
-                        )
-                      : "—"}
-                  </p>
-                  <p>
-                    <strong>{w("summarySupport")}:</strong>{" "}
-                    {supportChoice === "INCLUDED"
-                      ? w("supportIncludedTitle")
-                      : supportChoice === "CARE_PLUS"
-                        ? w("supportCarePlusTitle")
-                        : w("supportCareProTitle")}
-                  </p>
-                  <p>
-                    <strong>{w("summaryDelivery")}:</strong> {delivery}
-                  </p>
-                  <p>
-                    <strong>{w("summaryHdd")}:</strong> {hddRemoval}
-                    {hddExtraCents > 0
-                      ? ` (${formatWizardPriceEuro(hddExtraCents, { prefix: "+" })})`
-                      : ""}
-                  </p>
-                  {appBundles.length > 0 ? (
-                    <p>
-                      <strong>{w("summaryBundles")}:</strong>{" "}
-                      {appBundles
-                        .map((id) => w(WIZ_BUNDLE_MSG[id]))
-                        .join(" · ")}
-                    </p>
-                  ) : null}
-                  {portableVmOn && portableVmHandoff ? (
-                    <p>
-                      <strong>{w("summaryPortableVm")}:</strong>{" "}
-                      {portableVmHandoff === PortableVmHandoff.CUSTOMER_STORAGE
-                        ? w("vmHandoffCustomerSummary")
-                        : w("vmHandoffShippedSummary")}
-                    </p>
-                  ) : null}
-                  <p className="break-words">
-                    <strong>{w("summaryContact")}:</strong>{" "}
-                    {customerContact.trim()}
-                  </p>
-                  {liveTotal.checkoutTotalCents != null ? (
-                    <div className="rounded-xl border border-edge bg-sunken/40 px-5 py-4">
-                      <p className="text-sm font-semibold text-fog">
-                        {w("summaryPrice")}
-                      </p>
-                      <WizardPrice
-                        variant="total"
-                        cents={liveTotal.checkoutTotalCents}
-                        decimals={2}
-                        className="mt-1"
-                      />
-                    </div>
-                  ) : null}
+                <div className="border-t border-edge pt-8">
+                  <WizardOrderSummary
+                    computerDescription={computerDescription}
+                    tier={tier}
+                    supportChoice={supportChoice}
+                    delivery={delivery}
+                    hddRemoval={hddRemoval}
+                    appBundles={appBundles}
+                    portableVmOn={portableVmOn}
+                    portableVmHandoff={portableVmHandoff}
+                    customerContact={customerContact}
+                    checkoutTotalCents={liveTotal.checkoutTotalCents}
+                    onEditStep={setStep}
+                  />
                   {checkoutError ? (
-                    <p className="font-semibold text-danger" role="alert">
+                    <p className="mt-4 font-semibold text-danger" role="alert">
                       {checkoutError}
                     </p>
                   ) : null}
@@ -1076,7 +1056,7 @@ export function OrderWizard({ locale }: { locale: string }) {
                     type="button"
                     disabled={checkoutLoading || !contactOk}
                     aria-busy={checkoutLoading}
-                    className={`sparkki-btn-primary min-h-tap w-full min-w-0 justify-center py-4 pr-12 text-lg md:max-w-md ${
+                    className={`sparkki-btn-primary mt-6 min-h-tap w-full min-w-0 justify-center py-4 pr-12 text-lg md:max-w-md ${
                       checkoutLoading ? "sparkki-btn-loading" : ""
                     }`}
                     onClick={() => void startCheckout()}

@@ -7,6 +7,8 @@ import {
   buildComputerSpecRows,
   computerStepNeedsYear,
 } from "@/lib/wizard/computer-spec-rows";
+import { COMPUTER_LOOKUP_DEBOUNCE_MS } from "@/lib/wizard/computer-lookup-client";
+import { ComputerLookupSpecsSkeleton } from "@/components/wizard/ComputerLookupSpecsSkeleton";
 
 type Props = {
   locale: string;
@@ -81,7 +83,7 @@ export function WizardComputerStep({
         .finally(() => {
           if (!ac.signal.aborted) setLoading(false);
         });
-    }, 450);
+    }, COMPUTER_LOOKUP_DEBOUNCE_MS);
     return () => {
       ac.abort();
       window.clearTimeout(t);
@@ -162,13 +164,11 @@ export function WizardComputerStep({
         ) : null}
       </div>
 
-      {loading ? (
-        <p className="text-base text-fog" aria-live="polite">
-          {w("specsLoading")}
-        </p>
+      {loading && trimmed.length >= 3 ? (
+        <ComputerLookupSpecsSkeleton className="mt-4" />
       ) : null}
 
-      {lookup && lookup.matches.length > 1 ? (
+      {!loading && lookup && lookup.matches.length > 1 ? (
         <div className="space-y-2">
           <p className="text-sm font-semibold text-ink">{w("specsPickModel")}</p>
           <ul className="space-y-2" role="listbox" aria-label={w("specsPickModel")}>
@@ -200,7 +200,7 @@ export function WizardComputerStep({
         </div>
       ) : null}
 
-      {showYearPicker ? (
+      {!loading && showYearPicker ? (
         <div className="space-y-2">
           <label htmlFor="wiz-year" className="block text-sm font-semibold text-ink">
             {w("specsYearLabel")}
@@ -225,7 +225,7 @@ export function WizardComputerStep({
         </div>
       ) : null}
 
-      {tableRows.length > 0 ? (
+      {!loading && tableRows.length > 0 ? (
         <div className="overflow-x-auto rounded-xl border border-edge">
           <table className="w-full min-w-[280px] border-collapse text-left text-sm">
             <caption className="sr-only">{w("specsTableCaption")}</caption>
@@ -248,7 +248,7 @@ export function WizardComputerStep({
         <p className="text-sm text-fog">{w("specsNoMatch")}</p>
       ) : null}
 
-      {lookup?.compatibility ? (
+      {!loading && lookup?.compatibility ? (
         <p className="rounded-lg border border-g/25 bg-g/[0.06] px-4 py-3 text-sm text-ink">
           <span className="font-semibold">{w("specsCompatLabel")}: </span>
           {w(`compatStatus_${lookup.compatibility.status}` as "compatStatus_compatible")}

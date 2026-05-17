@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { usePathname } from "@/i18n/navigation";
 import {
   BG_NAV_ENERGY_BUMP,
@@ -315,24 +315,32 @@ export function SparkiBackground() {
   const navEnergyRef = useRef(0);
   const skipPathnameBumpRef = useRef(true);
   const pathname = usePathname();
+  const [reducedMotion, setReducedMotion] = useState(false);
+
+  useEffect(() => {
+    const mq = window.matchMedia("(prefers-reduced-motion: reduce)");
+    setReducedMotion(mq.matches);
+    const onChange = () => setReducedMotion(mq.matches);
+    mq.addEventListener("change", onChange);
+    return () => mq.removeEventListener("change", onChange);
+  }, []);
 
   useEffect(() => {
     if (skipPathnameBumpRef.current) {
       skipPathnameBumpRef.current = false;
       return;
     }
+    if (reducedMotion) return;
     navEnergyRef.current = Math.min(
       BG_NAV_ENERGY_MAX,
       navEnergyRef.current + BG_NAV_ENERGY_BUMP,
     );
-  }, [pathname]);
+  }, [pathname, reducedMotion]);
 
   useEffect(() => {
     const cvs = ref.current;
     if (!cvs) return;
-    const reduced =
-      typeof window !== "undefined" &&
-      window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const reduced = reducedMotion;
 
     const c2d = cvs.getContext("2d");
     if (!c2d) return;
@@ -461,13 +469,14 @@ export function SparkiBackground() {
       window.removeEventListener(SPARKKI_BG_NAV_EVENT, bumpNavEnergy);
       cancelAnimationFrame(raf);
     };
-  }, []);
+  }, [reducedMotion]);
 
   return (
     <canvas
       ref={ref}
-      className="pointer-events-none fixed inset-0 -z-20 h-full min-h-dvh w-full"
+      className="pointer-events-none fixed inset-0 -z-20 h-full min-h-dvh w-full motion-reduce:opacity-40"
       aria-hidden
+      data-reduced-motion={reducedMotion ? "" : undefined}
     />
   );
 }

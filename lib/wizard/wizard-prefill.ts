@@ -9,7 +9,7 @@ export type WizardPrefill = {
   computer: string;
   matchId?: string | null;
   year?: number | null;
-  /** Wizard step index (0 = computer, 1 = service & delivery, …). */
+  /** Wizard step index (0 = computer, 1 = tier + delivery, 2 = support & add-ons, …). */
   step?: number | null;
 };
 

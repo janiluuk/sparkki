@@ -122,16 +122,6 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "rate_limited" }, { status: 429 });
   }
 
-  if (!stripeConfigured() || !getStripe()) {
-    logApiEvent(requestId, "checkout.stripe_not_configured", {});
-    return NextResponse.json(
-      { error: "stripe_not_configured" },
-      { status: 503 },
-    );
-  }
-
-  const stripe = getStripe()!;
-
   const wantsMigration = Boolean(data.dataMigration) && data.dataMigrationSize;
   const migration = wantsMigration
     ? { size: data.dataMigrationSize! }
@@ -170,7 +160,6 @@ export async function POST(req: Request) {
     },
   );
 
-  const baseUrl = getSiteUrl();
   const yearNote =
     data.selectedYear != null ? ` · vuosi: ${data.selectedYear}` : "";
   const careNote =
@@ -203,6 +192,27 @@ export async function POST(req: Request) {
       portableVmHandoff,
     },
   });
+
+  const baseUrl = getSiteUrl();
+
+  if (process.env.CHECKOUT_E2E_BYPASS === "true") {
+    logApiEvent(requestId, "checkout.e2e_bypass", { orderId: order.id });
+    return NextResponse.json({
+      url: `${baseUrl}/${data.locale}/palvelu/kiitos?session_id=e2e_${order.id}`,
+      orderId: order.id,
+    });
+  }
+
+  if (!stripeConfigured() || !getStripe()) {
+    await prisma.order.delete({ where: { id: order.id } }).catch(() => {});
+    logApiEvent(requestId, "checkout.stripe_not_configured", {});
+    return NextResponse.json(
+      { error: "stripe_not_configured" },
+      { status: 503 },
+    );
+  }
+
+  const stripe = getStripe()!;
 
   const hddCents = hddRemovalAddonCents(
     data.tier as Exclude<ServiceTier, "B2B">,

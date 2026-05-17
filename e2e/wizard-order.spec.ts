@@ -90,6 +90,11 @@ test.describe("order wizard (checkout mocked)", () => {
     await wizard.getByRole("button", { name: "Seuraava" }).click();
 
     await expect(
+      wizard.getByRole("heading", { name: /Tuki palvelun jälkeen/i }),
+    ).toBeVisible({ timeout: 15_000 });
+    await wizard.getByRole("button", { name: "Seuraava" }).click();
+
+    await expect(
       wizard.getByRole("heading", { name: /Kiintolevy \(HDD\)/ }),
     ).toBeVisible({ timeout: 15_000 });
     await wizard.getByRole("button", { name: "Seuraava" }).click();
