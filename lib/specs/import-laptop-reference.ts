@@ -1,9 +1,7 @@
 import { readFileSync } from "node:fs";
 import type { PrismaClient } from "@prisma/client";
-import {
-  rowsFrom37DegreesJson,
-  type ReferenceLaptopJsonRow,
-} from "@/lib/specs/merge-reference-laptops";
+import { rowsFrom37DegreesJson } from "@/lib/specs/merge-reference-laptops";
+import type { ReferenceLaptopJsonRow } from "@/lib/specs/reference-laptop-row";
 
 export type ImportLaptopReferenceOptions = {
   /** Replace all rows (default). Set false to only insert when table is empty. */

@@ -42,5 +42,7 @@ for (const r of merged) {
 console.log(`Wrote ${merged.length} rows → ${outPath}`);
 console.log(
   "Top manufacturers:",
-  [...byMfr.entries()].sort((a, b) => b[1] - a[1]).slice(0, 12),
+  Array.from(byMfr.entries())
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 12),
 );
