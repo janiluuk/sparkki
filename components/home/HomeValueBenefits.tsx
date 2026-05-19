@@ -83,7 +83,7 @@ export async function HomeValueBenefits() {
                 <h3 className="font-display text-xl font-bold text-ink sm:text-2xl">
                   {item.title}
                 </h3>
-                <p className="text-base leading-relaxed text-fog">{item.body}</p>
+                <p className="text-base font-light leading-relaxed text-ink">{item.body}</p>
               </div>
             </div>
           </article>
