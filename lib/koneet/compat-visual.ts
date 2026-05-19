@@ -38,21 +38,21 @@ export function compatVisualForStatus(status: string): CompatVisual {
     case "incompatible":
       return {
         tone: "danger",
-        icon: "✕",
+        icon: "⚠",
         pillClass: TONE_CLASS.danger.pill,
         chipClass: TONE_CLASS.danger.chip,
       };
     case "potentially_good":
       return {
         tone: "accent",
-        icon: "◆",
+        icon: "✓",
         pillClass: TONE_CLASS.accent.pill,
         chipClass: TONE_CLASS.accent.chip,
       };
     default:
       return {
         tone: "amber",
-        icon: "◇",
+        icon: "⚠",
         pillClass: TONE_CLASS.amber.pill,
         chipClass: TONE_CLASS.amber.chip,
       };

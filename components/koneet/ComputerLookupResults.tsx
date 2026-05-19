@@ -136,17 +136,19 @@ export function ComputerLookupResults({
   return (
     <>
       {!loading && lookup.matches.length > 1 ? (
-        <div className="mt-6 space-y-2">
+        <div className="mt-4 space-y-1.5">
           <p className="text-sm font-semibold text-ink">{labels.specsPickModel}</p>
-          <ul className="space-y-2" role="listbox" aria-label={labels.specsPickModel}>
+          <ul className="space-y-1.5" role="listbox" aria-label={labels.specsPickModel}>
             {lookup.matches.slice(0, 8).map((m) => {
               const tone = matchCompatTone(m.compatible);
-              const dotClass =
+              const iconClass =
                 tone === "accent"
-                  ? "bg-g"
+                  ? "text-g"
                   : tone === "danger"
-                    ? "bg-danger"
-                    : "bg-amber";
+                    ? "text-danger"
+                    : "text-amber";
+              const icon =
+                tone === "accent" ? "✓" : tone === "danger" ? "⚠" : "⚠";
               return (
                 <li key={m.id}>
                   <button
@@ -154,18 +156,20 @@ export function ComputerLookupResults({
                     role="option"
                     aria-selected={selectedMatchId === m.id}
                     onClick={() => onSelectMatch(m.id)}
-                    className={`flex w-full items-center gap-3 rounded-lg border px-3 py-3 text-left text-sm transition-colors sm:px-4 ${
+                    className={`flex w-full items-center gap-3 rounded-lg border px-3 py-2.5 text-left text-sm transition-colors sm:px-4 ${
                       selectedMatchId === m.id
                         ? "border-g bg-g/[0.08]"
                         : "border-edge bg-card hover:border-em"
                     }`}
                   >
                     <span
-                      className={`size-2.5 shrink-0 rounded-full ${dotClass}`}
+                      className={`w-4 shrink-0 text-center text-sm font-bold ${iconClass}`}
                       aria-hidden
-                    />
+                    >
+                      {icon}
+                    </span>
                     {m.imageUrl ? (
-                      <span className="relative size-10 shrink-0 overflow-hidden rounded-md border border-edge bg-sunken">
+                      <span className="relative size-9 shrink-0 overflow-hidden rounded-md border border-edge bg-sunken">
                         {/* eslint-disable-next-line @next/next/no-img-element */}
                         <img
                           src={m.imageUrl}
@@ -176,7 +180,7 @@ export function ComputerLookupResults({
                       </span>
                     ) : (
                       <span
-                        className="flex size-10 shrink-0 items-center justify-center rounded-md border border-edge bg-sunken/80 text-lg text-g"
+                        className="flex size-9 shrink-0 items-center justify-center rounded-md border border-edge bg-sunken/80 text-base text-g"
                         aria-hidden
                       >
                         ▤
@@ -187,8 +191,8 @@ export function ComputerLookupResults({
                         {m.make} {m.model}
                       </span>
                       {(m.yearFrom != null || m.yearTo != null) && (
-                        <span className="mt-0.5 block font-mono text-xs text-fog">
-                          {m.yearFrom ?? "—"} – {m.yearTo ?? "—"}
+                        <span className="block font-mono text-xs text-fog">
+                          {m.yearFrom ?? "—"}–{m.yearTo ?? "—"}
                         </span>
                       )}
                     </span>
@@ -201,26 +205,49 @@ export function ComputerLookupResults({
       ) : null}
 
       {!loading && showYearPicker ? (
-        <div className="mt-6 space-y-2">
-          <label htmlFor="lookup-compat-year" className="block text-sm font-semibold text-ink">
+        <div className="mt-4 space-y-2">
+          <label
+            htmlFor="lookup-compat-year"
+            className="block text-sm font-semibold text-ink"
+          >
             {labels.specsYearLabel}
           </label>
-          <select
-            id="lookup-compat-year"
-            className="sparkki-input min-h-tap w-full max-w-xs rounded-lg border border-em bg-sunken px-4 text-ink"
-            value={selectedYear ?? ""}
-            onChange={(e) => {
-              const v = e.target.value;
-              onSelectYear(v ? Number(v) : null);
-            }}
-          >
-            <option value="">{labels.specsYearPlaceholder}</option>
-            {lookup.yearOptions.map((y) => (
-              <option key={y} value={y}>
-                {y}
-              </option>
-            ))}
-          </select>
+          {lookup.yearOptions.length <= 6 ? (
+            <div className="flex flex-wrap gap-2" role="group" aria-label={labels.specsYearLabel}>
+              {lookup.yearOptions.map((y) => (
+                <button
+                  key={y}
+                  type="button"
+                  onClick={() => onSelectYear(selectedYear === y ? null : y)}
+                  aria-pressed={selectedYear === y}
+                  className={`rounded-full border px-4 py-1.5 text-sm font-medium transition-colors ${
+                    selectedYear === y
+                      ? "border-g bg-g text-canvas"
+                      : "border-edge bg-card text-ink hover:border-em"
+                  }`}
+                >
+                  {y}
+                </button>
+              ))}
+            </div>
+          ) : (
+            <select
+              id="lookup-compat-year"
+              className="sparkki-input min-h-tap w-full max-w-xs rounded-lg border border-em bg-sunken px-4 text-ink"
+              value={selectedYear ?? ""}
+              onChange={(e) => {
+                const v = e.target.value;
+                onSelectYear(v ? Number(v) : null);
+              }}
+            >
+              <option value="">{labels.specsYearPlaceholder}</option>
+              {lookup.yearOptions.map((y) => (
+                <option key={y} value={y}>
+                  {y}
+                </option>
+              ))}
+            </select>
+          )}
           <p className="text-sm text-fog">{labels.specsYearHint}</p>
         </div>
       ) : null}
@@ -228,7 +255,7 @@ export function ComputerLookupResults({
       {!loading &&
       (chips.length > 0 || primary || lookup.reference?.summary || lookup.reference?.cpu) ? (
         <article
-          className="mt-6 overflow-hidden rounded-xl border border-edge bg-card/60"
+          className="mt-4 overflow-hidden rounded-xl border border-edge bg-card/60"
           aria-label={labels.specsTableCaption}
           data-testid="computer-lookup-visual"
         >

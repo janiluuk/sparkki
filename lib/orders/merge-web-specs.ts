@@ -19,6 +19,7 @@ export function mergeReferenceFromWebInsight(
     display: null,
     weight: null,
     summary: null,
+    category: null,
   };
   return {
     cpu: base.cpu ?? s.cpu,
@@ -28,6 +29,7 @@ export function mergeReferenceFromWebInsight(
     display: base.display ?? s.display,
     weight: base.weight ?? s.weight,
     summary: base.summary ?? insight.summary,
+    category: base.category,
   };
 }
 

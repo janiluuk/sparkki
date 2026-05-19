@@ -80,6 +80,14 @@ export async function KoneetCompatibilitySection({
         <ul className="mt-6 space-y-3">
           {filtered.map((m) => {
             const slug = computerModelSlug(m.make, m.model);
+            const compatIcon =
+              m.compatible === true ? "✓" : m.compatible === false ? "⚠" : "?";
+            const iconClass =
+              m.compatible === true
+                ? "text-g"
+                : m.compatible === false
+                  ? "text-danger"
+                  : "text-amber";
             const badge =
               m.compatible === true
                 ? t("compatYes")
@@ -88,30 +96,31 @@ export async function KoneetCompatibilitySection({
                   : t("compatUnknown");
             const badgeClass =
               m.compatible === true
-                ? "border-g text-g"
+                ? "border-g/40 bg-g/[0.07] text-g"
                 : m.compatible === false
-                  ? "border-danger/40 text-danger"
-                  : "border-amber/40 text-amber";
+                  ? "border-danger/40 bg-danger/[0.07] text-danger"
+                  : "border-amber/40 bg-amber/[0.07] text-amber";
             return (
               <li key={m.id}>
                 <Link
                   href={`/koneet/${slug}`}
-                  className="model-card flex cursor-pointer items-center gap-4 rounded-xl border border-edge bg-card p-5 transition-colors duration-150 hover:border-em"
+                  className="model-card flex cursor-pointer items-center gap-3 rounded-xl border border-edge bg-card px-4 py-3.5 transition-colors duration-150 hover:border-em"
                 >
                   <span
-                    className={`shrink-0 rounded-full border px-2.5 py-1 font-mono text-[11px] font-medium uppercase tracking-wide ${badgeClass}`}
+                    className={`inline-flex shrink-0 items-center gap-1.5 rounded-full border px-2.5 py-1 font-mono text-[11px] font-medium uppercase tracking-wide ${badgeClass}`}
                   >
+                    <span className={`font-bold ${iconClass}`} aria-hidden>{compatIcon}</span>
                     {badge}
                   </span>
                   <div className="min-w-0 flex-1">
                     <p className="text-sm font-semibold text-ink">
                       {m.make} {m.model}
                     </p>
-                    <p className="font-mono text-[11px] text-dust">
-                      {[m.yearFrom, m.yearTo].filter(Boolean).length > 0
-                        ? `${t("years")}: ${m.yearFrom ?? "—"}–${m.yearTo ?? "—"}`
-                        : t("statusUnchecked")}
-                    </p>
+                    {[m.yearFrom, m.yearTo].filter(Boolean).length > 0 ? (
+                      <p className="font-mono text-[11px] text-dust">
+                        {m.yearFrom ?? "—"}–{m.yearTo ?? "—"}
+                      </p>
+                    ) : null}
                   </div>
                 </Link>
               </li>
