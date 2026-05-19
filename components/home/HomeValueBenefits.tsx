@@ -22,25 +22,25 @@ export async function HomeValueBenefits() {
 
   const items: ValueCard[] = [
     {
-      icon: "↺",
+      icon: "💸",
       title: t("valueBoostTitle"),
       body: t("valueBoostBody"),
       accent: "accent",
     },
     {
-      icon: "◇",
+      icon: "🛡️",
       title: t("valueOsTitle"),
       body: t("valueOsBody"),
       accent: "neutral",
     },
     {
-      icon: "✓",
+      icon: "🔍",
       title: t("valueVerifyTitle"),
       body: t("valueVerifyBody"),
       accent: "amber",
     },
     {
-      icon: "◎",
+      icon: "💬",
       title: t("valueCareTitle"),
       body: t("valueCareBody"),
       accent: "accent",
