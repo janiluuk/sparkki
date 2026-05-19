@@ -47,7 +47,10 @@ test.describe("key public journeys", () => {
   test("compatibility checker on home", async ({ page }) => {
     await page.goto("/fi#yhteensopivuus", { waitUntil: "domcontentloaded" });
     await expect(
-      page.getByRole("heading", { level: 2, name: /Yhteensopivuus|Compatibility/i }),
+      page.getByRole("heading", {
+        level: 2,
+        name: /Tarkista, sopiiko koneesi|See if your machine is a good fit/i,
+      }),
     ).toBeVisible();
     await expect(page.getByTestId("home-compatibility-checker")).toBeVisible({
       timeout: 15_000,

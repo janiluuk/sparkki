@@ -7,7 +7,10 @@ test.describe("design-system UX flows", () => {
     await page.goto("/fi", { waitUntil: "domcontentloaded" });
 
     await expect(
-      page.getByRole("heading", { level: 1, name: /^Palvelu$/i }),
+      page.getByRole("heading", {
+        level: 1,
+        name: /Älä osta uutta — vauhdita vanhaa/i,
+      }),
     ).toBeVisible();
     await expect(
       page.getByRole("heading", { level: 2, name: /Miten tämä toimii/i }),
