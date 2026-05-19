@@ -9,10 +9,10 @@ type ValueCard = {
 
 function cardClass(accent: ValueCard["accent"]) {
   if (accent === "accent") {
-    return "border-g/35 bg-g/[0.06]";
+    return "border-g/35 bg-card";
   }
   if (accent === "amber") {
-    return "border-amber/30 bg-amber/[0.06]";
+    return "border-amber/30 bg-card";
   }
   return "border-edge bg-card/70";
 }

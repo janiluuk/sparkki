@@ -64,10 +64,10 @@ test.describe("home compatibility checker (catalog mocked)", () => {
     await page.goto("/fi#yhteensopivuus", { waitUntil: "domcontentloaded" });
     await fillHomeComputer(page, "Dell XPS 13");
 
-    await expect(page.getByRole("cell", { name: /Intel Core i5 8th Gen/i })).toBeVisible({
-      timeout: 10_000,
-    });
-    await expect(page.getByRole("cell", { name: /256GB SSD/i })).toBeVisible();
+    const visual = page.getByTestId("computer-lookup-visual");
+    await expect(visual).toBeVisible({ timeout: 10_000 });
+    await expect(visual.getByText(/Intel Core i5 8th Gen/i)).toBeVisible();
+    await expect(visual.getByText(/256GB SSD/i)).toBeVisible();
     await expect(page.getByTestId("home-web-specs-hint")).toHaveCount(0);
     await expect(page.getByTestId("home-no-match-notice")).toBeVisible();
     expect(laptopSpecsCalls).toBe(0);
@@ -78,10 +78,10 @@ test.describe("home compatibility checker (catalog mocked)", () => {
     await page.goto("/fi#yhteensopivuus", { waitUntil: "domcontentloaded" });
     await fillHomeComputer(page, "Lenovo ThinkPad T450");
 
-    await expect(
-      page.getByRole("cell", { name: /Lenovo ThinkPad T450/i }),
-    ).toBeVisible({ timeout: 10_000 });
-    await expect(page.getByRole("cell", { name: /Intel Core i5-4300U/i })).toBeVisible();
+    const visual = page.getByTestId("computer-lookup-visual");
+    await expect(visual).toBeVisible({ timeout: 10_000 });
+    await expect(visual.getByRole("heading", { name: /Lenovo ThinkPad T450/i })).toBeVisible();
+    await expect(visual.getByText(/Intel Core i5-4300U/i)).toBeVisible();
     await expect(page.getByTestId("home-web-specs-hint")).toHaveCount(0);
   });
 
@@ -95,7 +95,7 @@ test.describe("home compatibility checker (catalog mocked)", () => {
     await expect(page.getByTestId("home-no-match-notice")).toBeVisible({
       timeout: 10_000,
     });
-    await expect(page.getByRole("cell", { name: /Intel Core/i })).toHaveCount(0);
+    await expect(page.getByTestId("computer-lookup-visual")).toHaveCount(0);
   });
 });
 
@@ -109,9 +109,9 @@ test.describe("order wizard computer step (catalog mocked)", () => {
     await w.locator("#wiz-computer").fill("Dell XPS 13");
     await page.waitForTimeout(LOOKUP_WAIT_MS);
 
-    await expect(
-      w.getByRole("cell", { name: /Intel Core i5 8th Gen/i }),
-    ).toBeVisible({ timeout: 10_000 });
-    await expect(w.getByRole("cell", { name: /8GB/i })).toBeVisible();
+    const visual = w.getByTestId("computer-lookup-visual");
+    await expect(visual).toBeVisible({ timeout: 10_000 });
+    await expect(visual.getByText(/Intel Core i5 8th Gen/i)).toBeVisible();
+    await expect(visual.getByText(/8GB/i)).toBeVisible();
   });
 });
