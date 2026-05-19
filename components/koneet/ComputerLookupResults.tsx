@@ -63,7 +63,7 @@ function LookupImage({
 
   if (showPhoto) {
     return (
-      <div className="relative size-24 shrink-0 overflow-hidden rounded-xl border border-edge bg-sunken sm:size-28">
+      <div className="relative size-16 shrink-0 overflow-hidden rounded-lg border border-edge bg-sunken">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           src={imageUrl!}
@@ -79,7 +79,7 @@ function LookupImage({
 
   return (
     <div
-      className={`flex size-24 shrink-0 items-center justify-center rounded-xl border bg-canvas/80 font-display text-4xl sm:size-28 ${toneBorder(fallbackTone)}`}
+      className={`flex size-16 shrink-0 items-center justify-center rounded-lg border bg-canvas/80 font-display text-2xl ${toneBorder(fallbackTone)}`}
       aria-hidden
     >
       {fallbackIcon}
@@ -96,7 +96,6 @@ export function ComputerLookupResults({
   loading,
   noVerifiedMatch,
   labels,
-  webSpecsLabel,
   webSpecsLinkLabel,
   homeNoMatchSupport,
 }: Props) {
@@ -138,8 +137,8 @@ export function ComputerLookupResults({
       {!loading && lookup.matches.length > 1 ? (
         <div className="space-y-2">
           <p className="text-sm font-semibold text-ink">{labels.specsPickModel}</p>
-          <ul className="space-y-2" role="listbox" aria-label={labels.specsPickModel}>
-            {lookup.matches.slice(0, 8).map((m) => {
+          <ul className="space-y-1.5" role="listbox" aria-label={labels.specsPickModel}>
+            {lookup.matches.slice(0, 4).map((m) => {
               const tone = matchCompatTone(m.compatible);
               const iconClass =
                 tone === "accent"
@@ -156,7 +155,7 @@ export function ComputerLookupResults({
                     role="option"
                     aria-selected={selectedMatchId === m.id}
                     onClick={() => onSelectMatch(m.id)}
-                    className={`flex w-full items-center gap-3 rounded-lg border px-3 py-2.5 text-left text-sm transition-colors sm:px-4 ${
+                    className={`flex w-full items-center gap-3 rounded-lg border px-3 py-2 text-left text-sm transition-colors sm:px-4 ${
                       selectedMatchId === m.id
                         ? "border-g bg-g/[0.08]"
                         : "border-edge bg-card hover:border-em"
@@ -169,7 +168,7 @@ export function ComputerLookupResults({
                       {icon}
                     </span>
                     {m.imageUrl ? (
-                      <span className="relative size-9 shrink-0 overflow-hidden rounded-md border border-edge bg-sunken">
+                      <span className="relative size-8 shrink-0 overflow-hidden rounded-md border border-edge bg-sunken">
                         {/* eslint-disable-next-line @next/next/no-img-element */}
                         <img
                           src={m.imageUrl}
@@ -180,7 +179,7 @@ export function ComputerLookupResults({
                       </span>
                     ) : (
                       <span
-                        className="flex size-9 shrink-0 items-center justify-center rounded-md border border-edge bg-sunken/80 text-base text-g"
+                        className="flex size-8 shrink-0 items-center justify-center rounded-md border border-edge bg-sunken/80 text-sm text-g"
                         aria-hidden
                       >
                         ▤
@@ -205,7 +204,7 @@ export function ComputerLookupResults({
       ) : null}
 
       {!loading && showYearPicker ? (
-        <div className="mt-5 space-y-2">
+        <div className="mt-4 space-y-2">
           <label
             htmlFor="lookup-compat-year"
             className="block text-sm font-semibold text-ink"
@@ -248,62 +247,60 @@ export function ComputerLookupResults({
               ))}
             </select>
           )}
-          <p className="text-sm text-fog">{labels.specsYearHint}</p>
         </div>
       ) : null}
 
       {!loading &&
       (chips.length > 0 || primary || lookup.reference?.summary || lookup.reference?.cpu) ? (
         <article
-          className="mt-5 overflow-hidden rounded-xl border border-edge bg-card/60"
+          className="mt-4 overflow-hidden rounded-xl border border-edge bg-card/60"
           aria-label={labels.specsTableCaption}
           data-testid="computer-lookup-visual"
         >
-          <div className="flex flex-col gap-5 border-b border-edge p-5 sm:flex-row sm:items-start sm:p-6">
+          <div className="flex items-center gap-3 p-4 border-b border-edge">
             <LookupImage
               imageUrl={heroImageUrl}
               alt={labels.lookupImageAlt.replace("{model}", `${displayMake} ${displayModel}`.trim())}
               fallbackIcon={categoryVisual.icon}
               fallbackTone={categoryVisual.tone}
             />
-            <div className="min-w-0 flex-1 space-y-3">
-              <div className="flex flex-wrap items-start gap-2">
+            <div className="min-w-0 flex-1">
+              <div className="flex flex-wrap items-center gap-1.5">
                 <span
-                  className={`inline-flex items-center gap-1.5 rounded-full border px-3 py-1 font-mono text-[11px] font-medium uppercase tracking-wide ${compatVisual.pillClass}`}
+                  className={`inline-flex items-center gap-1 rounded-full border px-2.5 py-0.5 font-mono text-[10px] font-medium uppercase tracking-wide ${compatVisual.pillClass}`}
                 >
                   <span aria-hidden>{compatVisual.icon}</span>
                   {compatLabel}
                 </span>
                 {lookup.category ? (
-                  <span className="inline-flex items-center gap-1 rounded-full border border-edge bg-sunken/60 px-3 py-1 font-mono text-[10px] uppercase tracking-wider text-fog">
+                  <span className="inline-flex items-center rounded-full border border-edge bg-sunken/60 px-2.5 py-0.5 font-mono text-[10px] uppercase tracking-wider text-fog">
                     {lookup.category}
                   </span>
                 ) : null}
               </div>
-              <h3 className="font-display text-xl font-bold text-ink sm:text-2xl">
+              <h3 className="mt-1 font-display text-base font-bold leading-snug text-ink sm:text-lg">
                 {displayMake} {displayModel}
               </h3>
-              {primary?.verdict ? (
-                <p className="text-sm font-light leading-relaxed text-fog">{primary.verdict}</p>
-              ) : null}
             </div>
           </div>
 
           {chips.length > 0 ? (
-            <ul className="grid gap-3 p-4 sm:grid-cols-2 sm:p-5">
-              {chips.map((c) => (
-                <li key={c.id}>
-                  <SpecChip chip={c} />
-                </li>
-              ))}
-            </ul>
+            <div className="overflow-x-auto px-4 py-3 sm:px-5">
+              <ul className="flex gap-2" style={{ width: "max-content" }}>
+                {chips.map((c) => (
+                  <li key={c.id}>
+                    <SpecChip chip={c} />
+                  </li>
+                ))}
+              </ul>
+            </div>
           ) : null}
         </article>
       ) : null}
 
       {noVerifiedMatch && homeNoMatchSupport ? (
         <p
-          className="mt-4 rounded-lg border border-amber/30 bg-amber/[0.06] px-4 py-3 text-sm text-ink"
+          className="mt-3 rounded-lg border border-amber/30 bg-amber/[0.06] px-4 py-3 text-sm text-ink"
           role="status"
           data-testid="home-no-match-notice"
         >
@@ -311,31 +308,17 @@ export function ComputerLookupResults({
         </p>
       ) : null}
 
-      {!loading &&
-      lookup.webSpecs &&
-      (lookup.webSpecs.summary || lookup.webSpecs.specUrl) ? (
-        <div className="mt-4 rounded-lg border border-edge bg-sunken/40 px-4 py-3 text-sm text-ink" data-testid="home-web-specs-hint">
-          {webSpecsLabel ? (
-            <p className="font-semibold text-fog">{webSpecsLabel}</p>
-          ) : null}
-          {lookup.webSpecs.summary ? (
-            <p className="mt-2 whitespace-pre-wrap font-light leading-relaxed">
-              {lookup.webSpecs.summary}
-            </p>
-          ) : null}
-          {lookup.webSpecs.specUrl && webSpecsLinkLabel ? (
-            <p className="mt-2">
-              <a
-                href={lookup.webSpecs.specUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="font-medium text-g underline-offset-2 hover:underline"
-              >
-                {webSpecsLinkLabel}
-              </a>
-            </p>
-          ) : null}
-        </div>
+      {!loading && lookup.webSpecs?.specUrl && webSpecsLinkLabel ? (
+        <p className="mt-3" data-testid="home-web-specs-hint">
+          <a
+            href={lookup.webSpecs.specUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-sm font-medium text-g underline-offset-2 hover:underline"
+          >
+            {webSpecsLinkLabel}
+          </a>
+        </p>
       ) : null}
     </>
   );
@@ -351,17 +334,16 @@ function SpecChip({ chip }: { chip: { icon: string; label: string; value: string
           ? "border-amber/30 bg-amber/[0.06]"
           : "border-edge bg-card/70";
   return (
-    <div className={`flex gap-3 rounded-lg border px-3 py-3 ${chipSurface}`}>
-      <span className="mt-0.5 shrink-0 font-display text-lg text-g" aria-hidden>
+    <div className={`flex items-center gap-2 rounded-lg border px-3 py-2 ${chipSurface}`}>
+      <span className="shrink-0 font-display text-base text-g" aria-hidden>
         {chip.icon}
       </span>
-      <div className="min-w-0">
-        <p className="font-mono text-[10px] uppercase tracking-[0.1em] text-dust">
+      <div>
+        <p className="font-mono text-[9px] uppercase tracking-[0.08em] text-dust">
           {chip.label}
         </p>
-        <p className="mt-1 text-sm font-medium leading-snug text-ink">{chip.value}</p>
+        <p className="whitespace-nowrap text-xs font-medium leading-snug text-ink">{chip.value}</p>
       </div>
     </div>
   );
 }
-

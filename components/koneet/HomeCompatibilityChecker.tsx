@@ -199,7 +199,6 @@ export function HomeCompatibilityChecker({
               loading={loading}
               noVerifiedMatch={noVerifiedMatch}
               labels={lookupLabels}
-              webSpecsLabel={t("homeWebSpecsLabel")}
               webSpecsLinkLabel={t("homeWebSpecsLink")}
               homeNoMatchSupport={t("homeNoMatchSupport")}
             />
